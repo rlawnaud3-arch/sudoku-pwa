@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>👥 커플 게임 가이드</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Malgun Gothic','Apple SD Gothic Neo',system-ui,sans-serif;
+  background:#eef2ff;color:#1a1a2e;line-height:1.7;padding:24px 16px;max-width:780px;margin:0 auto}
+h1{font-size:28px;color:#3b5bdb;margin-bottom:8px}
+.sub{color:#868e96;margin-bottom:28px;font-size:15px}
+.step{background:#fff;border-radius:14px;padding:20px 22px;margin-bottom:14px;
+  box-shadow:0 2px 12px rgba(59,91,219,.08);border-left:5px solid #3b5bdb}
+.step h2{font-size:18px;color:#3b5bdb;margin-bottom:8px;display:flex;align-items:center;gap:10px}
+.step h3{font-size:15px;color:#1a1a2e;margin:14px 0 6px;padding-top:12px;border-top:1px dashed #dbe4ff}
+.step h2 .num{background:#3b5bdb;color:#fff;width:28px;height:28px;border-radius:50%;
+  display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:800}
+.step p,.step li{font-size:14.5px;color:#1a1a2e;margin:4px 0}
+.step ol,.step ul{padding-left:22px;margin:6px 0}
+.step code{background:#dbe4ff;color:#3b5bdb;padding:2px 8px;border-radius:6px;
+  font-family:'Consolas','SF Mono',monospace;font-size:13px;font-weight:600}
+.tip{background:#fff3bf;border-left-color:#f59f00}
+.tip h2{color:#e67700}
+.warn{background:#fff5f5;border-left-color:#c92a2a}
+.warn h2{color:#c92a2a}
+.feat{background:linear-gradient(135deg,#fff5f5,#fff);border-left-color:#fa5252}
+.feat h2{color:#fa5252}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:13px}
+th,td{padding:8px 10px;text-align:left;border-bottom:1px solid #dbe4ff}
+th{background:#f0f4ff;color:#3b5bdb;font-weight:700}
+.scenario{background:linear-gradient(135deg,#f0f4ff,#fff);padding:14px;border-radius:10px;
+  margin:10px 0;border:1px dashed #c5cae9}
+.scenario h4{font-size:13px;color:#3b5bdb;margin-bottom:6px;font-weight:800}
+.scenario p{font-size:13px;color:#495057;margin:2px 0}
+a{color:#3b5bdb;text-decoration:none;font-weight:600}
+.flow{display:flex;align-items:center;gap:8px;margin:10px 0;flex-wrap:wrap;font-size:13px}
+.flow .box{background:#fff;border:2px solid #3b5bdb;padding:8px 12px;border-radius:8px;font-weight:700}
+.flow .arrow{color:#3b5bdb;font-weight:800}
+</style>
+</head>
+<body>
+<h1>👥 와이프와 함께 즐기기</h1>
+<p class="sub">커플 랭킹 시스템 + 게임 업데이트 운영 가이드</p>
+
+<div class="step feat">
+<h2>🎯 한 줄 요약</h2>
+<p><strong>같은 Netlify URL을 둘이 공유</strong>하면 자동으로 모든 게 됩니다:</p>
+<ul>
+  <li>✅ 둘 다 같은 사이트에서 PWA 설치 (각자 폰에 별도 앱 + 별도 진행)</li>
+  <li>✅ 진행 상황은 각자 폰의 localStorage에 저장 (서로 침범 X)</li>
+  <li>✅ "👥 비교" 버튼으로 카톡 통해 코드 주고받으며 누가 부자인지 확인</li>
+  <li>✅ 게임 업데이트시 한 명이 Netlify에 새 폴더 드롭 → 둘 다 자동 업데이트</li>
+</ul>
+</div>
+
+<!-- ════════════════════ -->
+<div class="step">
+<h2><span class="num">1</span>처음 셋업 (한 번만)</h2>
+<ol>
+  <li>주명님이 Netlify Drop으로 호스팅 (전에 받은 URL 그대로)</li>
+  <li>그 URL을 와이프에게 카톡 "나에게 보내기" 또는 "공유"로 전달</li>
+  <li>각자 사파리/크롬으로 URL 열기</li>
+  <li>각자 "홈 화면에 추가" 또는 "앱 설치"</li>
+  <li><strong>각자 별도의 진행 시작</strong> (localStorage 분리됨)</li>
+</ol>
+</div>
+
+<!-- ════════════════════ -->
+<div class="step">
+<h2><span class="num">2</span>👥 코드 비교 시스템 사용법</h2>
+
+<h3>2-1. 처음 비교할 때 (각자 한 번씩)</h3>
+<ol>
+  <li>주명님: 헤더 우측 <code>👥</code> 버튼 탭</li>
+  <li>"내 이름 정하기" 프롬프트 → "주명" 입력 (이름은 나중에 변경 가능)</li>
+  <li>"📋 내 코드 복사" 버튼 → 코드가 클립보드에 복사됨</li>
+  <li>카톡 와이프 채팅창에 붙여넣기 → 전송</li>
+</ol>
+
+<h3>2-2. 받은 코드 입력</h3>
+<ol>
+  <li>와이프가 보낸 코드를 <strong>꾸욱 누르고 복사</strong></li>
+  <li>주명님 앱 → 👥 → "📥 코드 붙여넣기"</li>
+  <li>복사한 코드 붙여넣고 확인</li>
+  <li>화면에 둘의 통계 비교가 표 형태로 표시 ✨</li>
+</ol>
+
+<h3>2-3. 비교되는 항목 (12가지)</h3>
+<table>
+  <tr><th>항목</th><th>승리 조건</th></tr>
+  <tr><td>🪙 코인</td><td>많은 쪽 👑</td></tr>
+  <tr><td>🏠 집 레벨</td><td>높은 쪽 👑</td></tr>
+  <tr><td>🐉 전설/💜 영웅 보유</td><td>많은 쪽 👑</td></tr>
+  <tr><td>📦 컬렉션 / 총 보유</td><td>많은 쪽 👑</td></tr>
+  <tr><td>🏆 최장/🔥 현재 연속 챌린지</td><td>긴 쪽 👑</td></tr>
+  <tr><td>✅ 완성 횟수 / 🎮 플레이 수</td><td>많은 쪽 👑</td></tr>
+  <tr><td>⏱ 총 플레이 시간</td><td>많은 쪽 👑</td></tr>
+  <tr><td>✗ 실수 횟수</td><td>적은 쪽 👑 (역방향)</td></tr>
+</table>
+<p style="font-size:13px;color:#868e96;margin-top:8px">하단에 종합 결과 (X승 Y패 Z무) 자동 계산</p>
+</div>
+
+<!-- ════════════════════ -->
+<div class="step tip">
+<h2>💡 추천 운영 방식</h2>
+
+<div class="scenario">
+<h4>🎯 매일 저녁 "오늘의 부자" 체크</h4>
+<p>하루에 한 번, 자기 전에 둘이 코드 교환:</p>
+<p>1. 각자 👥 → "📋 내 코드 복사"</p>
+<p>2. 카톡으로 동시에 보내기</p>
+<p>3. 받은 코드 붙여넣기</p>
+<p>4. 결과 캡처해서 "오늘은 누가 더 부자!" 확인</p>
+</div>
+
+<div class="scenario">
+<h4>🏆 주말 챌린지: "이번 주 1등"</h4>
+<p>월요일 시작 코드 저장 → 일요일 종료 코드 비교 → 그 사이 수익(코인) 차이 비교</p>
+<p>이번 주 코인 증가량이 더 많은 쪽이 승자!</p>
+</div>
+
+<div class="scenario">
+<h4>🐉 전설 수집 레이스</h4>
+<p>"누가 먼저 전설 8종 다 모으나" 도전</p>
+<p>승자에겐 외식권, 영화 보기 등 보상 약속 😉</p>
+</div>
+
+<div class="scenario">
+<h4>🏯 집 LV 5 레이스</h4>
+<p>"먼저 황금성 도달하기" — 60,000코인 모으기</p>
+<p>스도쿠 → 자원 → 판매 → 업그레이드 사이클을 가장 효율적으로 돌리는 사람이 승자</p>
+</div>
+</div>
+
+<!-- ════════════════════ -->
+<div class="step">
+<h2><span class="num">3</span>🔄 게임 업데이트 자동 받기</h2>
+
+<div class="flow">
+  <div class="box">제가 새 기능 만듦</div>
+  <div class="arrow">→</div>
+  <div class="box">새 index.html 전달</div>
+  <div class="arrow">→</div>
+  <div class="box">주명님 폴더에 덮어쓰기</div>
+  <div class="arrow">→</div>
+  <div class="box">Netlify Drop에 다시 끌어다 놓기</div>
+  <div class="arrow">→</div>
+  <div class="box">와이프+주명님 자동 업데이트 ⚡</div>
+</div>
+
+<h3>3-1. 핵심 원리: Service Worker가 자동 갱신</h3>
+<ul>
+  <li>Netlify에 새 버전 올라가면 SW가 백그라운드에서 캐시 갱신</li>
+  <li>다음 앱 실행시 자동으로 새 버전</li>
+  <li>강제 즉시 적용: 앱 닫고 다시 열기</li>
+</ul>
+
+<h3>3-2. 더 자동화하려면 (선택 — GitHub 연동)</h3>
+<p>나중에 더 편하게 하려면 이 흐름:</p>
+<ol>
+  <li>GitHub 무료 계정 만들기</li>
+  <li>저장소(Repository) 만들고 sudoku-pwa 폴더 업로드</li>
+  <li>Netlify에서 GitHub 연동 (Site Settings → Build & Deploy)</li>
+  <li>이후엔 제가 코드 push만 하면 자동 배포됨</li>
+  <li>주명님은 아무것도 안 해도 됨</li>
+</ol>
+<p style="font-size:13px;color:#868e96">셋업 30분, 그 후 영구히 자동. 원하시면 가이드 따로 드림.</p>
+</div>
+
+<!-- ════════════════════ -->
+<div class="step warn">
+<h2>⚠️ 알아두실 점</h2>
+<ul>
+  <li><strong>각자 진행은 분리됨</strong> — 와이프가 황금성 만들어도 주명님 LV는 그대로. 별도 게임</li>
+  <li><strong>코드는 그 시점 스냅샷</strong> — 와이프 코드 받은 후 와이프가 더 플레이해도 비교는 받은 시점 기준. 새로 비교하려면 새 코드 받아야 함</li>
+  <li><strong>24시간 이상 지난 코드는 경고 표시됨</strong> — 새 코드 받으세요</li>
+  <li><strong>이름 변경 가능</strong> — 👥 화면에서 "변경" 링크</li>
+  <li><strong>코드 안에 위치 정보·개인정보 없음</strong> — 통계만 들어있음. 카톡 공유 안전</li>
+</ul>
+</div>
+
+<!-- ════════════════════ -->
+<div class="step">
+<h2><span class="num">4</span>🚀 더 나아간 옵션 (나중에 필요하면)</h2>
+
+<table>
+  <tr><th>옵션</th><th>난이도</th><th>비용</th><th>특징</th></tr>
+  <tr><td><strong>코드 비교</strong> (현재)</td><td>★</td><td>무료</td><td>수동, 카톡 교환</td></tr>
+  <tr><td>QR 코드 비교</td><td>★★</td><td>무료</td><td>코드 → QR 변환, 폰 카메라로 스캔</td></tr>
+  <tr><td>Firebase 백엔드</td><td>★★★★</td><td>무료 (월 1만건)</td><td>실시간 자동 동기화, 알림 가능</td></tr>
+  <tr><td>전용 서버</td><td>★★★★★</td><td>월 5천원~</td><td>리더보드, 친구 추가, 채팅</td></tr>
+</table>
+
+<p>지금 단계에선 <strong>코드 비교만으로 충분합니다.</strong> 5명 이상 함께 즐기게 되거나 실시간 알림이 필요해지면 그때 Firebase로 옮기면 됩니다.</p>
+</div>
+
+<!-- ════════════════════ -->
+<div class="step">
+<h2>📞 와이프에게 보낼 가이드 메시지 템플릿</h2>
+<div class="scenario">
+<p style="font-family:Consolas,monospace;font-size:13px;background:#fff;padding:12px;border-radius:8px">
+🎮 우리 같이할 스도쿠 게임이야!<br>
+1. <a href="#">[Netlify URL 여기]</a> 사파리로 열기<br>
+2. 하단 공유버튼(↑) → "홈 화면에 추가" → "추가"<br>
+3. 홈 화면에 9칸 격자 "스" 아이콘 → 탭<br>
+4. 매일 일일 챌린지 풀고 동물·집 모으기<br>
+5. 👥 버튼으로 누가 부자인지 비교!<br>
+첫 단계는 닭 1마리로 시작해서 키우는 거야 🐔
+</p>
+</div>
+</div>
+
+<p style="text-align:center;margin-top:32px;color:#868e96;font-size:13px">
+🎉 즐거운 커플 게임 시간 되세요!<br>
+질문 있으면 언제든 다시 도와드릴게요.
+</p>
+</body>
+</html>

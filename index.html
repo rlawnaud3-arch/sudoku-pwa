@@ -1,0 +1,3024 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>스도쿠</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#3b5bdb">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="스도쿠">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" sizes="512x512" href="icon-512.png">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#eef2ff;--surface:#fff;--primary:#3b5bdb;--pl:#dbe4ff;
+  --accent:#7048e8;--given:#1a1a2e;--input:#2563eb;
+  --err:#c92a2a;--err-bg:#fff5f5;
+  --sel:#dbe4ff;--rel:#f0f4ff;--same:#e9d8fd;
+  --note:#868e96;--border:#c5cae9;--ok:#2f9e44;--muted:#868e96;
+  --gold:#f59f00;--silver:#868e96;--bronze:#c47b2b;
+  --daily:#fa5252;--daily-bg:#fff5f5;
+}
+body{background:var(--bg);font-family:'Segoe UI','Malgun Gothic',system-ui,sans-serif;
+  min-height:100vh;display:flex;flex-direction:column;align-items:center;
+  padding:max(10px,env(safe-area-inset-top)) 8px max(60px,env(safe-area-inset-bottom));user-select:none}
+header{width:100%;max-width:420px;display:flex;align-items:center;
+  justify-content:space-between;margin-bottom:10px;gap:8px}
+.logo{font-size:24px;font-weight:900;color:var(--primary);letter-spacing:-1px;flex-shrink:0}
+.logo span{color:var(--accent)}
+.hright{display:flex;align-items:center;gap:4px;flex-shrink:0;flex-wrap:nowrap}
+.timer{font-size:17px;font-weight:700;color:var(--given);
+  font-variant-numeric:tabular-nums;letter-spacing:1px;margin-right:4px}
+.icon-btn{background:var(--pl);border:none;border-radius:50%;
+  width:30px;height:30px;font-size:12.5px;font-weight:700;color:var(--primary);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
+.icon-btn:hover{background:var(--primary);color:#fff}
+.icon-btn:active{transform:scale(.92)}
+.icon-btn.pause{background:#fff3bf;color:#e67700}
+.icon-btn.pause.active{background:#e67700;color:#fff}
+.icon-btn.farm{background:#d3f9d8;color:var(--ok)}
+.icon-btn.farm:hover{background:var(--ok);color:#fff}
+.icon-btn.compare{background:#fff3bf;color:#e67700}
+.icon-btn.compare:hover{background:#e67700;color:#fff}
+.icon-btn.settings{background:#f1f3f5;color:#495057}
+.icon-btn.settings:hover{background:#495057;color:#fff}
+/* ── SETTINGS MODAL ── */
+.settings-section{padding:14px 16px}
+.settings-section h3{font-size:13px;font-weight:800;color:var(--given);margin:14px 0 8px;
+  display:flex;align-items:center;gap:6px}
+.settings-section h3.danger{color:var(--err)}
+.settings-row{background:var(--bg);border-radius:10px;padding:12px;margin-bottom:6px;
+  display:flex;align-items:center;gap:10px}
+.settings-row .ic{font-size:22px;flex-shrink:0}
+.settings-row .info{flex:1;min-width:0}
+.settings-row .nm{font-size:13px;font-weight:700;color:var(--given)}
+.settings-row .desc{font-size:11px;color:var(--muted);margin-top:2px;line-height:1.4}
+.settings-row button{background:var(--primary);color:#fff;border:none;border-radius:8px;
+  padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0;white-space:nowrap}
+.settings-row button:hover{background:var(--accent)}
+.settings-row button.danger{background:var(--err)}
+.settings-row button.danger:hover{background:#a52020}
+.settings-row button.warn{background:#f59f00}
+.settings-row button.warn:hover{background:#e67700}
+.settings-info{background:#fff3bf;border-radius:10px;padding:10px;font-size:11px;
+  color:#5c4400;margin-bottom:10px;line-height:1.6}
+.settings-info strong{color:#a52020}
+.diff-tabs{display:flex;background:#fff;border-radius:12px;padding:4px;gap:2px;
+  box-shadow:0 2px 8px rgba(59,91,219,.12);margin-bottom:10px;
+  width:100%;max-width:420px}
+.dtab{flex:1;padding:7px 0;border:none;border-radius:9px;background:transparent;
+  color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;transition:all .18s}
+.dtab.active{background:var(--primary);color:#fff;box-shadow:0 2px 8px rgba(59,91,219,.3)}
+/* Daily Challenge Banner */
+.daily-banner{width:100%;max-width:420px;border-radius:14px;padding:12px 16px;
+  display:flex;align-items:center;gap:12px;margin-bottom:10px;cursor:pointer;
+  background:linear-gradient(135deg,#fa5252,#fab005);color:#fff;
+  box-shadow:0 4px 14px rgba(250,82,82,.3);transition:all .2s}
+.daily-banner:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(250,82,82,.4)}
+.daily-banner.done{background:linear-gradient(135deg,#2f9e44,#51cf66);box-shadow:0 4px 14px rgba(47,158,68,.3)}
+.daily-banner.active{background:linear-gradient(135deg,#3b5bdb,#7048e8);box-shadow:0 4px 14px rgba(112,72,232,.4)}
+.db-icon{font-size:28px;flex-shrink:0;animation:bounce 2s ease-in-out infinite}
+.daily-banner.done .db-icon,.daily-banner.active .db-icon{animation:none}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.db-info{flex:1;min-width:0}
+.db-title{font-size:13px;font-weight:800}
+.db-desc{font-size:11px;opacity:.92;margin-top:2px}
+.db-streak{font-size:11px;font-weight:700;background:rgba(255,255,255,.25);
+  padding:4px 10px;border-radius:20px;flex-shrink:0;backdrop-filter:blur(4px)}
+.mission-card{width:100%;max-width:420px;border-radius:14px;padding:12px 16px;
+  display:flex;align-items:center;gap:12px;margin-bottom:10px;
+  background:#fff;box-shadow:0 2px 10px rgba(59,91,219,.1);
+  border-left:5px solid var(--primary);transition:border-color .3s}
+.mission-card.failed{border-left-color:var(--err);background:#fff8f8}
+.mission-card.success{border-left-color:var(--ok);background:#f0fff4}
+.mission-card.daily{border-left-color:var(--daily);background:linear-gradient(90deg,#fff5f5,#fff)}
+.m-icon{font-size:26px;flex-shrink:0}
+.m-info{flex:1;min-width:0}
+.m-title{font-size:13px;font-weight:800;color:var(--given);display:flex;align-items:center;gap:6px}
+.m-title .daily-tag{background:var(--daily);color:#fff;font-size:9px;font-weight:800;
+  padding:2px 7px;border-radius:8px;letter-spacing:.5px}
+.m-desc{font-size:11px;color:var(--muted);margin-top:2px}
+.m-badge{font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;
+  white-space:nowrap;flex-shrink:0}
+.m-badge.ongoing{background:var(--pl);color:var(--primary)}
+.m-badge.failed{background:#ffeaea;color:var(--err)}
+.m-badge.success{background:#d3f9d8;color:var(--ok)}
+.m-badge.warning{background:#fff3bf;color:#e67700}
+.prog-wrap{width:100%;max-width:420px;margin-bottom:10px}
+.prog-bar{width:100%;height:5px;background:#e0e0e0;border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--accent));
+  border-radius:3px;transition:width .4s ease}
+.prog-label{font-size:10px;color:var(--muted);text-align:right;margin-top:3px}
+.board-wrap{background:#fff;border-radius:16px;padding:10px;position:relative;
+  box-shadow:0 4px 24px rgba(59,91,219,.15);margin-bottom:12px;
+  width:100%;max-width:420px}
+.board{display:grid;grid-template-columns:repeat(9,1fr);
+  border:3px solid var(--primary);border-radius:6px;overflow:hidden;aspect-ratio:1;width:100%}
+.cell{position:relative;aspect-ratio:1;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;border:.5px solid #c5cae9;background:#fff;transition:background .08s;overflow:hidden}
+.cell[data-c="2"],.cell[data-c="5"]{border-right:2.5px solid var(--primary)}
+.cell[data-c="3"],.cell[data-c="6"]{border-left:2.5px solid var(--primary)}
+.cell[data-r="2"],.cell[data-r="5"]{border-bottom:2.5px solid var(--primary)}
+.cell[data-r="3"],.cell[data-r="6"]{border-top:2.5px solid var(--primary)}
+.cell.selected{background:var(--sel)!important}
+.cell.related{background:var(--rel)}
+.cell.same-num{background:var(--same)}
+.cell.error{background:var(--err-bg)}
+.cell-val{font-size:clamp(13px,3.2vw,21px);font-weight:700;line-height:1;z-index:1}
+.cell.given .cell-val{color:var(--given)}
+.cell.user .cell-val{color:var(--input)}
+.cell.error .cell-val{color:var(--err)}
+.cell.correct .cell-val{color:#1971c2}
+.cell-notes{position:absolute;inset:1px;display:grid;
+  grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr)}
+.cell-notes span{display:flex;align-items:center;justify-content:center;
+  font-size:clamp(6px,1.3vw,8.5px);font-weight:600;color:var(--note);line-height:1}
+.cell-notes span.on{color:var(--accent)}
+.note-ind{width:100%;max-width:420px;display:flex;align-items:center;
+  justify-content:center;gap:6px;font-size:11px;font-weight:600;color:#bbb;
+  padding:2px 0 8px;transition:color .2s}
+.note-ind.on{color:var(--accent)}
+.ndot{width:7px;height:7px;border-radius:50%;background:currentColor;display:none}
+.note-ind.on .ndot{display:block}
+.numpad-wrap{width:100%;max-width:420px;margin-bottom:10px}
+.numpad{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.nbtn{background:#fff;border:2px solid var(--border);border-radius:10px;
+  padding:11px 0;font-size:19px;font-weight:700;color:var(--primary);cursor:pointer;
+  transition:all .13s;box-shadow:0 2px 5px rgba(59,91,219,.08);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.nbtn .cnt{font-size:9px;font-weight:500;color:var(--muted)}
+.nbtn:hover{background:var(--pl);border-color:var(--primary);transform:translateY(-1px)}
+.nbtn:active{transform:translateY(0)}
+.nbtn.done{opacity:.25;pointer-events:none}
+.nbtn.del{color:var(--err);border-color:#fcc;font-size:17px}
+.actions{width:100%;max-width:420px;display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.abtn{background:#fff;border:2px solid var(--border);border-radius:10px;
+  padding:9px 4px;font-size:10.5px;font-weight:600;color:var(--given);cursor:pointer;
+  transition:all .13s;display:flex;flex-direction:column;align-items:center;gap:3px;
+  box-shadow:0 2px 5px rgba(0,0,0,.05)}
+.abtn .ic{font-size:17px}
+.abtn:hover{background:var(--pl);border-color:var(--primary);color:var(--primary)}
+.abtn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.abtn:disabled{opacity:.35;pointer-events:none}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);
+  display:flex;align-items:center;justify-content:center;z-index:200;
+  backdrop-filter:blur(4px)}
+.overlay.hidden{display:none}
+.mbox{background:#fff;border-radius:22px;padding:28px 24px;text-align:center;
+  max-width:340px;width:92%;box-shadow:0 24px 60px rgba(0,0,0,.25);
+  animation:pop .3s cubic-bezier(.34,1.56,.64,1)}
+@keyframes pop{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+.m-emoji{font-size:52px;margin-bottom:10px}
+.m-h1{font-size:22px;font-weight:800;color:var(--given)}
+.m-h2{font-size:14px;color:var(--muted);margin:4px 0}
+.m-big{font-size:38px;font-weight:900;color:var(--primary);margin:10px 0}
+.mrow{display:flex;align-items:center;justify-content:center;gap:8px;
+  margin:6px 0;font-size:13px;flex-wrap:wrap}
+.chip{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700}
+.chip.ok{background:#d3f9d8;color:var(--ok)}
+.chip.fail{background:#ffeaea;color:var(--err)}
+.chip.rank{background:var(--pl);color:var(--primary)}
+.chip.gold{background:#fff3bf;color:#e67700}
+.chip.silver{background:#f1f3f5;color:#495057}
+.chip.bronze{background:#fff0e0;color:#c47b2b}
+.chip.daily{background:#fff5f5;color:var(--daily)}
+.mbtns{display:flex;gap:9px;margin-top:18px}
+.mbtn{flex:1;padding:12px;border:none;border-radius:10px;font-size:13px;
+  font-weight:700;cursor:pointer;transition:all .15s}
+.mbtn.pri{background:var(--primary);color:#fff}
+.mbtn.pri:hover{background:var(--accent)}
+.mbtn.out{background:transparent;border:2px solid var(--border);color:var(--muted)}
+/* Records & Stats Modals */
+.rec-box{background:#fff;border-radius:22px;padding:0;max-width:420px;width:95%;
+  max-height:90vh;overflow:hidden;display:flex;flex-direction:column;
+  box-shadow:0 24px 60px rgba(0,0,0,.25);animation:pop .3s cubic-bezier(.34,1.56,.64,1)}
+.rec-head{display:flex;align-items:center;justify-content:space-between;
+  padding:18px 18px 0}
+.rec-head h2{font-size:18px;font-weight:800;color:var(--given)}
+.rec-close{background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted);
+  width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.rec-close:hover{background:var(--bg)}
+.rec-tabs{display:flex;gap:4px;padding:10px 14px 0}
+.rtab{flex:1;padding:7px 0;border:none;border-radius:8px;background:var(--bg);
+  color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s}
+.rtab.active{background:var(--primary);color:#fff}
+.rec-list{flex:1;overflow-y:auto;padding:12px 16px 18px}
+.rec-empty{text-align:center;padding:40px 20px;color:var(--muted);font-size:14px}
+.rec-item{display:flex;align-items:center;gap:10px;padding:10px 12px;
+  border-radius:10px;margin-bottom:6px;background:var(--bg)}
+.rec-item:first-child{background:#fffde7}
+.rec-rank{font-size:20px;width:28px;text-align:center;flex-shrink:0}
+.rec-time{font-size:18px;font-weight:800;color:var(--given);min-width:60px}
+.rec-meta{flex:1;min-width:0}
+.rec-meta .line1{font-size:11px;font-weight:600;color:var(--given)}
+.rec-meta .line2{font-size:10px;color:var(--muted)}
+.rec-mission{font-size:18px}
+.rec-clear-btn{background:none;border:1px solid #fcc;border-radius:8px;
+  color:var(--err);font-size:11px;font-weight:600;cursor:pointer;padding:5px 10px;
+  margin-top:12px}
+/* Stats Dashboard */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.stat-card{background:linear-gradient(135deg,#fff,var(--bg));border-radius:12px;
+  padding:13px 12px;text-align:left;border:1px solid #e9ecef}
+.stat-card .ico{font-size:20px;margin-bottom:4px}
+.stat-card .num{font-size:22px;font-weight:900;color:var(--primary);
+  font-variant-numeric:tabular-nums;line-height:1.1}
+.stat-card .lbl{font-size:11px;color:var(--muted);font-weight:600;margin-top:2px}
+.stat-card.gold{background:linear-gradient(135deg,#fff,#fff3bf);border-color:#ffe066}
+.stat-card.gold .num{color:#e67700}
+.stat-card.daily{background:linear-gradient(135deg,#fff,#fff5f5);border-color:#ffc9c9}
+.stat-card.daily .num{color:var(--daily)}
+.stat-section{margin-top:18px}
+.stat-section h3{font-size:13px;font-weight:800;color:var(--given);
+  margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.stat-section h3 .em{font-size:16px}
+.mission-stat{display:flex;align-items:center;gap:8px;margin-bottom:8px;
+  font-size:12px;padding:8px 10px;background:var(--bg);border-radius:8px}
+.mission-stat .em{font-size:18px;flex-shrink:0}
+.mission-stat .lbl{flex:1;font-weight:700;color:var(--given)}
+.mission-stat .pcnt{font-size:11px;font-weight:700;color:var(--primary);min-width:50px;text-align:right}
+.mission-stat .bar-wrap{flex-basis:100%;height:5px;background:#e9ecef;border-radius:3px;
+  overflow:hidden;margin-top:4px;flex-shrink:0}
+.mission-stat-row{display:flex;flex-direction:column;gap:2px;flex:1}
+.mission-stat .bar-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--accent));
+  border-radius:3px;transition:width .8s ease}
+/* Calendar Heatmap */
+.heatmap{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;
+  padding:8px;background:var(--bg);border-radius:10px}
+.hcell{aspect-ratio:1;border-radius:3px;background:#e9ecef;
+  display:flex;align-items:center;justify-content:center;font-size:8px;color:var(--muted);position:relative}
+.hcell.played{background:#a5d8ff;color:#1864ab}
+.hcell.daily{background:#fa5252;color:#fff;font-weight:700}
+.hcell.today{outline:2px solid var(--primary);outline-offset:1px;font-weight:800}
+.hcell.future{opacity:.3}
+.heat-legend{display:flex;align-items:center;justify-content:center;gap:10px;
+  margin-top:8px;font-size:10px;color:var(--muted)}
+.heat-legend .dot{display:inline-block;width:10px;height:10px;border-radius:2px;vertical-align:middle;margin-right:3px}
+/* Effects */
+.fail-flash{position:fixed;inset:0;background:rgba(201,42,42,.15);
+  pointer-events:none;z-index:150;animation:flash .6s forwards}
+@keyframes flash{0%{opacity:1}100%{opacity:0}}
+.cw{position:fixed;inset:0;pointer-events:none;z-index:190;overflow:hidden}
+.conf{position:absolute;border-radius:2px;animation:fall linear forwards}
+@keyframes fall{0%{transform:translateY(-20px) rotate(0);opacity:1}
+  100%{transform:translateY(110vh) rotate(720deg);opacity:0}}
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(70px);
+  background:#1a1a2e;color:#fff;padding:9px 18px;border-radius:20px;
+  font-size:13px;font-weight:600;z-index:300;
+  transition:transform .28s,opacity .28s;opacity:0;white-space:nowrap}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.mistakes-wrap{display:flex;gap:4px;align-items:center}
+/* Install banner */
+.install-banner{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);
+  background:var(--primary);color:#fff;padding:10px 16px;border-radius:24px;
+  font-size:13px;font-weight:700;z-index:250;display:none;align-items:center;gap:10px;
+  box-shadow:0 6px 20px rgba(59,91,219,.4);cursor:pointer}
+.install-banner.show{display:flex;animation:pop .3s cubic-bezier(.34,1.56,.64,1)}
+.install-banner .x{background:rgba(255,255,255,.3);border:none;color:#fff;
+  width:22px;height:22px;border-radius:50%;font-size:14px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center}
+/* ── PAUSE OVERLAY ── */
+.pause-overlay{position:absolute;inset:0;background:rgba(255,255,255,.96);
+  display:none;align-items:center;justify-content:center;flex-direction:column;
+  border-radius:6px;z-index:50;backdrop-filter:blur(8px);cursor:pointer;
+  animation:fadeIn .2s}
+.pause-overlay.show{display:flex}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.pause-icon{font-size:64px;color:#e67700;margin-bottom:8px}
+.pause-text{font-size:18px;font-weight:800;color:var(--given)}
+.pause-sub{font-size:12px;color:var(--muted);margin-top:6px}
+/* ── REWARD CARD ── */
+.reward-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);
+  display:flex;align-items:center;justify-content:center;flex-direction:column;
+  z-index:400;backdrop-filter:blur(6px);padding:20px}
+.reward-overlay.hidden{display:none}
+.reward-title{color:#fff;font-size:18px;font-weight:800;margin-bottom:14px;text-align:center}
+.reward-cards{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;perspective:1000px}
+.rcard{width:160px;height:220px;position:relative;cursor:pointer;
+  transform-style:preserve-3d;transition:transform .8s;animation:cardIn .4s ease-out backwards}
+@keyframes cardIn{from{transform:translateY(40px) scale(.7);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}
+.rcard.flipped{transform:rotateY(180deg)}
+.rcard-face{position:absolute;inset:0;backface-visibility:hidden;border-radius:14px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px;
+  box-shadow:0 12px 36px rgba(0,0,0,.5)}
+.rcard-back{background:linear-gradient(135deg,#3b5bdb,#7048e8);color:#fff;
+  font-size:42px}
+.rcard-back::before{content:'?';font-size:80px;font-weight:900;text-shadow:0 4px 12px rgba(0,0,0,.4)}
+.rcard-back .tap-hint{position:absolute;bottom:14px;font-size:10px;font-weight:700;letter-spacing:1px}
+.rcard-front{transform:rotateY(180deg);background:#fff}
+.rcard-front.common{background:linear-gradient(135deg,#f8f9fa,#e9ecef);border:3px solid #adb5bd}
+.rcard-front.rare{background:linear-gradient(135deg,#e7f5ff,#a5d8ff);border:3px solid #1971c2;
+  box-shadow:0 0 28px rgba(25,113,194,.6),0 12px 36px rgba(0,0,0,.5)}
+.rcard-front.epic{background:linear-gradient(135deg,#f3e8ff,#d0bfff);border:3px solid var(--accent);
+  box-shadow:0 0 36px rgba(112,72,232,.7),0 12px 36px rgba(0,0,0,.5)}
+.rcard-front.legendary{background:linear-gradient(135deg,#fff3bf,#ffd43b);border:3px solid #f59f00;
+  box-shadow:0 0 48px #f59f00,0 0 80px rgba(245,159,0,.6),0 12px 36px rgba(0,0,0,.5);
+  animation:legendaryGlow 1.5s ease-in-out infinite alternate}
+@keyframes legendaryGlow{from{box-shadow:0 0 48px #f59f00,0 0 80px rgba(245,159,0,.6),0 12px 36px rgba(0,0,0,.5)}
+  to{box-shadow:0 0 64px #f59f00,0 0 110px rgba(245,159,0,.8),0 12px 36px rgba(0,0,0,.5)}}
+.rcard-emoji{font-size:64px;margin-bottom:8px;line-height:1}
+.rcard-name{font-size:15px;font-weight:800;color:#1a1a2e;text-align:center;margin-bottom:6px}
+.rcard-tier{font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;letter-spacing:1px}
+.rcard-tier.common{background:#adb5bd;color:#fff}
+.rcard-tier.rare{background:#1971c2;color:#fff}
+.rcard-tier.epic{background:var(--accent);color:#fff}
+.rcard-tier.legendary{background:linear-gradient(135deg,#f59f00,#fab005);color:#fff;
+  text-shadow:0 1px 3px rgba(0,0,0,.3)}
+.rcard-new{position:absolute;top:8px;right:8px;background:#fa5252;color:#fff;
+  font-size:9px;font-weight:800;padding:2px 7px;border-radius:10px;letter-spacing:.5px}
+.reward-btn{margin-top:18px;padding:12px 28px;background:#fff;color:var(--primary);
+  border:none;border-radius:24px;font-size:14px;font-weight:800;cursor:pointer;
+  box-shadow:0 6px 20px rgba(0,0,0,.3)}
+.reward-btn:disabled{opacity:.5;cursor:not-allowed}
+.reward-skip{margin-top:10px;color:#fff;background:transparent;border:1px solid rgba(255,255,255,.3);
+  padding:8px 18px;border-radius:20px;font-size:12px;cursor:pointer}
+/* ── FARM MODAL ── */
+.farm-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;
+  padding:12px 14px 0;text-align:center}
+.fs-box{background:var(--bg);border-radius:8px;padding:8px 4px}
+.fs-box .n{font-size:18px;font-weight:900;color:var(--primary);line-height:1.1}
+.fs-box .l{font-size:9px;color:var(--muted);font-weight:600;margin-top:2px}
+.fs-box.legendary .n{color:#f59f00}
+.fs-box.epic .n{color:var(--accent)}
+.fs-box.rare .n{color:#1971c2}
+.farm-filter{display:flex;gap:4px;padding:10px 14px 0;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.ffilter{padding:6px 12px;border:none;border-radius:8px;background:var(--bg);
+  color:var(--muted);font-size:11px;font-weight:600;cursor:pointer;flex-shrink:0;white-space:nowrap}
+.ffilter.active{background:var(--primary);color:#fff}
+.farm-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:12px 14px 18px}
+.fitem{aspect-ratio:1;border-radius:10px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;position:relative;padding:4px;
+  border:2px solid #e9ecef;background:#fff;cursor:pointer;transition:transform .15s}
+.fitem.unlocked{}
+.fitem.locked{opacity:.35;background:#f1f3f5}
+.fitem.common.unlocked{border-color:#adb5bd}
+.fitem.rare.unlocked{border-color:#1971c2;background:linear-gradient(135deg,#fff,#e7f5ff)}
+.fitem.epic.unlocked{border-color:var(--accent);background:linear-gradient(135deg,#fff,#f3e8ff)}
+.fitem.legendary.unlocked{border-color:#f59f00;background:linear-gradient(135deg,#fff,#fff3bf);
+  box-shadow:0 0 12px rgba(245,159,0,.4)}
+.fitem:hover{transform:translateY(-2px)}
+.fitem .em{font-size:28px;line-height:1}
+.fitem .nm{font-size:9px;font-weight:700;color:var(--given);text-align:center;
+  margin-top:2px;line-height:1.1;max-height:22px;overflow:hidden}
+.fitem .ct{position:absolute;top:2px;right:3px;background:var(--primary);color:#fff;
+  font-size:9px;font-weight:800;padding:1px 5px;border-radius:8px;min-width:14px;text-align:center}
+.fitem.legendary.unlocked .ct{background:#f59f00}
+.fitem.epic.unlocked .ct{background:var(--accent)}
+.fitem.rare.unlocked .ct{background:#1971c2}
+.fcollection{padding:0 14px 14px;font-size:11px;color:var(--muted);text-align:center}
+.fcollection .pct{font-weight:800;color:var(--primary);font-size:13px}
+/* ── FARM VIEW TABS ── */
+.farm-view-tabs{display:flex;padding:12px 14px 0;gap:6px}
+.fvtab{flex:1;padding:9px 0;border:none;border-radius:10px;background:var(--bg);
+  color:var(--muted);font-size:12px;font-weight:700;cursor:pointer;transition:all .15s}
+.fvtab.active{background:var(--primary);color:#fff;box-shadow:0 2px 6px rgba(59,91,219,.3)}
+.farm-section{display:none}
+.farm-section.show{display:block}
+/* ── FARM SCENE (Stardew Valley pixel style) ── */
+.farm-scene-wrap{padding:8px 10px 6px}
+.farm-scene{width:100%;height:400px;border-radius:6px;position:relative;overflow:hidden;
+  background-color:#7cb342;
+  background-image:
+    /* Pixel grid: vertical lines */
+    repeating-linear-gradient(90deg,transparent 0,transparent 23px,rgba(0,0,0,.07) 23px,rgba(0,0,0,.07) 24px),
+    /* Horizontal lines */
+    repeating-linear-gradient(0deg,transparent 0,transparent 23px,rgba(0,0,0,.07) 23px,rgba(0,0,0,.07) 24px),
+    /* Tile color variation */
+    repeating-conic-gradient(from 0deg at 50% 50%,rgba(255,255,255,.04) 0% 50%,transparent 50% 100%),
+    /* Sky+grass gradient */
+    linear-gradient(to bottom,#88c4ec 0%,#b8def0 26%,#7cb342 26%,#5a9926 100%);
+  border:4px solid #4a3826;
+  box-shadow:inset 0 0 0 2px #6b5333,inset 0 -3px 0 rgba(0,0,0,.15),0 4px 0 #2a1f12;
+  image-rendering:pixelated;image-rendering:crisp-edges;
+  user-select:none;cursor:default;transition:filter 1s ease}
+.farm-scene.placing{cursor:crosshair;outline:2px dashed #ffd43b;outline-offset:-8px}
+/* Day/night phase filters */
+.farm-scene.morning{filter:hue-rotate(-8deg) brightness(1.04) saturate(1.05)}
+.farm-scene.day{}
+.farm-scene.evening{filter:hue-rotate(15deg) brightness(.92) sepia(.18) saturate(1.1)}
+.farm-scene.night{filter:brightness(.6) saturate(.6) hue-rotate(-30deg)}
+.farm-scene::before{content:'☁️       ☁️    ☁️';position:absolute;top:8px;left:0;right:0;
+  font-size:16px;letter-spacing:8px;animation:cloudDrift 80s linear infinite;opacity:.85;white-space:nowrap;pointer-events:none}
+@keyframes cloudDrift{from{transform:translateX(-30%)}to{transform:translateX(30%)}}
+.placed-item{position:absolute;transform:translate(-50%,0);cursor:pointer;text-align:center;
+  line-height:1;transition:left .5s cubic-bezier(.34,1.2,.64,1),bottom .5s cubic-bezier(.34,1.2,.64,1);
+  filter:drop-shadow(2px 3px 0 rgba(0,0,0,.25));image-rendering:pixelated}
+.placed-item.building{font-size:46px}
+.placed-item.plant{font-size:36px;animation:plantSway 4s ease-in-out infinite alternate}
+.placed-item.animal{font-size:30px;animation:idleBreathe 1.8s ease-in-out infinite alternate}
+.placed-item.deco{font-size:30px}
+.placed-item.legendary{filter:drop-shadow(0 0 10px #f59f00) drop-shadow(2px 3px 0 rgba(0,0,0,.25));
+  animation:legendaryPulse 2s ease-in-out infinite alternate}
+.placed-item.epic{filter:drop-shadow(0 0 7px #7048e8) drop-shadow(2px 3px 0 rgba(0,0,0,.25))}
+.placed-item.rare{filter:drop-shadow(0 0 5px #4dabf7) drop-shadow(2px 3px 0 rgba(0,0,0,.25))}
+.placed-item.flipped{transform:translate(-50%,0) scaleX(-1)}
+.placed-item.animal.hopping{animation:hop .5s cubic-bezier(.34,1.4,.64,1)}
+.placed-item.flipped.animal.hopping{animation:hopFlipped .5s cubic-bezier(.34,1.4,.64,1)}
+.placed-item:hover{filter:drop-shadow(0 0 8px var(--primary)) drop-shadow(2px 3px 0 rgba(0,0,0,.3));z-index:999!important}
+@keyframes idleBreathe{from{transform:translate(-50%,0)}to{transform:translate(-50%,-1px) scale(1.03,.97)}}
+@keyframes plantSway{from{transform:translate(-50%,0) rotate(-1.5deg)}to{transform:translate(-50%,0) rotate(1.5deg)}}
+@keyframes hop{
+  0%{transform:translate(-50%,0)}
+  35%{transform:translate(-50%,-14px) scale(1.08,.92)}
+  70%{transform:translate(-50%,0) scale(.9,1.08)}
+  100%{transform:translate(-50%,0)}
+}
+@keyframes hopFlipped{
+  0%{transform:translate(-50%,0) scaleX(-1)}
+  35%{transform:translate(-50%,-14px) scale(-1.08,.92)}
+  70%{transform:translate(-50%,0) scale(-.9,1.08)}
+  100%{transform:translate(-50%,0) scaleX(-1)}
+}
+@keyframes legendaryPulse{from{filter:drop-shadow(0 0 10px #f59f00) drop-shadow(2px 3px 0 rgba(0,0,0,.25))}
+  to{filter:drop-shadow(0 0 22px #ffd43b) drop-shadow(2px 3px 0 rgba(0,0,0,.25))}}
+/* Day/night badge */
+.day-badge{position:absolute;top:8px;left:8px;background:rgba(0,0,0,.5);color:#fff;
+  font-size:11px;font-weight:700;padding:4px 9px;border-radius:14px;z-index:200;
+  letter-spacing:.5px;text-shadow:1px 1px 0 #000;backdrop-filter:blur(4px)}
+/* Weather particles */
+.weather-particle{position:absolute;font-size:14px;pointer-events:none;
+  animation:weatherFall 6s linear infinite;z-index:50}
+@keyframes weatherFall{
+  from{transform:translateY(-20px) rotate(0)}
+  to{transform:translateY(360px) rotate(180deg)}
+}
+.farm-counter{background:rgba(255,255,255,.92);position:absolute;bottom:8px;left:8px;
+  padding:4px 10px;border-radius:14px;font-size:11px;font-weight:700;color:var(--given);
+  z-index:200;backdrop-filter:blur(4px)}
+.farm-controls{display:flex;gap:6px;padding:0 14px 8px}
+.fc-btn{flex:1;padding:9px 6px;border:2px solid var(--border);border-radius:10px;
+  background:#fff;color:var(--given);font-size:11.5px;font-weight:700;cursor:pointer;
+  transition:all .15s;display:flex;align-items:center;justify-content:center;gap:3px}
+.fc-btn:hover{background:var(--pl);border-color:var(--primary);color:var(--primary)}
+.fc-btn.active{background:var(--ok);color:#fff;border-color:var(--ok)}
+.farm-help{font-size:11px;color:var(--muted);text-align:center;padding:0 14px 8px;line-height:1.4}
+.farm-tray{display:none;background:linear-gradient(135deg,#fff,#f8f9fa);
+  margin:0 14px 14px;border-radius:12px;padding:10px;border:1px solid #dbe4ff}
+.farm-tray.show{display:block;animation:fadeIn .2s}
+.farm-tray-title{font-size:11px;font-weight:700;color:var(--muted);
+  margin-bottom:6px;display:flex;align-items:center;justify-content:space-between}
+.farm-tray-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:4px}
+.tray-item{aspect-ratio:1;border-radius:8px;background:#fff;display:flex;align-items:center;
+  justify-content:center;font-size:18px;cursor:pointer;border:2px solid #e9ecef;
+  position:relative;transition:all .12s}
+.tray-item:hover{transform:translateY(-1px);border-color:var(--primary)}
+.tray-item.selected{background:var(--primary);border-color:var(--primary);transform:scale(1.05)}
+.tray-item .ct{position:absolute;top:-3px;right:-3px;background:var(--ok);color:#fff;
+  font-size:8px;font-weight:800;padding:1px 4px;border-radius:8px;min-width:14px;text-align:center}
+.tray-empty{grid-column:1/-1;text-align:center;color:var(--muted);font-size:11px;padding:14px 8px}
+/* ── HOUSE ── */
+.placed-item.house{transition:none;cursor:pointer;animation:houseBob 3s ease-in-out infinite alternate;
+  filter:drop-shadow(3px 4px 0 rgba(0,0,0,.3))}
+.placed-item.house.lv2{filter:drop-shadow(3px 4px 0 rgba(0,0,0,.3)) drop-shadow(0 0 4px rgba(116,184,22,.5))}
+.placed-item.house.lv3{filter:drop-shadow(3px 4px 0 rgba(0,0,0,.3)) drop-shadow(0 0 6px rgba(77,171,247,.6))}
+.placed-item.house.lv4{filter:drop-shadow(3px 4px 0 rgba(0,0,0,.3)) drop-shadow(0 0 10px #7048e8);
+  animation:houseBob 3s ease-in-out infinite alternate,housePulse 2s ease-in-out infinite alternate}
+.placed-item.house.lv5{filter:drop-shadow(3px 4px 0 rgba(0,0,0,.3)) drop-shadow(0 0 16px #f59f00) drop-shadow(0 0 24px #ffd43b);
+  animation:houseBob 3s ease-in-out infinite alternate,houseGlow 1.5s ease-in-out infinite alternate}
+@keyframes houseBob{from{transform:translate(-50%,0)}to{transform:translate(-50%,-2px)}}
+@keyframes housePulse{from{filter:drop-shadow(3px 4px 0 rgba(0,0,0,.3)) drop-shadow(0 0 10px #7048e8)}
+  to{filter:drop-shadow(3px 4px 0 rgba(0,0,0,.3)) drop-shadow(0 0 18px #b197fc)}}
+@keyframes houseGlow{from{filter:drop-shadow(3px 4px 0 rgba(0,0,0,.3)) drop-shadow(0 0 16px #f59f00) drop-shadow(0 0 24px #ffd43b)}
+  to{filter:drop-shadow(3px 4px 0 rgba(0,0,0,.3)) drop-shadow(0 0 24px #ffd43b) drop-shadow(0 0 36px #fff3bf)}}
+/* ── PRODUCTION INDICATOR ── */
+.placed-item .prod-badge{position:absolute;top:-8px;right:-8px;background:#fa5252;color:#fff;
+  font-size:9px;font-weight:800;padding:1px 5px;border-radius:8px;min-width:14px;text-align:center;
+  box-shadow:0 1px 3px rgba(0,0,0,.4);z-index:5}
+.placed-item .baby-badge{position:absolute;top:-12px;left:-8px;font-size:14px;
+  filter:drop-shadow(1px 1px 0 rgba(0,0,0,.3));z-index:6;animation:babyShake 1.5s ease-in-out infinite alternate}
+.placed-item .stage-badge{position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);
+  background:rgba(0,0,0,.7);color:#fff;font-size:8px;font-weight:800;padding:1px 5px;border-radius:6px;
+  white-space:nowrap;letter-spacing:.5px;z-index:7}
+@keyframes babyShake{from{transform:rotate(-8deg)}to{transform:rotate(8deg)}}
+/* Baby/juvenile stage scaling — applied to inner emoji via font-size override */
+/* ── BABY SHOP ── */
+.baby-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:6px}
+.baby-card{background:#fff;border:2px solid #e9ecef;border-radius:10px;padding:8px 6px;
+  display:flex;flex-direction:column;align-items:center;text-align:center;cursor:pointer;
+  transition:all .15s;position:relative}
+.baby-card:hover{transform:translateY(-2px);border-color:var(--primary);box-shadow:0 4px 10px rgba(59,91,219,.15)}
+.baby-card.common{border-color:#adb5bd}
+.baby-card.rare{border-color:#1971c2;background:linear-gradient(135deg,#fff,#e7f5ff)}
+.baby-card.epic{border-color:var(--accent);background:linear-gradient(135deg,#fff,#f3e8ff)}
+.baby-card.legendary{border-color:#f59f00;background:linear-gradient(135deg,#fff,#fff3bf);
+  box-shadow:0 0 8px rgba(245,159,0,.3)}
+.baby-card.disabled{opacity:.45;cursor:not-allowed}
+.baby-card .em{font-size:28px;line-height:1;position:relative}
+.baby-card .em::before{content:'🍼';position:absolute;top:-8px;left:-12px;font-size:14px}
+.baby-card .nm{font-size:10px;font-weight:700;color:var(--given);margin:3px 0 1px;line-height:1.1}
+.baby-card .pr{font-size:11px;font-weight:800;color:var(--primary);display:flex;align-items:center;gap:2px}
+.baby-card.disabled .pr{color:var(--err)}
+.baby-card .tm{font-size:8px;color:var(--muted);font-weight:600;margin-top:1px}
+/* ── COINS DISPLAY ── */
+.coins-bar{display:flex;justify-content:space-between;align-items:center;
+  padding:0 14px 10px;font-size:14px;gap:8px}
+.coins-pill{background:linear-gradient(135deg,#fff3bf,#ffd43b);color:#5c4400;
+  padding:6px 14px;border-radius:18px;font-weight:800;font-size:13px;
+  box-shadow:0 2px 6px rgba(245,159,0,.3);display:flex;align-items:center;gap:5px}
+.collect-btn{background:linear-gradient(135deg,#51cf66,#2f9e44);color:#fff;
+  border:none;border-radius:18px;padding:6px 14px;font-size:12px;font-weight:800;
+  cursor:pointer;box-shadow:0 2px 8px rgba(47,158,68,.3);display:flex;align-items:center;gap:5px;transition:all .15s}
+.collect-btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(47,158,68,.4)}
+.collect-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+/* ── SHOP ── */
+.shop-section{padding:0 14px 18px}
+.shop-h{font-size:12px;font-weight:800;color:var(--given);margin:14px 0 8px;
+  display:flex;align-items:center;gap:6px}
+.shop-h .em{font-size:16px}
+.res-row{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--bg);
+  border-radius:10px;margin-bottom:6px}
+.res-row .em{font-size:24px;flex-shrink:0;width:32px;text-align:center}
+.res-row .info{flex:1;min-width:0}
+.res-row .info .nm{font-size:13px;font-weight:700;color:var(--given)}
+.res-row .info .pr{font-size:10px;color:var(--muted);margin-top:1px}
+.res-row .ct{font-size:14px;font-weight:800;color:var(--primary);min-width:40px;text-align:right}
+.res-row .actions{display:flex;gap:4px;flex-shrink:0}
+.res-btn{background:var(--ok);color:#fff;border:none;border-radius:8px;
+  padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap}
+.res-btn:hover{background:#1f7a32}
+.res-btn.all{background:linear-gradient(135deg,#f59f00,#fab005)}
+.res-btn.all:hover{background:linear-gradient(135deg,#e67700,#f59f00)}
+.res-btn:disabled{opacity:.35;cursor:not-allowed;background:#adb5bd}
+.shop-empty{text-align:center;padding:24px 14px;color:var(--muted);font-size:13px}
+/* ── HOUSE UPGRADE ── */
+.house-card{background:linear-gradient(135deg,#fff,var(--pl));border:2px solid var(--primary);
+  border-radius:14px;padding:14px;margin-bottom:10px;display:flex;align-items:center;gap:14px}
+.house-card .em{font-size:48px;flex-shrink:0}
+.house-card .info{flex:1;min-width:0}
+.house-card .info .lv{font-size:10px;font-weight:800;color:var(--primary);letter-spacing:1px;text-transform:uppercase}
+.house-card .info .nm{font-size:18px;font-weight:900;color:var(--given);margin-top:2px}
+.house-card .info .perk{font-size:11px;color:var(--muted);margin-top:3px}
+.upgrade-card{background:#fff;border:2px solid #ffd43b;border-radius:14px;padding:14px;
+  display:flex;align-items:center;gap:14px;margin-bottom:10px}
+.upgrade-card .em{font-size:36px;flex-shrink:0;opacity:.7}
+.upgrade-card .info{flex:1;min-width:0}
+.upgrade-card .info .lbl{font-size:10px;font-weight:800;color:#e67700;letter-spacing:1px}
+.upgrade-card .info .nm{font-size:15px;font-weight:800;color:var(--given);margin-top:2px}
+.upgrade-card .info .perk{font-size:11px;color:var(--muted);margin-top:3px}
+.upgrade-btn{background:linear-gradient(135deg,#f59f00,#fab005);color:#fff;border:none;
+  border-radius:10px;padding:9px 14px;font-size:12px;font-weight:800;cursor:pointer;flex-shrink:0;
+  display:flex;flex-direction:column;align-items:center;gap:1px;line-height:1.1;min-width:90px}
+.upgrade-btn:hover:not(:disabled){background:linear-gradient(135deg,#e67700,#f59f00);transform:translateY(-1px)}
+.upgrade-btn:disabled{background:#adb5bd;cursor:not-allowed;opacity:.6}
+.upgrade-btn .cost{font-size:13px}
+.upgrade-btn .sub{font-size:9px;opacity:.85}
+.upgrade-max{padding:14px;text-align:center;background:linear-gradient(135deg,#fff3bf,#ffd43b);
+  border-radius:14px;font-weight:800;color:#5c4400;font-size:14px}
+/* ── COMPARE MODAL ── */
+.cmp-actions{display:flex;gap:6px;padding:14px 14px 6px}
+.cmp-btn{flex:1;padding:10px 6px;border:2px solid var(--border);border-radius:10px;
+  background:#fff;color:var(--given);font-size:12px;font-weight:700;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:2px;line-height:1.2;transition:all .15s}
+.cmp-btn:hover{background:var(--pl);border-color:var(--primary);color:var(--primary)}
+.cmp-btn.copy{background:linear-gradient(135deg,#fff3bf,#ffd43b);border-color:#f59f00;color:#5c4400}
+.cmp-btn.copy:hover{background:linear-gradient(135deg,#ffe066,#f59f00);color:#fff}
+.cmp-btn .em{font-size:18px}
+.cmp-name{padding:4px 14px;text-align:center;font-size:11px;color:var(--muted)}
+.cmp-name a{color:var(--primary);font-weight:700;cursor:pointer}
+.cmp-empty{text-align:center;padding:40px 20px;color:var(--muted);font-size:13px;line-height:1.7}
+.cmp-empty .num{display:inline-block;background:var(--primary);color:#fff;width:20px;height:20px;
+  border-radius:50%;font-weight:800;font-size:11px;line-height:20px;margin-right:5px}
+.cmp-content{padding:0 14px 18px}
+.cmp-age{font-size:11px;color:var(--muted);text-align:center;margin-bottom:10px}
+.cmp-age.stale{color:var(--err);font-weight:700}
+.cmp-header{display:flex;gap:8px;font-weight:800;color:var(--given);padding:10px 12px;
+  background:var(--bg);border-radius:10px;margin-bottom:6px;font-size:12px}
+.cmp-header .lbl{flex:1}
+.cmp-header .me{width:88px;text-align:center;color:var(--primary)}
+.cmp-header .opp{width:88px;text-align:center;color:var(--accent)}
+.cmp-row{display:flex;gap:8px;padding:9px 12px;border-bottom:1px solid #f1f3f5;font-size:13px;align-items:center}
+.cmp-row .lbl{flex:1;color:var(--given);font-weight:600}
+.cmp-row .v{width:88px;text-align:center;font-weight:600;color:var(--given);font-size:12.5px}
+.cmp-row .v.win{font-weight:900;color:var(--ok);font-size:13.5px}
+.cmp-summary{margin-top:14px;padding:16px;border-radius:14px;text-align:center}
+.cmp-summary.win{background:linear-gradient(135deg,#fff3bf,#ffd43b);color:#5c4400}
+.cmp-summary.lose{background:linear-gradient(135deg,#f1f3f5,#dee2e6);color:#495057}
+.cmp-summary.tie{background:linear-gradient(135deg,#dbe4ff,#bac8ff);color:#3b5bdb}
+.cmp-summary .res{font-size:22px;font-weight:900;margin-top:4px}
+.cmp-summary .sub{font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;opacity:.85}
+/* Friend farm view */
+.friend-farm-wrap{padding:0 14px 14px}
+.friend-info{background:linear-gradient(135deg,#fff,var(--pl));border-radius:12px;
+  padding:12px;margin-bottom:10px;display:flex;align-items:center;gap:12px}
+.friend-info .em{font-size:36px;flex-shrink:0}
+.friend-info .info{flex:1;min-width:0}
+.friend-info .nm{font-size:16px;font-weight:900;color:var(--given)}
+.friend-info .stats{font-size:11px;color:var(--muted);margin-top:3px}
+.friend-scene{position:relative;width:100%;height:300px;border-radius:6px;overflow:hidden;
+  background-color:#7cb342;
+  background-image:
+    repeating-linear-gradient(90deg,transparent 0,transparent 23px,rgba(0,0,0,.07) 23px,rgba(0,0,0,.07) 24px),
+    repeating-linear-gradient(0deg,transparent 0,transparent 23px,rgba(0,0,0,.07) 23px,rgba(0,0,0,.07) 24px),
+    linear-gradient(to bottom,#88c4ec 0%,#b8def0 26%,#7cb342 26%,#5a9926 100%);
+  border:4px solid #4a3826;box-shadow:inset 0 0 0 2px #6b5333}
+.friend-scene .placed-item{cursor:default;pointer-events:none}
+/* Gift modal */
+.gift-section{padding:12px 14px 18px}
+.gift-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin:8px 0}
+.gift-card{background:#fff;border:2px solid var(--border);border-radius:10px;padding:10px;
+  text-align:center;cursor:pointer;transition:all .15s}
+.gift-card:hover{transform:translateY(-2px);border-color:var(--ok);box-shadow:0 4px 10px rgba(47,158,68,.2)}
+.gift-card .em{font-size:24px}
+.gift-card .nm{font-size:11px;font-weight:700;color:var(--given);margin-top:3px}
+.gift-card .pr{font-size:10px;color:var(--muted);margin-top:2px}
+.gift-item-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;max-height:160px;
+  overflow-y:auto;padding:6px;background:var(--bg);border-radius:8px}
+.gift-item-card{aspect-ratio:1;background:#fff;border:2px solid #e9ecef;border-radius:8px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:18px;
+  cursor:pointer;position:relative;transition:all .12s}
+.gift-item-card:hover{border-color:var(--ok);transform:translateY(-1px)}
+.gift-item-card .ct{position:absolute;top:-3px;right:-3px;background:var(--ok);color:#fff;
+  font-size:8px;font-weight:800;padding:1px 4px;border-radius:8px}
+
+
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">스<span>도</span>쿠</div>
+  <div class="hright">
+    <div class="timer" id="timer">00:00</div>
+    <div class="mistakes-wrap" id="mistakeWrap"></div>
+    <button class="icon-btn pause" id="pauseBtn" onclick="togglePause()" title="일시정지">⏸</button>
+    <button class="icon-btn farm" onclick="openFarm()" title="내 농장">🌾</button>
+    <button class="icon-btn compare" onclick="openCompare()" title="와이프와 비교">👥</button>
+    <button class="icon-btn" onclick="openStats()" title="통계">📊</button>
+    <button class="icon-btn" onclick="openRecords()" title="기록">🏅</button>
+    <button class="icon-btn settings" onclick="openSettings()" title="설정/백업">⚙️</button>
+  </div>
+</header>
+<div class="diff-tabs" id="diffTabs">
+  <button class="dtab" data-d="easy">쉬움</button>
+  <button class="dtab active" data-d="medium">보통</button>
+  <button class="dtab" data-d="hard">어려움</button>
+  <button class="dtab" data-d="expert">전문가</button>
+</div>
+<!-- Daily Challenge Banner -->
+<div class="daily-banner" id="dailyBanner" onclick="startDailyChallenge()">
+  <div class="db-icon" id="dbIcon">🔥</div>
+  <div class="db-info">
+    <div class="db-title" id="dbTitle">오늘의 챌린지</div>
+    <div class="db-desc" id="dbDesc">매일 새로운 퍼즐 · 전세계 동일 난이도</div>
+  </div>
+  <div class="db-streak" id="dbStreak">🔥 0일</div>
+</div>
+<!-- Mission Card -->
+<div class="mission-card" id="missionCard">
+  <div class="m-icon" id="mIcon">🎯</div>
+  <div class="m-info">
+    <div class="m-title" id="mTitle">미션 로딩 중...</div>
+    <div class="m-desc" id="mDesc"></div>
+  </div>
+  <div class="m-badge ongoing" id="mBadge">진행중</div>
+</div>
+<div class="prog-wrap">
+  <div class="prog-bar"><div class="prog-fill" id="pFill" style="width:0%"></div></div>
+  <div class="prog-label" id="pLabel">0 / 81</div>
+</div>
+<div class="board-wrap">
+  <div class="board" id="board"></div>
+  <div class="pause-overlay" id="pauseOverlay" onclick="togglePause()">
+    <div class="pause-icon">⏸</div>
+    <div class="pause-text">일시정지됨</div>
+    <div class="pause-sub">탭하여 계속하기</div>
+  </div>
+</div>
+<div class="note-ind" id="noteInd">
+  <div class="ndot"></div>✏️ 메모 모드 ON
+</div>
+<div class="numpad-wrap">
+  <div class="numpad" id="numpad"></div>
+</div>
+<div class="actions">
+  <button class="abtn" id="undoBtn" onclick="undo()"><span class="ic">↩</span>실행취소</button>
+  <button class="abtn" id="noteBtn" onclick="toggleNote()"><span class="ic">✏️</span>메모</button>
+  <button class="abtn" id="hintBtn" onclick="giveHint()"><span class="ic">💡</span>힌트(<span id="hCnt">3</span>)</button>
+  <button class="abtn" onclick="startNewGame()"><span class="ic">🎲</span>새 게임</button>
+</div>
+<!-- Win Modal -->
+<div class="overlay hidden" id="winModal">
+  <div class="mbox">
+    <div class="m-emoji" id="winEmoji">🎉</div>
+    <div class="m-h1" id="winTitle">완성!</div>
+    <div class="m-h2" id="winDiff"></div>
+    <div class="m-big" id="winTime"></div>
+    <div class="m-h2">클리어 타임</div>
+    <div class="mrow" id="winStats"></div>
+    <div class="mrow" style="margin-top:8px" id="winMission"></div>
+    <div class="mrow" id="winRank"></div>
+    <div class="mrow" id="winStreak" style="display:none"></div>
+    <div class="mbtns">
+      <button class="mbtn out" onclick="document.getElementById('winModal').classList.add('hidden');showRewardsAfterWin()">🎁 보상 받기</button>
+      <button class="mbtn pri" onclick="document.getElementById('winModal').classList.add('hidden');showRewardsAfterWin();setTimeout(startNewGame,3500)">🎁 + 새 게임</button>
+    </div>
+  </div>
+</div>
+<!-- Records Modal -->
+<div class="overlay hidden" id="recModal">
+  <div class="rec-box">
+    <div class="rec-head">
+      <h2>🏅 최고 기록</h2>
+      <button class="rec-close" onclick="closeRecords()">✕</button>
+    </div>
+    <div class="rec-tabs" id="recTabs">
+      <button class="rtab active" data-d="easy">쉬움</button>
+      <button class="rtab" data-d="medium">보통</button>
+      <button class="rtab" data-d="hard">어려움</button>
+      <button class="rtab" data-d="expert">전문가</button>
+      <button class="rtab" data-d="daily">일일</button>
+    </div>
+    <div class="rec-list" id="recList"></div>
+  </div>
+</div>
+<!-- Stats Modal -->
+<div class="overlay hidden" id="statsModal">
+  <div class="rec-box">
+    <div class="rec-head">
+      <h2>📊 통계 대시보드</h2>
+      <button class="rec-close" onclick="closeStats()">✕</button>
+    </div>
+    <div class="rec-tabs" id="statsTabs">
+      <button class="rtab active" data-t="all">전체</button>
+      <button class="rtab" data-t="easy">쉬움</button>
+      <button class="rtab" data-t="medium">보통</button>
+      <button class="rtab" data-t="hard">어려움</button>
+      <button class="rtab" data-t="expert">전문가</button>
+    </div>
+    <div class="rec-list" id="statsList"></div>
+  </div>
+</div>
+<!-- Settings Modal -->
+<div class="overlay hidden" id="settingsModal">
+  <div class="rec-box">
+    <div class="rec-head">
+      <h2>⚙️ 설정 / 백업</h2>
+      <button class="rec-close" onclick="closeSettings()">✕</button>
+    </div>
+    <div class="rec-list">
+      <div class="settings-section">
+        <div class="settings-info">
+          ✅ <strong>업데이트해도 진행 사항은 자동 보존됩니다.</strong><br>
+          단, 폰 변경/앱 삭제/도메인 변경 시엔 잃을 수 있어요.<br>
+          중요한 진행 사항은 <strong>주기적으로 백업 코드</strong>를 만들어두세요.
+        </div>
+        <h3>👤 플레이어 정보</h3>
+        <div class="settings-row">
+          <div class="ic">🏷</div>
+          <div class="info">
+            <div class="nm">이름: <span id="settingsPlayerName">주명</span></div>
+            <div class="desc">친구 비교/선물 코드에 표시되는 이름</div>
+          </div>
+          <button onclick="changeMyName();openSettings()">변경</button>
+        </div>
+        <h3>💾 백업 / 복원</h3>
+        <div class="settings-row">
+          <div class="ic">📋</div>
+          <div class="info">
+            <div class="nm">백업 코드 만들기</div>
+            <div class="desc">모든 진행 사항을 코드로 변환 → 카톡/메모장에 저장</div>
+          </div>
+          <button onclick="exportBackup()">생성</button>
+        </div>
+        <div class="settings-row">
+          <div class="ic">📥</div>
+          <div class="info">
+            <div class="nm">백업 코드 복원</div>
+            <div class="desc">예전에 저장한 백업 코드로 진행 사항 복구</div>
+          </div>
+          <button onclick="importBackup()" class="warn">복원</button>
+        </div>
+        <h3 class="danger">⚠️ 위험 구역</h3>
+        <div class="settings-row">
+          <div class="ic">🗑</div>
+          <div class="info">
+            <div class="nm">전체 데이터 초기화</div>
+            <div class="desc">모든 진행 사항 영구 삭제 — 신중하게!</div>
+          </div>
+          <button onclick="resetAllData()" class="danger">초기화</button>
+        </div>
+        <div style="margin-top:18px;padding:10px;background:var(--bg);border-radius:8px;font-size:11px;color:var(--muted);line-height:1.6">
+          <strong>📦 백업되는 항목:</strong><br>
+          • 코인·집 레벨·수확 데이터<br>
+          • 농장 풍경 (배치 위치, 새끼 성장 진행도)<br>
+          • 보유 아이템·자원<br>
+          • 일일 챌린지 연속 기록<br>
+          • 모든 미션 통계·최고 기록<br>
+          • 받은 선물 이력
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Compare Modal -->
+<div class="overlay hidden" id="compareModal">
+  <div class="rec-box">
+    <div class="rec-head">
+      <h2>👥 와이프와 함께</h2>
+      <button class="rec-close" onclick="closeCompare()">✕</button>
+    </div>
+    <div class="cmp-name" id="cmpNameInfo"></div>
+    <div class="cmp-actions">
+      <button class="cmp-btn copy" onclick="generateMyCode()"><span class="em">📋</span><span>내 코드 복사</span></button>
+      <button class="cmp-btn" onclick="pasteFriendCode()"><span class="em">📥</span><span>친구 코드</span></button>
+      <button class="cmp-btn" onclick="pasteGiftCode()"><span class="em">🎁</span><span>선물 받기</span></button>
+    </div>
+    <div class="rec-tabs" id="cmpSubTabs">
+      <button class="rtab active" data-cmp="stats" onclick="switchCmpView('stats')">📊 통계</button>
+      <button class="rtab" data-cmp="farm" onclick="switchCmpView('farm')">🏞 친구 농장</button>
+      <button class="rtab" data-cmp="gift" onclick="switchCmpView('gift')">🎁 선물</button>
+    </div>
+    <div class="rec-list">
+      <div id="compareContent"></div>
+    </div>
+  </div>
+</div>
+<!-- Reward Overlay -->
+<div class="reward-overlay hidden" id="rewardOverlay">
+  <div class="reward-title" id="rewardTitle">🎁 보상 카드를 탭해서 열어보세요!</div>
+  <div class="reward-cards" id="rewardCards"></div>
+  <button class="reward-btn" id="rewardConfirm" onclick="closeReward()" disabled>모두 열어보세요</button>
+</div>
+<!-- Farm Modal -->
+<div class="overlay hidden" id="farmModal">
+  <div class="rec-box">
+    <div class="rec-head">
+      <h2>🌾 내 농장</h2>
+      <button class="rec-close" onclick="closeFarm()">✕</button>
+    </div>
+    <div class="coins-bar">
+      <div class="coins-pill" id="coinsPill">🪙 <span id="coinAmount">0</span></div>
+      <button class="collect-btn" id="collectBtn" onclick="collectAll()">🌾 수확</button>
+    </div>
+    <div class="farm-view-tabs">
+      <button class="fvtab active" data-v="scene" onclick="switchFarmView('scene')">🏞 풍경</button>
+      <button class="fvtab" data-v="shop" onclick="switchFarmView('shop')">🏪 상점</button>
+      <button class="fvtab" data-v="inv" onclick="switchFarmView('inv')">📦 보관함</button>
+    </div>
+    <!-- SCENE view -->
+    <div class="farm-section show" id="farmSceneSection">
+      <div class="farm-scene-wrap">
+        <div class="farm-scene" id="farmScene">
+          <div class="day-badge" id="dayBadge">🌞 낮</div>
+          <div class="farm-counter" id="farmCounter">0개 배치</div>
+        </div>
+      </div>
+      <div class="farm-controls">
+        <button class="fc-btn" id="placeModeBtn" onclick="togglePlaceMode()">✋ 배치 모드</button>
+        <button class="fc-btn" onclick="autoArrangeFarm()">🎲 자동 정리</button>
+        <button class="fc-btn" onclick="clearFarmLayout()">🗑 모두 치우기</button>
+      </div>
+      <div class="farm-help" id="farmHelp">동물들이 5초마다 돌아다녀요. 배치 모드로 직접 꾸밀 수도 있어요!</div>
+      <div class="farm-tray" id="farmTray">
+        <div class="farm-tray-title"><span>📦 미배치 아이템</span><span style="font-size:10px">탭 → 풍경 클릭</span></div>
+        <div class="farm-tray-grid" id="farmTrayGrid"></div>
+      </div>
+    </div>
+    <!-- SHOP view -->
+    <div class="farm-section" id="farmShopSection">
+      <div class="rec-list" style="padding:0">
+        <div class="shop-section" id="shopContent"></div>
+      </div>
+    </div>
+    <!-- INVENTORY view -->
+    <div class="farm-section" id="farmInvSection">
+      <div class="farm-stats" id="farmStats"></div>
+      <div class="fcollection" id="farmCollection"></div>
+      <div class="farm-filter" id="farmFilter">
+        <button class="ffilter active" data-f="all">전체</button>
+        <button class="ffilter" data-f="legendary">🌟 전설</button>
+        <button class="ffilter" data-f="epic">💜 영웅</button>
+        <button class="ffilter" data-f="rare">💙 레어</button>
+        <button class="ffilter" data-f="common">⚪ 일반</button>
+        <button class="ffilter" data-f="animal">🐾 동물</button>
+        <button class="ffilter" data-f="building">🏠 건물</button>
+        <button class="ffilter" data-f="plant">🌳 식물</button>
+        <button class="ffilter" data-f="deco">🎨 장식</button>
+      </div>
+      <div class="rec-list" style="padding:0">
+        <div class="farm-grid" id="farmGrid"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="cw" id="cw"></div>
+<div class="toast" id="toast"></div>
+<div class="install-banner" id="installBanner">
+  <span>📱 홈 화면에 설치하기</span>
+  <button class="x" onclick="event.stopPropagation();dismissInstall()">×</button>
+</div>
+<script>
+// ═══════════════════════════════════════
+// CONSTANTS
+// ═══════════════════════════════════════
+const DIFF = {
+  easy:   {label:'쉬움',   remove:32, color:'#2f9e44'},
+  medium: {label:'보통',   remove:44, color:'#3b5bdb'},
+  hard:   {label:'어려움', remove:52, color:'#e67700'},
+  expert: {label:'전문가', remove:58, color:'#c92a2a'},
+};
+const MISSIONS = {
+  no_mistakes: {icon:'🎯', title:'무실수 클리어', desc:'단 한 번의 실수도 없이 완성하세요',
+    check: s => s.mistakes === 0, failOn:'mistake', diffs:['easy','medium','hard','expert']},
+  no_hints: {icon:'🧠', title:'힌트 없이 클리어', desc:'힌트를 한 번도 사용하지 마세요',
+    check: s => s.hintsUsed === 0, failOn:'hint', diffs:['easy','medium','hard','expert']},
+  no_notes: {icon:'✏️', title:'메모 없이 클리어', desc:'메모 기능을 사용하지 마세요',
+    check: s => !s.notesUsed, failOn:'note', diffs:['easy','medium','hard']},
+  no_undo: {icon:'🔥', title:'취소 없이 클리어', desc:'실행취소를 사용하지 마세요',
+    check: s => !s.undoUsed, failOn:'undo', diffs:['easy','medium','hard','expert']},
+  speed_2min: {icon:'⚡', title:'2분 스피드런', desc:'2분(120초) 안에 완성하세요',
+    check: s => s.time <= 120, failOn:'time', timeLimit:120, diffs:['easy']},
+  speed_5min: {icon:'⚡', title:'5분 스피드런', desc:'5분(300초) 안에 완성하세요',
+    check: s => s.time <= 300, failOn:'time', timeLimit:300, diffs:['medium']},
+  speed_10min: {icon:'⚡', title:'10분 스피드런', desc:'10분(600초) 안에 완성하세요',
+    check: s => s.time <= 600, failOn:'time', timeLimit:600, diffs:['hard']},
+  perfect: {icon:'👑', title:'퍼펙트 클리어', desc:'실수·힌트·메모·취소 전부 없이 완성',
+    check: s => s.mistakes===0 && s.hintsUsed===0 && !s.notesUsed && !s.undoUsed,
+    failOn:'any', diffs:['easy','medium']},
+};
+const MEDAL = ['🥇','🥈','🥉','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣','🔟'];
+const REC_KEY='sudoku_records_v2';
+const STATS_KEY='sudoku_stats_v1';
+const DAILY_KEY='sudoku_daily_v1';
+// ═══════════════════════════════════════
+// SEEDED RNG (Mulberry32) — for daily challenges
+// ═══════════════════════════════════════
+function mulberry32(seed){
+  return function(){
+    let t = seed += 0x6D2B79F5;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+let currentRng = Math.random;  // swappable RNG (Math.random or seeded)
+function rnd(n){return Math.floor(currentRng()*n)}
+function sh(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=rnd(i+1);[b[i],b[j]]=[b[j],b[i]]}return b}
+// ═══════════════════════════════════════
+// DATE UTILITIES
+// ═══════════════════════════════════════
+function todayKey(){
+  const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function todaySeed(){return parseInt(todayKey().replace(/-/g,''),10)}
+function dayOfYear(d=new Date()){
+  const start=new Date(d.getFullYear(),0,0);
+  return Math.floor((d-start)/86400000);
+}
+function dailyDifficulty(){
+  const dow=new Date().getDay(); // 0=Sun..6=Sat
+  return ['medium','easy','medium','hard','medium','hard','expert'][dow];
+}
+// ═══════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════
+let board=[], given=[], solution=[], notes=[], sel=null;
+let noteMode=false, timerVal=0, timerInt=null;
+let history=[], diff='medium', completed=false;
+let hintsLeft=3, hintsUsed=0, mistakes=0;
+let notesUsed=false, undoUsed=false;
+let mission=null, missionFailed=false;
+let recDiff='easy', statsTab='all';
+let isDaily=false;
+let isPaused=false;
+// ═══════════════════════════════════════
+// PUZZLE GENERATION
+// ═══════════════════════════════════════
+function genSolution(){
+  let g=[
+    [1,2,3,4,5,6,7,8,9],[4,5,6,7,8,9,1,2,3],[7,8,9,1,2,3,4,5,6],
+    [2,3,4,5,6,7,8,9,1],[5,6,7,8,9,1,2,3,4],[8,9,1,2,3,4,5,6,7],
+    [3,4,5,6,7,8,9,1,2],[6,7,8,9,1,2,3,4,5],[9,1,2,3,4,5,6,7,8],
+  ];
+  const dp=sh([1,2,3,4,5,6,7,8,9]);
+  g=g.map(r=>r.map(d=>dp[d-1]));
+  for(let b=0;b<3;b++){const p=sh([0,1,2]);const rows=[g[b*3],g[b*3+1],g[b*3+2]];for(let i=0;i<3;i++)g[b*3+i]=rows[p[i]]}
+  const ng=g.map(r=>[...r]);
+  for(let s=0;s<3;s++){const p=sh([0,1,2]);for(let r=0;r<9;r++){ng[r][s*3+0]=g[r][s*3+p[0]];ng[r][s*3+1]=g[r][s*3+p[1]];ng[r][s*3+2]=g[r][s*3+p[2]]}}
+  g=ng;
+  const bp=sh([0,1,2]);const g2=[];for(const b of bp)g2.push(g[b*3],g[b*3+1],g[b*3+2]);g=g2;
+  const sp=sh([0,1,2]);
+  return g.map(r=>{const nr=[];for(const s of sp)nr.push(r[s*3],r[s*3+1],r[s*3+2]);return nr});
+}
+function makePuzzle(sol,n){
+  const p=sol.map(r=>[...r]);
+  sh([...Array(81).keys()]).slice(0,n).forEach(i=>{p[Math.floor(i/9)][i%9]=0});
+  return p;
+}
+// ═══════════════════════════════════════
+// MISSION SYSTEM
+// ═══════════════════════════════════════
+function pickMission(d){
+  if(isDaily){
+    // Daily uses fixed mission: rotate by day of year
+    const ids=Object.keys(MISSIONS).filter(id=>MISSIONS[id].diffs.includes(d));
+    return {id:ids[dayOfYear()%ids.length], ...MISSIONS[ids[dayOfYear()%ids.length]]};
+  }
+  const pool=Object.entries(MISSIONS).filter(([,m])=>m.diffs.includes(d)).map(([id,m])=>({id,...m}));
+  return pool[rnd(pool.length)];
+}
+function updateMissionCard(){
+  if(!mission)return;
+  const card=document.getElementById('missionCard');
+  const badge=document.getElementById('mBadge');
+  const title=document.getElementById('mTitle');
+  card.className='mission-card'+(isDaily?' daily':'');
+  badge.className='m-badge';
+  // Title with daily tag
+  title.innerHTML = mission.title + (isDaily ? ' <span class="daily-tag">DAILY</span>' : '');
+  if(completed){
+    const ok=mission.check({mistakes,hintsUsed,notesUsed,undoUsed,time:timerVal});
+    if(ok){card.classList.add('success');badge.classList.add('success');badge.textContent='✅ 성공!';}
+    else{card.classList.add('failed');badge.classList.add('failed');badge.textContent='❌ 실패';}
+  } else if(missionFailed){
+    card.classList.add('failed');badge.classList.add('failed');badge.textContent='❌ 미션 실패';
+  } else {
+    if(mission.failOn==='time' && mission.timeLimit){
+      const left=mission.timeLimit-timerVal;
+      if(left<=0){missionFailed=true;updateMissionCard();return;}
+      const cls=left<=30?'warning':'ongoing';
+      badge.classList.add(cls);
+      badge.textContent=left<=0?'⏰ 시간초과':`⏱ ${Math.floor(left/60)}:${String(left%60).padStart(2,'0')} 남음`;
+    } else {
+      badge.classList.add('ongoing');badge.textContent='🔥 진행중';
+    }
+  }
+}
+function triggerFail(reason){
+  if(missionFailed||completed)return;
+  const m=mission;if(!m)return;
+  const shouldFail=
+    (m.failOn==='mistake'&&reason==='mistake')||
+    (m.failOn==='hint'&&reason==='hint')||
+    (m.failOn==='note'&&reason==='note')||
+    (m.failOn==='undo'&&reason==='undo')||
+    (m.failOn==='any');
+  if(shouldFail){
+    missionFailed=true;updateMissionCard();
+    const f=document.createElement('div');f.className='fail-flash';document.body.appendChild(f);
+    setTimeout(()=>f.remove(),700);
+    showToast('💥 미션 실패! 하지만 계속 도전하세요');
+  }
+}
+// ═══════════════════════════════════════
+// STATS SYSTEM
+// ═══════════════════════════════════════
+function getStats(){
+  const def={
+    games:{easy:0,medium:0,hard:0,expert:0,daily:0},
+    wins:{easy:0,medium:0,hard:0,expert:0,daily:0},
+    totalTime:{easy:0,medium:0,hard:0,expert:0},
+    bestTime:{easy:0,medium:0,hard:0,expert:0},
+    totalMistakes:0, totalHints:0, totalUndos:0,
+    missionStats:{}, // {missionId: [success, total]}
+    daily:{completed:[], currentStreak:0, longestStreak:0, lastDate:null},
+    firstPlay:todayKey(), lastPlay:todayKey()
+  };
+  try{
+    const s=JSON.parse(localStorage.getItem(STATS_KEY)||'{}');
+    return Object.assign(def, s, {
+      games:Object.assign(def.games,s.games||{}),
+      wins:Object.assign(def.wins,s.wins||{}),
+      totalTime:Object.assign(def.totalTime,s.totalTime||{}),
+      bestTime:Object.assign(def.bestTime,s.bestTime||{}),
+      missionStats:Object.assign({},def.missionStats,s.missionStats||{}),
+      daily:Object.assign(def.daily,s.daily||{})
+    });
+  }catch(e){return def}
+}
+function saveStats(s){localStorage.setItem(STATS_KEY,JSON.stringify(s))}
+function trackGameStart(d){
+  const s=getStats();
+  s.games[isDaily?'daily':d]=(s.games[isDaily?'daily':d]||0)+1;
+  s.lastPlay=todayKey();
+  saveStats(s);
+}
+function trackGameWin(){
+  const s=getStats();
+  const key=isDaily?'daily':diff;
+  s.wins[key]=(s.wins[key]||0)+1;
+  if(!isDaily){
+    s.totalTime[diff]=(s.totalTime[diff]||0)+timerVal;
+    if(!s.bestTime[diff]||timerVal<s.bestTime[diff])s.bestTime[diff]=timerVal;
+  }
+  s.totalMistakes+=mistakes;
+  s.totalHints+=hintsUsed;
+  // Mission tracking
+  if(mission){
+    if(!s.missionStats[mission.id])s.missionStats[mission.id]=[0,0];
+    s.missionStats[mission.id][1]++;
+    if(!missionFailed && mission.check({mistakes,hintsUsed,notesUsed,undoUsed,time:timerVal})){
+      s.missionStats[mission.id][0]++;
+    }
+  }
+  // Daily streak
+  let streakInfo=null;
+  if(isDaily){
+    const today=todayKey();
+    if(!s.daily.completed.includes(today)){
+      s.daily.completed.push(today);
+      // Calculate streak
+      const yesterday=new Date();yesterday.setDate(yesterday.getDate()-1);
+      const yKey=`${yesterday.getFullYear()}-${String(yesterday.getMonth()+1).padStart(2,'0')}-${String(yesterday.getDate()).padStart(2,'0')}`;
+      if(s.daily.lastDate===yKey || s.daily.lastDate===null){
+        s.daily.currentStreak=(s.daily.currentStreak||0)+1;
+      } else {
+        s.daily.currentStreak=1;
+      }
+      if(s.daily.currentStreak>s.daily.longestStreak)s.daily.longestStreak=s.daily.currentStreak;
+      s.daily.lastDate=today;
+      streakInfo={current:s.daily.currentStreak, longest:s.daily.longestStreak, isNew:true};
+    }
+  }
+  saveStats(s);
+  return streakInfo;
+}
+function trackUndo(){const s=getStats();s.totalUndos++;saveStats(s)}
+// ═══════════════════════════════════════
+// DAILY CHALLENGE
+// ═══════════════════════════════════════
+function isDailyDoneToday(){
+  const s=getStats();return s.daily.completed.includes(todayKey());
+}
+function updateDailyBanner(){
+  const banner=document.getElementById('dailyBanner');
+  const icon=document.getElementById('dbIcon');
+  const title=document.getElementById('dbTitle');
+  const desc=document.getElementById('dbDesc');
+  const streakEl=document.getElementById('dbStreak');
+  const s=getStats();
+  banner.className='daily-banner';
+  if(isDaily && !completed){
+    banner.classList.add('active');
+    icon.textContent='🎯';
+    title.textContent='일일 챌린지 진행중';
+    desc.textContent=`${DIFF[diff].label} 난이도 · ${todayKey()}`;
+  } else if(isDailyDoneToday()){
+    banner.classList.add('done');
+    icon.textContent='✅';
+    title.textContent='오늘 챌린지 완료!';
+    desc.textContent='내일 새 퍼즐을 다시 도전하세요';
+  } else {
+    icon.textContent='🔥';
+    title.textContent='오늘의 챌린지';
+    desc.textContent=`매일 새 퍼즐 · 오늘 난이도: ${DIFF[dailyDifficulty()].label}`;
+  }
+  streakEl.textContent=`🔥 ${s.daily.currentStreak||0}일`;
+}
+function startDailyChallenge(){
+  if(isDailyDoneToday() && !confirm('오늘 챌린지는 이미 완료했어요. 다시 플레이하시겠어요? (기록은 갱신되지 않습니다)'))return;
+  isDaily=true;
+  const dailyDiff=dailyDifficulty();
+  // Use seeded RNG
+  currentRng=mulberry32(todaySeed());
+  initGame(dailyDiff, true);
+}
+// ═══════════════════════════════════════
+// INIT GAME
+// ═══════════════════════════════════════
+function initGame(d, daily=false){
+  diff=d;completed=false;
+  hintsLeft=3;hintsUsed=0;mistakes=0;
+  notesUsed=false;undoUsed=false;
+  history=[];noteMode=false;sel=null;missionFailed=false;
+  // Reset pause state
+  if(isPaused){
+    isPaused=false;
+    const ov=document.getElementById('pauseOverlay');if(ov)ov.classList.remove('show');
+    const pb=document.getElementById('pauseBtn');if(pb){pb.classList.remove('active');pb.innerHTML='⏸';pb.title='일시정지';}
+  }
+  if(!daily){isDaily=false;currentRng=Math.random;}
+  solution=genSolution();
+  const puz=makePuzzle(solution,DIFF[d].remove);
+  board=puz.map(r=>[...r]);
+  given=puz.map(r=>r.map(v=>v!==0));
+  notes=Array.from({length:9},()=>Array.from({length:9},()=>new Set()));
+  mission=pickMission(d);
+  document.getElementById('mIcon').textContent=mission.icon;
+  document.getElementById('mDesc').textContent=mission.desc;
+  stopTimer();timerVal=0;
+  document.getElementById('timer').textContent='00:00';
+  startTimer();
+  updateHintBtn();updateMistakeWrap();
+  renderBoard();renderNumpad();
+  document.getElementById('noteBtn').classList.remove('active');
+  document.getElementById('noteInd').classList.remove('on');
+  updateProgress();
+  updateMissionCard();
+  updateDailyBanner();
+  trackGameStart(d);
+}
+// ═══════════════════════════════════════
+// TIMER
+// ═══════════════════════════════════════
+function startTimer(){
+  timerInt=setInterval(()=>{
+    timerVal++;
+    document.getElementById('timer').textContent=fmtTime(timerVal);
+    if(mission&&mission.failOn==='time'&&!missionFailed&&!completed)updateMissionCard();
+  },1000);
+}
+function stopTimer(){clearInterval(timerInt);timerInt=null}
+function fmtTime(s){const m=Math.floor(s/60),sec=s%60;return`${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`}
+function fmtTimeLong(s){
+  if(s<60)return s+'초';
+  const h=Math.floor(s/3600),m=Math.floor((s%3600)/60);
+  if(h>0)return`${h}시간 ${m}분`;
+  return`${m}분`;
+}
+// ═══════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════
+function renderBoard(){
+  const el=document.getElementById('board');el.innerHTML='';
+  for(let r=0;r<9;r++)for(let c=0;c<9;c++){
+    const cell=document.createElement('div');
+    cell.className='cell';cell.dataset.r=r;cell.dataset.c=c;
+    const val=document.createElement('div');val.className='cell-val';
+    const nts=document.createElement('div');nts.className='cell-notes';
+    for(let n=1;n<=9;n++){const s=document.createElement('span');s.dataset.n=n;nts.appendChild(s)}
+    cell.append(val,nts);
+    cell.addEventListener('click',()=>selCell(r,c));
+    el.appendChild(cell);
+  }
+  refreshAll();
+}
+function refreshAll(){for(let r=0;r<9;r++)for(let c=0;c<9;c++)refreshCell(r,c);highlight()}
+function refreshCell(r,c){
+  const cell=document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
+  if(!cell)return;
+  const v=board[r][c],val=cell.querySelector('.cell-val'),nts=cell.querySelector('.cell-notes');
+  cell.classList.remove('given','user','error','correct');
+  if(given[r][c]){
+    cell.classList.add('given');val.textContent=v;nts.style.display='none';
+  } else if(v!==0){
+    cell.classList.add('user');
+    if(v!==solution[r][c])cell.classList.add('error');else cell.classList.add('correct');
+    val.textContent=v;nts.style.display='none';
+  } else {
+    val.textContent='';
+    const ns=notes[r][c];
+    if(ns.size>0){
+      nts.style.display='grid';
+      nts.querySelectorAll('span').forEach(s=>{
+        const n=+s.dataset.n;s.textContent=ns.has(n)?n:'';s.classList.toggle('on',ns.has(n));
+      });
+    } else nts.style.display='none';
+  }
+}
+function highlight(){
+  document.querySelectorAll('.cell').forEach(c=>c.classList.remove('selected','related','same-num'));
+  if(!sel)return;
+  const{r,c}=sel,sv=board[r][c];
+  for(let i=0;i<9;i++)for(let j=0;j<9;j++){
+    const cell=document.querySelector(`.cell[data-r="${i}"][data-c="${j}"]`);
+    if(!cell)continue;
+    const sBox=Math.floor(i/3)===Math.floor(r/3)&&Math.floor(j/3)===Math.floor(c/3);
+    if(i===r&&j===c)cell.classList.add('selected');
+    else if(i===r||j===c||sBox)cell.classList.add('related');
+    if(!(i===r&&j===c)&&sv!==0&&board[i][j]===sv)cell.classList.add('same-num');
+  }
+}
+function renderNumpad(){
+  const pad=document.getElementById('numpad');pad.innerHTML='';
+  const cnt=Array(10).fill(0);
+  for(let r=0;r<9;r++)for(let c=0;c<9;c++)
+    if(board[r][c]>0&&board[r][c]===solution[r][c])cnt[board[r][c]]++;
+  for(let n=1;n<=9;n++){
+    const b=document.createElement('button');
+    b.className='nbtn'+(cnt[n]>=9?' done':'');
+    b.innerHTML=`${n}<span class="cnt">${cnt[n]>=9?'완료':`${9-cnt[n]}개`}</span>`;
+    b.addEventListener('click',()=>input(n));pad.appendChild(b);
+  }
+  const d=document.createElement('button');
+  d.className='nbtn del';d.innerHTML='⌫<span class="cnt">지우기</span>';
+  d.addEventListener('click',()=>input(0));pad.appendChild(d);
+}
+// ═══════════════════════════════════════
+// INPUT
+// ═══════════════════════════════════════
+function selCell(r,c){if(completed)return;sel={r,c};highlight()}
+function input(n){
+  if(!sel||completed)return;
+  const{r,c}=sel;if(given[r][c])return;
+  history.push({r,c,val:board[r][c],notes:new Set(notes[r][c])});
+  if(n===0){board[r][c]=0;notes[r][c].clear();}
+  else if(noteMode){
+    if(board[r][c]!==0)return;
+    if(!notesUsed){notesUsed=true;if(mission)triggerFail('note')}
+    notes[r][c].has(n)?notes[r][c].delete(n):notes[r][c].add(n);
+  } else {
+    const wasErr=board[r][c]!==0&&board[r][c]!==solution[r][c];
+    board[r][c]=n;notes[r][c].clear();
+    if(n!==solution[r][c]){
+      if(!wasErr){mistakes++;updateMistakeWrap();if(mission)triggerFail('mistake')}
+    } else clearPeerNotes(r,c,n);
+  }
+  refreshCell(r,c);renderNumpad();highlight();updateProgress();checkWin();
+}
+function clearPeerNotes(r,c,n){
+  for(let i=0;i<9;i++){notes[r][i].delete(n);refreshCell(r,i);notes[i][c].delete(n);refreshCell(i,c)}
+  const br=Math.floor(r/3)*3,bc=Math.floor(c/3)*3;
+  for(let i=0;i<3;i++)for(let j=0;j<3;j++){notes[br+i][bc+j].delete(n);refreshCell(br+i,bc+j)}
+}
+function undo(){
+  if(!history.length)return showToast('더 이상 취소할 수 없습니다');
+  if(!undoUsed){undoUsed=true;if(mission)triggerFail('undo');trackUndo()}
+  const last=history.pop();
+  board[last.r][last.c]=last.val;notes[last.r][last.c]=last.notes;
+  refreshCell(last.r,last.c);renderNumpad();highlight();updateProgress();
+}
+function toggleNote(){
+  noteMode=!noteMode;
+  document.getElementById('noteBtn').classList.toggle('active',noteMode);
+  document.getElementById('noteInd').classList.toggle('on',noteMode);
+}
+function giveHint(){
+  if(!sel)return showToast('먼저 칸을 선택하세요');
+  if(hintsLeft<=0)return showToast('힌트를 모두 사용했습니다');
+  const{r,c}=sel;
+  if(given[r][c])return showToast('이미 채워진 칸입니다');
+  if(board[r][c]===solution[r][c])return showToast('이미 정답입니다! ✨');
+  history.push({r,c,val:board[r][c],notes:new Set(notes[r][c])});
+  board[r][c]=solution[r][c];notes[r][c].clear();
+  hintsLeft--;hintsUsed++;
+  if(mission)triggerFail('hint');
+  updateHintBtn();clearPeerNotes(r,c,solution[r][c]);
+  refreshCell(r,c);renderNumpad();highlight();updateProgress();checkWin();
+  showToast('💡 힌트 적용!');
+}
+function updateHintBtn(){
+  document.getElementById('hCnt').textContent=hintsLeft;
+  document.getElementById('hintBtn').disabled=hintsLeft<=0;
+}
+function checkWin(){
+  for(let r=0;r<9;r++)for(let c=0;c<9;c++)if(board[r][c]!==solution[r][c])return;
+  completed=true;stopTimer();updateMissionCard();
+  setTimeout(()=>showWin(),350);
+}
+function showWin(){
+  const mOk=mission&&!missionFailed&&mission.check({mistakes,hintsUsed,notesUsed,undoUsed,time:timerVal});
+  const streak=trackGameWin();
+  const entry={diff:isDaily?'daily':diff,time:timerVal,mistakes,hintsUsed,
+    missionId:mission?.id||null,missionTitle:mission?.title||null,
+    missionOk:!!mOk,daily:isDaily,date:todayKey()};
+  const rank=saveRecord(entry);
+  document.getElementById('winEmoji').textContent=isDaily?'🌟':(mOk?'👑':'🎉');
+  document.getElementById('winTitle').textContent=isDaily?'일일 챌린지 클리어!':(mOk?'퍼펙트 클리어!':'완성!');
+  document.getElementById('winDiff').textContent=isDaily?`📅 ${todayKey()}`:`${DIFF[diff].label} 난이도`;
+  document.getElementById('winTime').textContent=fmtTime(timerVal);
+  document.getElementById('winStats').innerHTML=
+    `<span class="chip ok">실수 ${mistakes}회</span>`+
+    `<span class="chip ok">힌트 ${hintsUsed}회</span>`+
+    (isDaily?`<span class="chip daily">DAILY ${DIFF[diff].label}</span>`:'');
+  if(mission){
+    document.getElementById('winMission').innerHTML=
+      `${mission.icon} ${mission.title} &nbsp;`+
+      `<span class="chip ${mOk?'ok':'fail'}">${mOk?'✅ 성공':'❌ 실패'}</span>`;
+  }
+  const rkChip=rank<=3?['gold','silver','bronze'][rank-1]:'rank';
+  document.getElementById('winRank').innerHTML=
+    `${MEDAL[rank-1]||'🏅'} 기록 &nbsp;<span class="chip ${rkChip}">${rank}위 등록!</span>`;
+  // Streak display
+  const sEl=document.getElementById('winStreak');
+  if(streak && streak.isNew){
+    sEl.style.display='flex';
+    sEl.innerHTML=`<span class="chip daily">🔥 연속 ${streak.current}일</span>`+
+      (streak.current===streak.longest?`<span class="chip gold">🏆 신기록!</span>`:`<span class="chip rank">최장 ${streak.longest}일</span>`);
+  } else { sEl.style.display='none'; }
+  document.getElementById('winModal').classList.remove('hidden');
+  if(mOk||isDaily)launchConfetti();
+  updateDailyBanner();
+  // Generate and queue rewards (shown when user closes win modal)
+  pendingRewardData=generateRewards(diff,!!mOk,isDaily);
+}
+// Show rewards when win modal closes
+function showRewardsAfterWin(){
+  if(pendingRewardData){
+    const r=pendingRewardData;pendingRewardData=null;
+    setTimeout(()=>showRewards(r),250);
+  }
+}
+let pendingRewardData=null;
+// ═══════════════════════════════════════
+// RECORDS
+// ═══════════════════════════════════════
+function saveRecord(entry){
+  const all=JSON.parse(localStorage.getItem(REC_KEY)||'{}');
+  if(!all[entry.diff])all[entry.diff]=[];
+  all[entry.diff].push(entry);
+  all[entry.diff].sort((a,b)=>a.time-b.time);
+  const rank=all[entry.diff].findIndex(r=>
+    r.time===entry.time&&r.date===entry.date&&r.mistakes===entry.mistakes)+1;
+  all[entry.diff]=all[entry.diff].slice(0,10);
+  localStorage.setItem(REC_KEY,JSON.stringify(all));
+  return rank||1;
+}
+function getRecords(d){return JSON.parse(localStorage.getItem(REC_KEY)||'{}')[d]||[]}
+function openRecords(){
+  recDiff=isDaily?'daily':diff;
+  document.querySelectorAll('#recTabs .rtab').forEach(b=>b.classList.toggle('active',b.dataset.d===recDiff));
+  renderRecords();
+  document.getElementById('recModal').classList.remove('hidden');
+}
+function closeRecords(){document.getElementById('recModal').classList.add('hidden')}
+function renderRecords(){
+  const list=getRecords(recDiff);
+  const el=document.getElementById('recList');
+  if(!list.length){
+    el.innerHTML=`<div class="rec-empty">📭 아직 기록이 없어요<br><small>게임을 완성하면 여기에 저장됩니다</small></div>`;
+    return;
+  }
+  el.innerHTML=list.map((r,i)=>{
+    const mBadge=r.missionId
+      ?`<div class="rec-mission" title="${r.missionTitle}">${MISSIONS[r.missionId]?.icon||'🎯'}${r.missionOk?'✅':''}</div>`
+      :'';
+    return`<div class="rec-item">
+      <div class="rec-rank">${MEDAL[i]||'🏅'}</div>
+      <div class="rec-time">${fmtTime(r.time)}</div>
+      <div class="rec-meta">
+        <div class="line1">실수 ${r.mistakes}회 · 힌트 ${r.hintsUsed}회${r.daily?' · 일일':''}</div>
+        <div class="line2">${r.date}</div>
+      </div>
+      ${mBadge}
+    </div>`;
+  }).join('')+
+  `<button class="rec-clear-btn" onclick="clearRecords('${recDiff}')">🗑 ${recDiff==='daily'?'일일':DIFF[recDiff].label} 기록 삭제</button>`;
+}
+function clearRecords(d){
+  if(!confirm(`${d==='daily'?'일일':DIFF[d].label} 기록을 모두 삭제할까요?`))return;
+  const all=JSON.parse(localStorage.getItem(REC_KEY)||'{}');
+  delete all[d];localStorage.setItem(REC_KEY,JSON.stringify(all));
+  renderRecords();showToast('기록 삭제 완료');
+}
+document.getElementById('recTabs').addEventListener('click',e=>{
+  const b=e.target.closest('.rtab');if(!b)return;
+  recDiff=b.dataset.d;
+  document.querySelectorAll('#recTabs .rtab').forEach(t=>t.classList.toggle('active',t.dataset.d===recDiff));
+  renderRecords();
+});
+function openStats(){
+  statsTab='all';
+  document.querySelectorAll('#statsTabs .rtab').forEach(b=>b.classList.toggle('active',b.dataset.t===statsTab));
+  renderStats();
+  document.getElementById('statsModal').classList.remove('hidden');
+}
+function closeStats(){document.getElementById('statsModal').classList.add('hidden')}
+document.getElementById('statsTabs').addEventListener('click',e=>{
+  const b=e.target.closest('.rtab');if(!b)return;
+  statsTab=b.dataset.t;
+  document.querySelectorAll('#statsTabs .rtab').forEach(t=>t.classList.toggle('active',t.dataset.t===statsTab));
+  renderStats();
+});
+function renderStats(){
+  const s=getStats();
+  const el=document.getElementById('statsList');
+  let html='';
+  if(statsTab==='all'){
+    const totalGames=Object.values(s.games).reduce((a,b)=>a+b,0);
+    const totalWins=Object.values(s.wins).reduce((a,b)=>a+b,0);
+    const totalTimeAll=Object.values(s.totalTime).reduce((a,b)=>a+b,0);
+    const winRate=totalGames>0?Math.round(totalWins/totalGames*100):0;
+    const days=Math.max(1,Math.ceil((Date.now()-new Date(s.firstPlay).getTime())/86400000));
+    html+=`<div class="stat-grid">
+      <div class="stat-card"><div class="ico">🎮</div><div class="num">${totalGames}</div><div class="lbl">총 플레이 횟수</div></div>
+      <div class="stat-card gold"><div class="ico">🏆</div><div class="num">${totalWins}</div><div class="lbl">완성 횟수</div></div>
+      <div class="stat-card"><div class="ico">📈</div><div class="num">${winRate}%</div><div class="lbl">완성률</div></div>
+      <div class="stat-card"><div class="ico">⏱</div><div class="num">${fmtTimeLong(totalTimeAll)}</div><div class="lbl">총 플레이 시간</div></div>
+      <div class="stat-card daily"><div class="ico">🔥</div><div class="num">${s.daily.currentStreak||0}</div><div class="lbl">연속 일일챌린지 (현재)</div></div>
+      <div class="stat-card daily"><div class="ico">⚡</div><div class="num">${s.daily.longestStreak||0}</div><div class="lbl">연속 일일챌린지 (최장)</div></div>
+      <div class="stat-card"><div class="ico">📅</div><div class="num">${days}</div><div class="lbl">플레이한 날 수</div></div>
+      <div class="stat-card"><div class="ico">✗</div><div class="num">${s.totalMistakes}</div><div class="lbl">총 실수 횟수</div></div>
+    </div>`;
+    html+=`<div class="stat-section"><h3><span class="em">📅</span> 최근 4주 활동</h3>${renderHeatmap(s)}</div>`;
+    html+=renderMissionStats(s);
+  } else {
+    const d=statsTab;
+    const games=s.games[d]||0;
+    const wins=s.wins[d]||0;
+    const winRate=games>0?Math.round(wins/games*100):0;
+    const best=s.bestTime[d]||0;
+    const total=s.totalTime[d]||0;
+    const avg=wins>0?Math.round(total/wins):0;
+    html+=`<div class="stat-grid">
+      <div class="stat-card"><div class="ico">🎮</div><div class="num">${games}</div><div class="lbl">${DIFF[d].label} 플레이</div></div>
+      <div class="stat-card gold"><div class="ico">🏆</div><div class="num">${wins}</div><div class="lbl">완성</div></div>
+      <div class="stat-card"><div class="ico">📈</div><div class="num">${winRate}%</div><div class="lbl">완성률</div></div>
+      <div class="stat-card"><div class="ico">⏱</div><div class="num">${best?fmtTime(best):'-'}</div><div class="lbl">최고 기록</div></div>
+      <div class="stat-card"><div class="ico">⚡</div><div class="num">${avg?fmtTime(avg):'-'}</div><div class="lbl">평균 시간</div></div>
+      <div class="stat-card"><div class="ico">📊</div><div class="num">${fmtTimeLong(total)}</div><div class="lbl">총 시간</div></div>
+    </div>`;
+    html+=renderMissionStats(s, d);
+  }
+  el.innerHTML=html;
+}
+function renderMissionStats(s, filterDiff){
+  let html=`<div class="stat-section"><h3><span class="em">🎯</span> 미션 성공률</h3>`;
+  let any=false;
+  for(const [id,m] of Object.entries(MISSIONS)){
+    if(filterDiff && !m.diffs.includes(filterDiff))continue;
+    const stats=s.missionStats[id]||[0,0];
+    const [success,total]=stats;
+    if(total===0)continue;
+    any=true;
+    const pct=Math.round(success/total*100);
+    html+=`<div class="mission-stat">
+      <span class="em">${m.icon}</span>
+      <div class="mission-stat-row">
+        <div style="display:flex;justify-content:space-between"><span class="lbl">${m.title}</span><span class="pcnt">${success}/${total} (${pct}%)</span></div>
+        <div class="bar-wrap"><div class="bar-fill" style="width:${pct}%"></div></div>
+      </div>
+    </div>`;
+  }
+  if(!any)html+=`<div class="rec-empty" style="padding:20px">미션 클리어 기록이 아직 없어요</div>`;
+  html+=`</div>`;
+  return html;
+}
+function renderHeatmap(s){
+  const days=28;
+  const today=new Date();
+  const cells=[];
+  const start=new Date(today);start.setDate(start.getDate()-(days-1));
+  const startDow=start.getDay();
+  start.setDate(start.getDate()-startDow);
+  for(let i=0;i<35;i++){
+    const d=new Date(start);d.setDate(d.getDate()+i);
+    const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    const isToday=key===todayKey();
+    const isFuture=d>today;
+    const wasDaily=s.daily.completed.includes(key);
+    cells.push({key,day:d.getDate(),isToday,isFuture,wasDaily});
+  }
+  let html=`<div class="heatmap">`;
+  cells.forEach(c=>{
+    const cls=['hcell'];
+    if(c.wasDaily)cls.push('daily');
+    if(c.isToday)cls.push('today');
+    if(c.isFuture)cls.push('future');
+    html+=`<div class="${cls.join(' ')}" title="${c.key}">${c.day}</div>`;
+  });
+  html+=`</div><div class="heat-legend">
+    <span><span class="dot" style="background:#e9ecef"></span>없음</span>
+    <span><span class="dot" style="background:#fa5252"></span>일일챌린지 완료</span>
+    <span><span class="dot" style="background:#fff;outline:2px solid #3b5bdb"></span>오늘</span>
+  </div>`;
+  return html;
+}
+function updateProgress(){
+  let ok=0;for(let r=0;r<9;r++)for(let c=0;c<9;c++)if(board[r][c]===solution[r][c])ok++;
+  const pct=Math.round(ok/81*100);
+  document.getElementById('pFill').style.width=pct+'%';
+  document.getElementById('pLabel').textContent=`${ok} / 81 완성 (${pct}%)`;
+}
+function updateMistakeWrap(){
+  const w=document.getElementById('mistakeWrap');
+  w.innerHTML=mistakes>0?`<span style="font-size:12px;font-weight:700;color:var(--err)">✗${mistakes}</span>`:'';
+}
+function launchConfetti(){
+  const w=document.getElementById('cw');w.innerHTML='';
+  const cols=['#3b5bdb','#7048e8','#f59f00','#2f9e44','#e03131','#0c8599','#d6336c','#f76707'];
+  for(let i=0;i<140;i++){
+    const e=document.createElement('div');e.className='conf';
+    e.style.cssText=`left:${Math.random()*100}%;top:-10px;background:${cols[Math.floor(Math.random()*cols.length)]};
+      width:${4+Math.random()*8}px;height:${4+Math.random()*8}px;
+      border-radius:${Math.random()>.5?'50%':'2px'};
+      animation-duration:${1.5+Math.random()*2.5}s;animation-delay:${Math.random()*1.2}s`;
+    w.appendChild(e);
+  }
+  setTimeout(()=>w.innerHTML='',5000);
+}
+let toastTid;
+function showToast(msg){
+  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  clearTimeout(toastTid);toastTid=setTimeout(()=>t.classList.remove('show'),2200);
+}
+document.addEventListener('keydown',e=>{
+  if(completed)return;
+  const k=e.key;
+  // While paused, only allow unpause keys
+  if(isPaused){
+    if(k.toLowerCase()==='p'||k===' '){e.preventDefault();togglePause();}
+    return;
+  }
+  if(sel&&['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(k)){
+    e.preventDefault();
+    const d={ArrowUp:[-1,0],ArrowDown:[1,0],ArrowLeft:[0,-1],ArrowRight:[0,1]}[k];
+    selCell(Math.max(0,Math.min(8,sel.r+d[0])),Math.max(0,Math.min(8,sel.c+d[1])));
+    return;
+  }
+  if(k>='1'&&k<='9')input(+k);
+  else if(k==='Backspace'||k==='Delete'||k==='0')input(0);
+  else if(k.toLowerCase()==='n')toggleNote();
+  else if(k.toLowerCase()==='p'||k===' '){e.preventDefault();togglePause();}
+  else if((e.ctrlKey||e.metaKey)&&k.toLowerCase()==='z'){e.preventDefault();undo();}
+});
+document.getElementById('diffTabs').addEventListener('click',e=>{
+  const b=e.target.closest('.dtab');if(!b)return;
+  const nd=b.dataset.d;
+  if(nd===diff && !isDaily)return;
+  if(confirm(`${DIFF[nd].label} 난이도로 새 게임을 시작할까요?`)){
+    isDaily=false;currentRng=Math.random;
+    diff=nd;
+    document.querySelectorAll('.dtab').forEach(t=>t.classList.toggle('active',t.dataset.d===diff));
+    initGame(diff);
+  }
+});
+function startNewGame(){
+  isDaily=false;currentRng=Math.random;
+  document.querySelectorAll('.dtab').forEach(t=>t.classList.toggle('active',t.dataset.d===diff));
+  initGame(diff);
+}
+document.querySelectorAll('.dtab').forEach(t=>t.classList.toggle('active',t.dataset.d===diff));
+initGame(diff);
+updateDailyBanner();
+updateFarmBadge();
+// ═══════════════════════════════════════
+// ITEMS CATALOG (43 items × 4 rarities × 4 categories)
+// ═══════════════════════════════════════
+const ITEMS=[
+  // animals
+  {id:'a01',n:'닭',e:'🐔',r:'common',c:'animal'},
+  {id:'a02',n:'양',e:'🐑',r:'common',c:'animal'},
+  {id:'a03',n:'소',e:'🐄',r:'common',c:'animal'},
+  {id:'a04',n:'돼지',e:'🐖',r:'common',c:'animal'},
+  {id:'a05',n:'토끼',e:'🐰',r:'common',c:'animal'},
+  {id:'a06',n:'사슴',e:'🦌',r:'rare',c:'animal'},
+  {id:'a07',n:'여우',e:'🦊',r:'rare',c:'animal'},
+  {id:'a08',n:'부엉이',e:'🦉',r:'rare',c:'animal'},
+  {id:'a09',n:'곰',e:'🐻',r:'epic',c:'animal'},
+  {id:'a10',n:'사자',e:'🦁',r:'epic',c:'animal'},
+  {id:'a11',n:'호랑이',e:'🐯',r:'epic',c:'animal'},
+  {id:'a12',n:'드래곤',e:'🐉',r:'legendary',c:'animal'},
+  {id:'a13',n:'유니콘',e:'🦄',r:'legendary',c:'animal'},
+  {id:'a14',n:'봉황',e:'🦅',r:'legendary',c:'animal'},
+  // plants
+  {id:'p01',n:'나무',e:'🌳',r:'common',c:'plant'},
+  {id:'p02',n:'해바라기',e:'🌻',r:'common',c:'plant'},
+  {id:'p03',n:'당근밭',e:'🥕',r:'common',c:'plant'},
+  {id:'p04',n:'옥수수밭',e:'🌽',r:'common',c:'plant'},
+  {id:'p05',n:'사과나무',e:'🍎',r:'rare',c:'plant'},
+  {id:'p06',n:'소나무',e:'🌲',r:'rare',c:'plant'},
+  {id:'p07',n:'야자수',e:'🌴',r:'rare',c:'plant'},
+  {id:'p08',n:'벚꽃나무',e:'🌸',r:'epic',c:'plant'},
+  {id:'p09',n:'단풍나무',e:'🍁',r:'epic',c:'plant'},
+  {id:'p10',n:'세계수',e:'🌟',r:'legendary',c:'plant'},
+  {id:'p11',n:'무지개나무',e:'🌈',r:'legendary',c:'plant'},
+  // buildings
+  {id:'b01',n:'오두막',e:'🛖',r:'common',c:'building'},
+  {id:'b02',n:'텐트',e:'⛺',r:'common',c:'building'},
+  {id:'b03',n:'폐가',e:'🏚',r:'common',c:'building'},
+  {id:'b04',n:'농가',e:'🏠',r:'rare',c:'building'},
+  {id:'b05',n:'분수',e:'⛲',r:'rare',c:'building'},
+  {id:'b06',n:'정자',e:'🏛',r:'rare',c:'building'},
+  {id:'b07',n:'성탑',e:'🏰',r:'epic',c:'building'},
+  {id:'b08',n:'사원',e:'🏯',r:'epic',c:'building'},
+  {id:'b09',n:'자유의여신상',e:'🗽',r:'legendary',c:'building'},
+  {id:'b10',n:'신전',e:'🛕',r:'legendary',c:'building'},
+  // decorations
+  {id:'d01',n:'울타리',e:'🪵',r:'common',c:'deco'},
+  {id:'d02',n:'등불',e:'🏮',r:'common',c:'deco'},
+  {id:'d03',n:'의자',e:'🪑',r:'common',c:'deco'},
+  {id:'d04',n:'과녁',e:'🎯',r:'rare',c:'deco'},
+  {id:'d05',n:'사다리',e:'🪜',r:'rare',c:'deco'},
+  {id:'d06',n:'모닥불',e:'🔥',r:'epic',c:'deco'},
+  {id:'d07',n:'석상',e:'🗿',r:'epic',c:'deco'},
+  {id:'d08',n:'황금트로피',e:'🏆',r:'legendary',c:'deco'},
+];
+const RARITY_INFO={
+  common:{label:'일반',color:'#adb5bd',weight:60},
+  rare:{label:'레어',color:'#1971c2',weight:25},
+  epic:{label:'영웅',color:'#7048e8',weight:12},
+  legendary:{label:'전설',color:'#f59f00',weight:3},
+};
+const FARM_KEY='sudoku_farm_v1';
+function getFarm(){
+  try{return JSON.parse(localStorage.getItem(FARM_KEY)||'{}')}catch(e){return{}}
+}
+function saveFarm(f){localStorage.setItem(FARM_KEY,JSON.stringify(f))}
+// ═══════════════════════════════════════
+// PAUSE SYSTEM
+// ═══════════════════════════════════════
+function togglePause(){
+  if(completed)return;
+  isPaused=!isPaused;
+  const overlay=document.getElementById('pauseOverlay');
+  const btn=document.getElementById('pauseBtn');
+  if(isPaused){
+    stopTimer();
+    overlay.classList.add('show');
+    btn.classList.add('active');
+    btn.innerHTML='▶';
+    btn.title='재개';
+  }else{
+    startTimer();
+    overlay.classList.remove('show');
+    btn.classList.remove('active');
+    btn.innerHTML='⏸';
+    btn.title='일시정지';
+  }
+}
+// Auto-pause on tab hide / window blur
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden && !isPaused && !completed && timerInt){
+    togglePause();
+  }
+});
+window.addEventListener('blur',()=>{
+  if(!isPaused && !completed && timerInt && !document.hasFocus()){
+    setTimeout(()=>{if(!document.hasFocus() && !isPaused && !completed && timerInt)togglePause()},300);
+  }
+});
+// ═══════════════════════════════════════
+// REWARD GACHA SYSTEM
+// ═══════════════════════════════════════
+function rarityWeights(diff, missionOk, isDailyGame){
+  // Default weights (medium difficulty)
+  let w={common:60,rare:25,epic:12,legendary:3};
+  // Difficulty boosts: harder = better odds
+  if(diff==='easy')      w={common:65,rare:25,epic:8, legendary:2};
+  else if(diff==='hard') w={common:50,rare:30,epic:15,legendary:5};
+  else if(diff==='expert')w={common:40,rare:30,epic:20,legendary:10};
+  // Daily challenge boost
+  if(isDailyGame){
+    w.common=Math.max(0,w.common-10);
+    w.rare+=2; w.epic+=4; w.legendary+=4;
+  }
+  // Mission success boost (small)
+  if(missionOk){
+    w.common=Math.max(0,w.common-5);
+    w.rare+=2; w.epic+=2; w.legendary+=1;
+  }
+  return w;
+}
+function pickRarity(weights){
+  const total=weights.common+weights.rare+weights.epic+weights.legendary;
+  let roll=Math.random()*total;
+  if((roll-=weights.legendary)<0)return'legendary';
+  if((roll-=weights.epic)<0)return'epic';
+  if((roll-=weights.rare)<0)return'rare';
+  return'common';
+}
+function rollOneItem(weights){
+  const rarity=pickRarity(weights);
+  const pool=ITEMS.filter(i=>i.r===rarity);
+  return pool[Math.floor(Math.random()*pool.length)];
+}
+function calcRewardCount(diff, missionOk, isDailyGame){
+  let n=1;
+  if(diff==='hard')n=1;
+  if(diff==='expert')n=2;
+  if(isDailyGame)n+=1;
+  if(missionOk)n+=1;
+  return Math.min(4,n);
+}
+function generateRewards(diff, missionOk, isDailyGame){
+  const weights=rarityWeights(diff,missionOk,isDailyGame);
+  const count=calcRewardCount(diff,missionOk,isDailyGame);
+  const rewards=[];
+  for(let i=0;i<count;i++)rewards.push(rollOneItem(weights));
+  return rewards;
+}
+function addRewardsToFarm(rewards){
+  const farm=getFarm();
+  const newItems=[];
+  rewards.forEach(item=>{
+    const isNew=!farm[item.id];
+    farm[item.id]=(farm[item.id]||0)+1;
+    if(isNew)newItems.push(item.id);
+  });
+  saveFarm(farm);
+  updateFarmBadge();
+  return newItems;
+}
+// ═══════════════════════════════════════
+// REWARD REVEAL MODAL
+// ═══════════════════════════════════════
+let pendingRewards=null, openedCount=0;
+function showRewards(rewards){
+  pendingRewards=rewards;
+  openedCount=0;
+  const newItemIds=addRewardsToFarm(rewards);
+  const wrap=document.getElementById('rewardCards');
+  wrap.innerHTML='';
+  rewards.forEach((item,idx)=>{
+    const card=document.createElement('div');
+    card.className='rcard';
+    card.style.animationDelay=(idx*0.1)+'s';
+    const isNew=newItemIds.includes(item.id);
+    card.innerHTML=`
+      <div class="rcard-face rcard-back"><div class="tap-hint">탭해서 열기</div></div>
+      <div class="rcard-face rcard-front ${item.r}">
+        ${isNew?'<div class="rcard-new">NEW</div>':''}
+        <div class="rcard-emoji">${item.e}</div>
+        <div class="rcard-name">${item.n}</div>
+        <div class="rcard-tier ${item.r}">${RARITY_INFO[item.r].label.toUpperCase()}</div>
+      </div>`;
+    card.addEventListener('click',()=>{
+      if(card.classList.contains('flipped'))return;
+      card.classList.add('flipped');
+      openedCount++;
+      // Legendary triggers extra confetti
+      if(item.r==='legendary')launchConfetti();
+      if(openedCount>=rewards.length){
+        const btn=document.getElementById('rewardConfirm');
+        btn.disabled=false;
+        btn.textContent='✓ 확인 (농장에 추가됨)';
+      }
+    });
+    wrap.appendChild(card);
+  });
+  document.getElementById('rewardTitle').textContent=
+    rewards.length===1?'🎁 보상이 도착했습니다!':`🎁 보상 ${rewards.length}개를 받으셨어요!`;
+  const btn=document.getElementById('rewardConfirm');
+  btn.disabled=true;
+  btn.textContent=`카드 ${rewards.length}장을 모두 열어보세요`;
+  document.getElementById('rewardOverlay').classList.remove('hidden');
+}
+function closeReward(){
+  if(openedCount<(pendingRewards?.length||0))return;
+  document.getElementById('rewardOverlay').classList.add('hidden');
+  pendingRewards=null;openedCount=0;
+}
+// ═══════════════════════════════════════
+// FARM VIEW
+// ═══════════════════════════════════════
+let farmFilter='all';
+function openFarm(){
+  farmFilter='all';
+  document.querySelectorAll('#farmFilter .ffilter').forEach(b=>b.classList.toggle('active',b.dataset.f==='all'));
+  renderFarm();
+  // Default to scene view
+  document.querySelectorAll('.fvtab').forEach(b=>b.classList.toggle('active',b.dataset.v==='scene'));
+  document.getElementById('farmSceneSection').classList.add('show');
+  document.getElementById('farmShopSection').classList.remove('show');
+  document.getElementById('farmInvSection').classList.remove('show');
+  loadLayout();
+  // First-time starter pack
+  spawnStarterPack();
+  if(farmLayout.length===0 && Object.keys(getFarm()).length>0)autoArrangeFarm();
+  else renderFarmScene();
+  updateCoinsDisplay();
+  document.getElementById('farmModal').classList.remove('hidden');
+}
+function closeFarm(){
+  document.getElementById('farmModal').classList.add('hidden');
+  stopWalking();
+  if(placeMode)togglePlaceMode();
+}
+document.getElementById('farmFilter').addEventListener('click',e=>{
+  const b=e.target.closest('.ffilter');if(!b)return;
+  farmFilter=b.dataset.f;
+  document.querySelectorAll('#farmFilter .ffilter').forEach(t=>t.classList.toggle('active',t.dataset.f===farmFilter));
+  renderFarm();
+});
+function renderFarm(){
+  const farm=getFarm();
+  const ownedIds=Object.keys(farm);
+  const totalCount=Object.values(farm).reduce((a,b)=>a+b,0);
+  const uniqueCount=ownedIds.length;
+  // Stats by rarity
+  const byRarity={common:0,rare:0,epic:0,legendary:0};
+  ownedIds.forEach(id=>{
+    const item=ITEMS.find(i=>i.id===id);
+    if(item)byRarity[item.r]++;
+  });
+  const totalLegendary=ITEMS.filter(i=>i.r==='legendary').length;
+  const totalEpic=ITEMS.filter(i=>i.r==='epic').length;
+  const totalRare=ITEMS.filter(i=>i.r==='rare').length;
+  const totalCommon=ITEMS.filter(i=>i.r==='common').length;
+  // Render stats boxes
+  document.getElementById('farmStats').innerHTML=`
+    <div class="fs-box legendary"><div class="n">${byRarity.legendary}/${totalLegendary}</div><div class="l">🌟 전설</div></div>
+    <div class="fs-box epic"><div class="n">${byRarity.epic}/${totalEpic}</div><div class="l">💜 영웅</div></div>
+    <div class="fs-box rare"><div class="n">${byRarity.rare}/${totalRare}</div><div class="l">💙 레어</div></div>
+    <div class="fs-box"><div class="n">${byRarity.common}/${totalCommon}</div><div class="l">⚪ 일반</div></div>
+  `;
+  // Collection rate
+  const pct=Math.round(uniqueCount/ITEMS.length*100);
+  document.getElementById('farmCollection').innerHTML=
+    `🎯 컬렉션 <span class="pct">${pct}%</span> (${uniqueCount}/${ITEMS.length}) · 총 보유 ${totalCount}개`;
+  // Filter items
+  let filtered=ITEMS;
+  if(['legendary','epic','rare','common'].includes(farmFilter))
+    filtered=ITEMS.filter(i=>i.r===farmFilter);
+  else if(['animal','building','plant','deco'].includes(farmFilter))
+    filtered=ITEMS.filter(i=>i.c===farmFilter);
+  // Sort: owned first (by rarity desc), then locked
+  const rOrder={legendary:0,epic:1,rare:2,common:3};
+  filtered.sort((a,b)=>{
+    const oa=farm[a.id]?0:1, ob=farm[b.id]?0:1;
+    if(oa!==ob)return oa-ob;
+    return rOrder[a.r]-rOrder[b.r];
+  });
+  // Render grid
+  const grid=document.getElementById('farmGrid');
+  grid.innerHTML=filtered.map(item=>{
+    const count=farm[item.id]||0;
+    const cls=count>0?`fitem ${item.r} unlocked`:`fitem ${item.r} locked`;
+    return`<div class="${cls}" title="${item.n} (${RARITY_INFO[item.r].label})">
+      <div class="em">${count>0?item.e:'❓'}</div>
+      <div class="nm">${count>0?item.n:'???'}</div>
+      ${count>1?`<div class="ct">×${count}</div>`:''}
+    </div>`;
+  }).join('');
+}
+function updateFarmBadge(){
+  // Show a small NEW indicator on farm button if recent rewards
+  // (kept simple for now - no extra badge state needed)
+}
+// ═══════════════════════════════════════
+// FARM SCENE VIEW (visual placement + walking animals)
+// ═══════════════════════════════════════
+const LAYOUT_KEY='sudoku_farm_layout_v1';
+let farmLayout=[];
+let placeMode=false;
+let selectedTrayItem=null;
+let walkInterval=null;
+function loadLayout(){
+  try{farmLayout=JSON.parse(localStorage.getItem(LAYOUT_KEY)||'[]')}catch(e){farmLayout=[]}
+}
+function saveLayout(){localStorage.setItem(LAYOUT_KEY,JSON.stringify(farmLayout))}
+function genUid(){return'p_'+Math.random().toString(36).substr(2,9)}
+function autoArrangeFarm(){
+  const farm=getFarm();
+  farmLayout=[];
+  const items=[];
+  // Cap visible per item to avoid clutter
+  Object.entries(farm).forEach(([id,count])=>{
+    const item=ITEMS.find(i=>i.id===id);
+    if(!item)return;
+    const visible=Math.min(3,count);
+    for(let i=0;i<visible;i++)items.push(item);
+  });
+  // Place by category in zones (snapped to 5% grid for pixel feel)
+  items.forEach(item=>{
+    let x=10+Math.random()*80,y;
+    if(item.c==='building')y=42+Math.random()*20;
+    else if(item.c==='plant')y=8+Math.random()*52;
+    else if(item.c==='animal')y=4+Math.random()*30;
+    else y=5+Math.random()*55;
+    x=Math.round(x/5)*5;
+    y=Math.round(y/5)*5;
+    farmLayout.push({uid:genUid(),id:item.id,x,y});
+  });
+  saveLayout();
+  renderFarmScene();
+  if(placeMode)renderTray();
+}
+function renderFarmScene(){
+  const scene=document.getElementById('farmScene');
+  if(!scene)return;
+  scene.querySelectorAll('.placed-item').forEach(el=>el.remove());
+  // Render house first (always present, fixed position)
+  const econ=getEconomy();
+  const h=houseInfo(econ.houseLevel);
+  const hEl=document.createElement('div');
+  hEl.className=`placed-item house lv${h.lv}`;
+  hEl.textContent=h.e;
+  hEl.style.left='50%';
+  hEl.style.bottom='48%';
+  hEl.style.fontSize=h.size+'px';
+  hEl.style.zIndex='80';
+  hEl.title=`${h.n} (LV ${h.lv}) - ${h.perk}`;
+  hEl.addEventListener('click',e=>{
+    e.stopPropagation();
+    switchFarmView('shop');
+    showToast(`🏘 ${h.n} (LV ${h.lv}): ${h.perk}`);
+  });
+  scene.appendChild(hEl);
+  farmLayout.forEach(p=>{
+    const item=ITEMS.find(i=>i.id===p.id);
+    if(!item)return;
+    const el=document.createElement('div');
+    el.className=`placed-item ${item.c} ${item.r}`;
+    el.dataset.uid=p.uid;
+    el.textContent=item.e;
+    el.style.left=p.x+'%';
+    el.style.bottom=p.y+'%';
+    el.style.zIndex=Math.round(150-p.y);
+    // Apply stage scale for animals
+    const stage=getCurrentStage(p);
+    if(item.c==='animal' && stage<3){
+      const baseSize=30;
+      el.style.fontSize=(baseSize*STAGE_SCALE[stage])+'px';
+      // Baby badge
+      if(stage===1){
+        const baby=document.createElement('div');
+        baby.className='baby-badge';baby.textContent='🍼';
+        el.appendChild(baby);
+      }
+      // Stage label
+      const label=document.createElement('div');
+      label.className='stage-badge';
+      const grow=getGrowthRemaining(p);
+      label.textContent=stage===1?`🍼 ${grow?fmtCountdown(grow.remainingSec):''}`:`🐣 ${grow?fmtCountdown(grow.remainingSec):''}`;
+      el.appendChild(label);
+    }
+    el.title=`${item.n} (${RARITY_INFO[item.r].label})${stage<3?' · '+STAGE_LABEL[stage]:''}`;
+    el.addEventListener('click',e=>{
+      e.stopPropagation();
+      if(placeMode){
+        if(confirm(`${item.e} ${item.n} 치우기?`)){
+          farmLayout=farmLayout.filter(x=>x.uid!==p.uid);
+          saveLayout();renderFarmScene();renderTray();
+        }
+      }else{
+        const stageInfo=stage<3?` · ${STAGE_LABEL[stage]}`:'';
+        showToast(`${item.e} ${item.n} (${RARITY_INFO[item.r].label})${stageInfo}`);
+      }
+    });
+    scene.appendChild(el);
+  });
+  document.getElementById('farmCounter').textContent=`${farmLayout.length}개 배치`;
+  startWalking();
+  updatePendingBadges();
+}
+function startWalking(){
+  if(walkInterval)clearInterval(walkInterval);
+  // Apply day/night and weather on start
+  applyDayPhase();
+  applyWeather();
+  walkInterval=setInterval(()=>{
+    if(document.getElementById('farmModal').classList.contains('hidden'))return;
+    if(placeMode)return;
+    // Update day phase + collect button + production badges periodically
+    applyDayPhase();
+    updateCoinsDisplay();
+    updatePendingBadges();
+    farmLayout.forEach(p=>{
+      const item=ITEMS.find(i=>i.id===p.id);
+      if(!item||item.c!=='animal')return;
+      // Babies/juveniles wander less (or not at all)
+      const stage=getCurrentStage(p);
+      if(stage===1)return; // babies stay put
+      // Snap to 5% grid for pixel-art feel; small wander (within ~25%)
+      const range=stage===2?15:25;
+      let newX=p.x+(Math.random()*range*2-range);
+      newX=Math.max(8,Math.min(92,newX));
+      newX=Math.round(newX/5)*5; // snap to 5% increments
+      const oldX=p.x;
+      if(Math.abs(newX-oldX)<3)return; // skip tiny moves
+      p.x=newX;
+      const el=document.querySelector(`[data-uid="${p.uid}"]`);
+      if(el){
+        // Trigger hop animation
+        if(newX<oldX)el.classList.add('flipped');else el.classList.remove('flipped');
+        el.classList.add('hopping');
+        setTimeout(()=>el.classList.remove('hopping'),500);
+        el.style.left=p.x+'%';
+      }
+    });
+    saveLayout();
+  },3000);
+}
+function stopWalking(){if(walkInterval){clearInterval(walkInterval);walkInterval=null}}
+// Day/night cycle based on real time
+function getDayPhase(){
+  const h=new Date().getHours();
+  if(h>=5 && h<8)return{cls:'morning',emoji:'🌅',label:'아침'};
+  if(h>=8 && h<17)return{cls:'day',emoji:'🌞',label:'낮'};
+  if(h>=17 && h<20)return{cls:'evening',emoji:'🌇',label:'저녁'};
+  return{cls:'night',emoji:'🌙',label:'밤'};
+}
+function applyDayPhase(){
+  const scene=document.getElementById('farmScene');
+  const badge=document.getElementById('dayBadge');
+  if(!scene||!badge)return;
+  const phase=getDayPhase();
+  scene.classList.remove('morning','day','evening','night');
+  scene.classList.add(phase.cls);
+  const t=new Date();
+  badge.textContent=`${phase.emoji} ${phase.label} ${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}`;
+}
+// Seasonal weather particles
+function applyWeather(){
+  const scene=document.getElementById('farmScene');
+  if(!scene)return;
+  // Clear existing
+  scene.querySelectorAll('.weather-particle').forEach(p=>p.remove());
+  const m=new Date().getMonth()+1; // 1-12
+  let particle=null,count=0;
+  if(m>=3 && m<=5){particle='🌸';count=4;} // 봄: 벚꽃
+  else if(m>=6 && m<=8){particle='✨';count=3;} // 여름: 햇살
+  else if(m>=9 && m<=11){particle='🍂';count=5;} // 가을: 낙엽
+  else {particle='❄️';count=6;} // 겨울: 눈
+  for(let i=0;i<count;i++){
+    const p=document.createElement('div');
+    p.className='weather-particle';
+    p.textContent=particle;
+    p.style.left=(Math.random()*100)+'%';
+    p.style.animationDelay=(Math.random()*6)+'s';
+    p.style.animationDuration=(5+Math.random()*4)+'s';
+    p.style.fontSize=(10+Math.random()*8)+'px';
+    p.style.opacity=(0.6+Math.random()*0.4);
+    scene.appendChild(p);
+  }
+}
+// ═══════════════════════════════════════
+// ECONOMY: resources, coins, house, production
+// ═══════════════════════════════════════
+const ECONOMY_KEY='sudoku_economy_v1';
+const RESOURCES={
+  egg:{n:'계란',e:'🥚',price:5},
+  milk:{n:'우유',e:'🥛',price:12},
+  wool:{n:'양털',e:'🧶',price:10},
+  fruit:{n:'과일',e:'🍎',price:8},
+  honey:{n:'꿀',e:'🍯',price:30},
+  fish:{n:'생선',e:'🐟',price:18},
+  meat:{n:'고기',e:'🥩',price:40},
+  gem:{n:'보석',e:'💎',price:250},
+  star:{n:'별가루',e:'⭐',price:600},
+  mana:{n:'마나석',e:'🔮',price:1500},
+};
+const HOUSES=[
+  {lv:1,e:'🛖',n:'오두막',cost:0,size:50,perk:'시작 단계'},
+  {lv:2,e:'🏠',n:'농가',cost:500,size:62,perk:'자원 가격 +10%'},
+  {lv:3,e:'🏡',n:'별장',cost:2500,size:74,perk:'자원 가격 +20%'},
+  {lv:4,e:'🏰',n:'성탑',cost:12000,size:86,perk:'자원 가격 +35%'},
+  {lv:5,e:'🏯',n:'황금성',cost:60000,size:100,perk:'자원 가격 +50%'},
+];
+// Production (seconds per 1 unit)
+const PROD={
+  // Common animals
+  a01:{r:'egg',  s:300},   a02:{r:'wool',s:480},
+  a03:{r:'milk', s:480},   a04:{r:'meat',s:1800},
+  a05:{r:'fruit',s:600},
+  // Rare animals
+  a06:{r:'meat',s:900},    a07:{r:'fish',s:600},
+  a08:{r:'mana',s:7200},
+  // Epic animals
+  a09:{r:'honey',s:1500},  a10:{r:'meat',s:900},
+  a11:{r:'meat',s:900},
+  // Legendary animals
+  a12:{r:'gem', s:3600},   a13:{r:'star',s:7200},
+  a14:{r:'mana',s:3600},
+  // Plants
+  p01:{r:'fruit',s:1800},  p02:{r:'fruit',s:1500},
+  p03:{r:'fruit',s:600},   p04:{r:'fruit',s:600},
+  p05:{r:'fruit',s:1200},  p06:{r:'fruit',s:1800},
+  p07:{r:'fruit',s:1200},  p08:{r:'honey',s:1800},
+  p09:{r:'gem', s:3600},   p10:{r:'star',s:5400},
+  p11:{r:'star',s:5400},
+};
+const MAX_STACK=12; // max accumulated per item
+// Baby system
+const BABY_PRICES={common:50,rare:250,epic:1000,legendary:5000};
+const GROW_SECONDS={common:1800,rare:3600,epic:7200,legendary:14400}; // per stage
+const STAGE_MULT=[0,0,0.5,1.0]; // [unused,baby,juvenile,adult]
+const STAGE_LABEL=['','새끼','청소년','성체'];
+const STAGE_SCALE=[1,0.55,0.78,1.0];
+function getCurrentStage(p){
+  if(!p.bornAt||p.stage===3)return 3;
+  const item=ITEMS.find(i=>i.id===p.id);
+  if(!item||item.c!=='animal')return 3; // only animals have stages for now
+  const grow=GROW_SECONDS[item.r]||1800;
+  const age=(Date.now()-p.bornAt)/1000;
+  if(age<grow)return 1;
+  if(age<grow*2)return 2;
+  return 3;
+}
+function getGrowthRemaining(p){
+  // returns {remainingSec, nextStage} or null if adult
+  if(!p.bornAt||p.stage===3)return null;
+  const item=ITEMS.find(i=>i.id===p.id);
+  if(!item||item.c!=='animal')return null;
+  const grow=GROW_SECONDS[item.r]||1800;
+  const age=(Date.now()-p.bornAt)/1000;
+  if(age<grow)return{remainingSec:Math.max(0,grow-age),nextStage:2};
+  if(age<grow*2)return{remainingSec:Math.max(0,grow*2-age),nextStage:3};
+  return null;
+}
+function fmtCountdown(sec){
+  if(sec<60)return`${Math.ceil(sec)}초`;
+  const m=Math.floor(sec/60);
+  if(m<60)return`${m}분`;
+  const h=Math.floor(m/60);
+  return`${h}시간 ${m%60}분`;
+}
+function getEconomy(){
+  const def={coins:0,resources:{},houseLevel:1,lastCollect:Date.now(),starterSpawned:false};
+  try{
+    const e=JSON.parse(localStorage.getItem(ECONOMY_KEY)||'{}');
+    return Object.assign(def,e,{resources:Object.assign({},def.resources,e.resources||{})});
+  }catch(err){return def}
+}
+function saveEconomy(e){localStorage.setItem(ECONOMY_KEY,JSON.stringify(e))}
+function houseInfo(lv){return HOUSES[Math.max(1,Math.min(5,lv))-1]}
+function priceMultiplier(){
+  const lv=getEconomy().houseLevel;
+  return[1.0,1.0,1.10,1.20,1.35,1.50][lv]||1;
+}
+function spawnStarterPack(){
+  const e=getEconomy();
+  if(e.starterSpawned)return;
+  // Give 1 chicken to inventory
+  const farm=getFarm();
+  farm.a01=(farm.a01||0)+1;
+  saveFarm(farm);
+  // Place chicken on farm
+  farmLayout.push({uid:genUid(),id:'a01',x:55,y:10});
+  saveLayout();
+  e.starterSpawned=true;
+  e.lastCollect=Date.now();
+  saveEconomy(e);
+  showToast('🌾 환영합니다! 🛖 오두막과 🐔 닭 1마리로 시작!');
+}
+// Calculate produced resources since last collect (per-instance, stage-aware)
+function calculateProduction(){
+  const e=getEconomy();
+  const now=Date.now();
+  const elapsed=Math.floor((now-e.lastCollect)/1000);
+  if(elapsed<10)return{produced:{},any:false};
+  const produced={};
+  farmLayout.forEach(p=>{
+    const prod=PROD[p.id];if(!prod)return;
+    const stage=getCurrentStage(p);
+    const mult=STAGE_MULT[stage]||0;
+    if(mult<=0)return; // baby doesn't produce
+    const effectiveSec=elapsed*mult;
+    const units=Math.min(MAX_STACK,Math.floor(effectiveSec/prod.s));
+    if(units<=0)return;
+    produced[prod.r]=(produced[prod.r]||0)+units;
+  });
+  return{produced,any:Object.keys(produced).length>0,elapsed};
+}
+function collectAll(){
+  const{produced,any}=calculateProduction();
+  const e=getEconomy();
+  if(!any){
+    showToast('⏰ 아직 수확할 게 없어요. 시간이 좀 더 필요해요!');
+    return;
+  }
+  Object.entries(produced).forEach(([r,n])=>{
+    e.resources[r]=(e.resources[r]||0)+n;
+  });
+  e.lastCollect=Date.now();
+  saveEconomy(e);
+  // Show what was collected
+  const items=Object.entries(produced).map(([r,n])=>`${RESOURCES[r].e}×${n}`).join(' ');
+  showToast(`🌾 수확! ${items}`);
+  updateCoinsDisplay();
+  // If shop is open, refresh
+  if(document.getElementById('farmShopSection').classList.contains('show'))renderShop();
+  updatePendingBadges();
+}
+function sellResource(resId,amount){
+  const e=getEconomy();
+  const have=e.resources[resId]||0;
+  const sellN=Math.min(have,amount);
+  if(sellN<=0)return;
+  const price=Math.round(RESOURCES[resId].price*priceMultiplier());
+  const earn=sellN*price;
+  e.resources[resId]=have-sellN;
+  if(e.resources[resId]===0)delete e.resources[resId];
+  e.coins+=earn;
+  saveEconomy(e);
+  showToast(`💰 ${RESOURCES[resId].e}×${sellN} 판매 → +${earn} 코인!`);
+  updateCoinsDisplay();
+  renderShop();
+}
+function sellAllResource(resId){
+  const e=getEconomy();
+  sellResource(resId,e.resources[resId]||0);
+}
+function buyBaby(itemId){
+  const item=ITEMS.find(i=>i.id===itemId);
+  if(!item||item.c!=='animal')return;
+  const cost=BABY_PRICES[item.r];
+  const e=getEconomy();
+  if(e.coins<cost){showToast(`💸 ${cost-e.coins} 코인 부족!`);return;}
+  if(!confirm(`${item.e} ${item.n} 새끼 입양?\n비용: ${cost} 코인\n성장 시간: ${fmtCountdown(GROW_SECONDS[item.r]*2)}`))return;
+  e.coins-=cost;
+  saveEconomy(e);
+  // Add to inventory
+  const farm=getFarm();
+  farm[itemId]=(farm[itemId]||0)+1;
+  saveFarm(farm);
+  // Place baby on scene at random position
+  let x=Math.round((10+Math.random()*80)/5)*5;
+  let y=Math.round((5+Math.random()*25)/5)*5;
+  farmLayout.push({uid:genUid(),id:itemId,x,y,stage:1,bornAt:Date.now()});
+  saveLayout();
+  renderFarmScene();
+  updateCoinsDisplay();
+  renderShop();
+  showToast(`🐣 ${item.n} 새끼 입양! 정성껏 키워주세요`);
+}
+function buyHouseUpgrade(){
+  const e=getEconomy();
+  const next=HOUSES[e.houseLevel];if(!next)return;
+  if(e.coins<next.cost){showToast(`💸 ${next.cost-e.coins} 코인 부족!`);return;}
+  if(!confirm(`${next.e} ${next.n}으로 업그레이드?\n비용: ${next.cost} 코인\n혜택: ${next.perk}`))return;
+  e.coins-=next.cost;
+  e.houseLevel=next.lv;
+  saveEconomy(e);
+  showToast(`🎉 ${next.e} ${next.n}으로 업그레이드 완료!`);
+  updateCoinsDisplay();
+  renderShop();
+  renderFarmScene();
+  launchConfetti();
+}
+function updateCoinsDisplay(){
+  const e=getEconomy();
+  const el=document.getElementById('coinAmount');
+  if(el)el.textContent=e.coins.toLocaleString();
+  const{any}=calculateProduction();
+  const btn=document.getElementById('collectBtn');
+  if(btn)btn.disabled=!any;
+}
+function renderShop(){
+  const e=getEconomy();
+  const el=document.getElementById('shopContent');
+  if(!el)return;
+  const mult=priceMultiplier();
+  const multTxt=mult>1?` <span style="color:var(--ok);font-weight:700">(+${Math.round((mult-1)*100)}%)</span>`:'';
+  // Resources to sell
+  const ownedRes=Object.entries(e.resources).filter(([,n])=>n>0);
+  let html=`<div class="shop-h"><span class="em">🪙</span>자원 판매${multTxt}</div>`;
+  if(ownedRes.length===0){
+    html+=`<div class="shop-empty">📭 판매할 자원이 없어요<br><small style="color:#aaa">동물·식물을 풍경에 두고 시간이 지나면 자원이 생산됩니다</small></div>`;
+  }else{
+    // Sort by price desc
+    ownedRes.sort((a,b)=>RESOURCES[b[0]].price-RESOURCES[a[0]].price);
+    ownedRes.forEach(([r,n])=>{
+      const res=RESOURCES[r];
+      const price=Math.round(res.price*mult);
+      html+=`<div class="res-row">
+        <div class="em">${res.e}</div>
+        <div class="info"><div class="nm">${res.n}</div><div class="pr">개당 ${price} 코인</div></div>
+        <div class="ct">×${n}</div>
+        <div class="actions">
+          <button class="res-btn" onclick="sellResource('${r}',1)">1개</button>
+          <button class="res-btn all" onclick="sellAllResource('${r}')">전체</button>
+        </div>
+      </div>`;
+    });
+  }
+  // Baby shop
+  html+=`<div class="shop-h"><span class="em">🐣</span>새끼 입양</div>`;
+  html+=`<div style="font-size:11px;color:var(--muted);margin-bottom:6px;line-height:1.4">
+    코인으로 새끼를 사 키울 수 있어요. 새끼=0% 생산, 청소년=50%, 성체=100%</div>`;
+  const animals=ITEMS.filter(i=>i.c==='animal');
+  ['common','rare','epic','legendary'].forEach(rarity=>{
+    const rAnimals=animals.filter(i=>i.r===rarity);
+    if(rAnimals.length===0)return;
+    const cost=BABY_PRICES[rarity];
+    const can=e.coins>=cost;
+    html+=`<div style="font-size:11px;color:var(--muted);font-weight:700;margin:8px 0 4px">
+      ${RARITY_INFO[rarity].label} · 🪙 ${cost.toLocaleString()} · ${fmtCountdown(GROW_SECONDS[rarity]*2)} 키우면 성체
+    </div>`;
+    html+=`<div class="baby-grid">`;
+    rAnimals.forEach(item=>{
+      html+=`<div class="baby-card ${item.r} ${can?'':'disabled'}" onclick="${can?`buyBaby('${item.id}')`:''}">
+        <div class="em">${item.e}</div>
+        <div class="nm">${item.n}</div>
+        <div class="pr">🪙 ${cost.toLocaleString()}</div>
+      </div>`;
+    });
+    html+=`</div>`;
+  });
+  // House section
+  html+=`<div class="shop-h"><span class="em">🏘</span>현재 집</div>`;
+  const cur=houseInfo(e.houseLevel);
+  html+=`<div class="house-card">
+    <div class="em">${cur.e}</div>
+    <div class="info">
+      <div class="lv">LV ${cur.lv}</div>
+      <div class="nm">${cur.n}</div>
+      <div class="perk">✨ ${cur.perk}</div>
+    </div>
+  </div>`;
+  // Upgrade
+  if(e.houseLevel>=5){
+    html+=`<div class="upgrade-max">🏆 최고 단계 달성!<br><small style="font-weight:600">모든 자원이 +50% 가격</small></div>`;
+  }else{
+    const next=HOUSES[e.houseLevel];
+    const can=e.coins>=next.cost;
+    html+=`<div class="shop-h"><span class="em">⬆️</span>다음 업그레이드</div>`;
+    html+=`<div class="upgrade-card">
+      <div class="em">${next.e}</div>
+      <div class="info">
+        <div class="lbl">LV ${next.lv} · 다음 단계</div>
+        <div class="nm">${next.n}</div>
+        <div class="perk">✨ ${next.perk}</div>
+      </div>
+      <button class="upgrade-btn" onclick="buyHouseUpgrade()" ${can?'':'disabled'}>
+        <span class="cost">🪙 ${next.cost.toLocaleString()}</span>
+        <span class="sub">${can?'업그레이드':'코인 부족'}</span>
+      </button>
+    </div>`;
+  }
+  // Production guide
+  html+=`<div class="shop-h"><span class="em">📚</span>생산 안내</div>
+    <div style="background:var(--bg);border-radius:10px;padding:10px;font-size:11px;color:var(--given);line-height:1.6">
+      • 풍경에 배치된 동물·식물이 시간에 따라 자원 생산<br>
+      • 한 항목당 최대 ${MAX_STACK}개까지 누적 (그 이상은 생산 X)<br>
+      • 같은 동물 여러 마리 = 그만큼 빠른 생산<br>
+      • 🪙 수확 버튼으로 생산물을 자원으로 변환<br>
+      • 자원 판매하여 집 업그레이드<br>
+      • 집 업그레이드시 자원 판매 가격 영구 +%
+    </div>`;
+  el.innerHTML=html;
+}
+// Show pending production count on placed items
+function updatePendingBadges(){
+  const e=getEconomy();
+  const elapsed=Math.floor((Date.now()-e.lastCollect)/1000);
+  // Count by id
+  const idCount={};
+  farmLayout.forEach(p=>idCount[p.id]=(idCount[p.id]||0)+1);
+  // For each placed item element, compute its share of production
+  const pending={}; // id → total pending
+  Object.entries(idCount).forEach(([id,count])=>{
+    const prod=PROD[id];if(!prod)return;
+    const perUnit=Math.min(MAX_STACK,Math.floor(elapsed/prod.s));
+    pending[id]=perUnit;
+  });
+  // Update DOM
+  document.querySelectorAll('.placed-item').forEach(el=>{
+    el.querySelectorAll('.prod-badge').forEach(b=>b.remove());
+    const uid=el.dataset.uid;
+    if(!uid)return;
+    const placed=farmLayout.find(p=>p.uid===uid);
+    if(!placed)return;
+    const n=pending[placed.id]||0;
+    if(n>0){
+      const b=document.createElement('div');
+      b.className='prod-badge';
+      b.textContent=n>=MAX_STACK?'MAX':('+'+n);
+      el.appendChild(b);
+    }
+  });
+}
+function togglePlaceMode(){
+  placeMode=!placeMode;
+  const btn=document.getElementById('placeModeBtn');
+  const tray=document.getElementById('farmTray');
+  const help=document.getElementById('farmHelp');
+  const scene=document.getElementById('farmScene');
+  if(placeMode){
+    btn.classList.add('active');btn.innerHTML='✓ 완료';
+    tray.classList.add('show');scene.classList.add('placing');
+    help.innerHTML='① 아래에서 아이템 선택 → ② 풍경에서 원하는 위치 탭<br>또는 배치된 아이템 탭하여 보관함으로';
+    renderTray();
+  }else{
+    btn.classList.remove('active');btn.innerHTML='✋ 배치 모드';
+    tray.classList.remove('show');scene.classList.remove('placing');
+    help.innerHTML='동물들이 5초마다 돌아다녀요. 배치 모드로 직접 꾸밀 수도 있어요!';
+    selectedTrayItem=null;
+  }
+}
+function renderTray(){
+  const farm=getFarm();
+  const grid=document.getElementById('farmTrayGrid');
+  // Count placed items per id
+  const placed={};
+  farmLayout.forEach(p=>placed[p.id]=(placed[p.id]||0)+1);
+  let html='';
+  // Sort by rarity (legendary first)
+  const rOrder={legendary:0,epic:1,rare:2,common:3};
+  const sortedIds=Object.keys(farm).sort((a,b)=>{
+    const ia=ITEMS.find(i=>i.id===a),ib=ITEMS.find(i=>i.id===b);
+    if(!ia||!ib)return 0;
+    return rOrder[ia.r]-rOrder[ib.r];
+  });
+  sortedIds.forEach(id=>{
+    const remaining=(farm[id]||0)-(placed[id]||0);
+    if(remaining<=0)return;
+    const item=ITEMS.find(i=>i.id===id);
+    if(!item)return;
+    const cls=selectedTrayItem===id?'tray-item selected':'tray-item';
+    html+=`<div class="${cls}" data-id="${id}" onclick="selectTrayItem('${id}')">${item.e}<span class="ct">×${remaining}</span></div>`;
+  });
+  grid.innerHTML=html||'<div class="tray-empty">보유 아이템을 모두 배치했어요!<br>스도쿠 더 풀고 보상을 모아보세요 🎯</div>';
+}
+function selectTrayItem(id){
+  selectedTrayItem=selectedTrayItem===id?null:id;
+  renderTray();
+  if(selectedTrayItem){
+    const item=ITEMS.find(i=>i.id===id);
+    showToast(`${item.e} 선택됨 → 풍경 클릭으로 배치`);
+  }
+}
+function clearFarmLayout(){
+  if(!confirm('농장에 배치된 아이템을 모두 보관함으로 되돌릴까요?'))return;
+  farmLayout=[];saveLayout();renderFarmScene();
+  if(placeMode)renderTray();
+  showToast('🗑 모두 보관함으로 이동했습니다');
+}
+// Click on scene to place
+document.addEventListener('click',e=>{
+  if(!placeMode||!selectedTrayItem)return;
+  const scene=document.getElementById('farmScene');
+  if(!scene||scene.classList.contains('hidden'))return;
+  // Only handle clicks directly on scene (not on placed items)
+  if(e.target!==scene && !e.target.classList.contains('farm-counter'))return;
+  if(e.target.classList.contains('farm-counter'))return;
+  const rect=scene.getBoundingClientRect();
+  let x=((e.clientX-rect.left)/rect.width)*100;
+  let y=((rect.bottom-e.clientY)/rect.height)*100;
+  // Snap to 5% grid (Stardew tile feel)
+  x=Math.round(Math.max(3,Math.min(97,x))/5)*5;
+  y=Math.round(Math.max(2,Math.min(85,y))/5)*5;
+  farmLayout.push({uid:genUid(),id:selectedTrayItem,x,y});
+  saveLayout();renderFarmScene();renderTray();
+});
+function switchFarmView(v){
+  document.querySelectorAll('.fvtab').forEach(b=>b.classList.toggle('active',b.dataset.v===v));
+  document.getElementById('farmSceneSection').classList.toggle('show',v==='scene');
+  document.getElementById('farmShopSection').classList.toggle('show',v==='shop');
+  document.getElementById('farmInvSection').classList.toggle('show',v==='inv');
+  if(v==='scene'){
+    loadLayout();
+    if(farmLayout.length===0 && Object.keys(getFarm()).length>0)autoArrangeFarm();
+    else renderFarmScene();
+  }else if(v==='shop'){
+    stopWalking();
+    renderShop();
+  }else{
+    stopWalking();
+    renderFarm();
+  }
+}
+// ═══════════════════════════════════════
+// COUPLE COMPARE — kakao-shareable codes
+// ═══════════════════════════════════════
+const COMPARE_KEY='sudoku_compare_friend';
+const PLAYER_NAME_KEY='sudoku_player_name';
+function getPlayerName(){return localStorage.getItem(PLAYER_NAME_KEY)||'주명'}
+function setPlayerName(n){localStorage.setItem(PLAYER_NAME_KEY,n)}
+function buildMyStats(){
+  const s=getStats();const farm=getFarm();const econ=getEconomy();
+  return{
+    name:getPlayerName(),
+    coins:econ.coins||0,
+    houseLevel:econ.houseLevel||1,
+    totalItems:Object.values(farm).reduce((a,b)=>a+b,0),
+    uniqueItems:Object.keys(farm).length,
+    legendary:ITEMS.filter(i=>i.r==='legendary'&&farm[i.id]).length,
+    epic:ITEMS.filter(i=>i.r==='epic'&&farm[i.id]).length,
+    dailyStreak:s.daily.currentStreak||0,
+    longestStreak:s.daily.longestStreak||0,
+    totalGames:Object.values(s.games).reduce((a,b)=>a+b,0),
+    totalWins:Object.values(s.wins).reduce((a,b)=>a+b,0),
+    totalTime:Object.values(s.totalTime).reduce((a,b)=>a+b,0),
+    totalMistakes:s.totalMistakes||0,
+    ts:Date.now()
+  };
+}
+function buildFullProfile(){
+  // Combined profile: stats + farm layout + house — used for visiting friend's farm
+  const stats=buildMyStats();
+  return{
+    ...stats,
+    layout:farmLayout.map(p=>({uid:p.uid,id:p.id,x:p.x,y:p.y,stage:p.stage,bornAt:p.bornAt})),
+    fullProfile:true
+  };
+}
+function encodeStats(stats){
+  return btoa(unescape(encodeURIComponent(JSON.stringify(stats))));
+}
+function decodeStats(code){
+  try{return JSON.parse(decodeURIComponent(escape(atob(code.trim()))))}catch(e){return null}
+}
+async function generateMyCode(){
+  const stats=buildFullProfile();
+  const code=encodeStats(stats);
+  let copied=false;
+  try{await navigator.clipboard.writeText(code);copied=true}catch(e){}
+  if(copied){
+    showToast('📋 내 코드 복사완료! 카톡으로 와이프에게 보내세요');
+  }else{
+    // Fallback: prompt with code for manual copy
+    prompt('아래 코드를 길게 눌러 복사해서 보내세요:',code);
+  }
+}
+function pasteFriendCode(){
+  const code=prompt('와이프한테 받은 코드를 붙여넣으세요:','');
+  if(!code)return;
+  const decoded=decodeStats(code);
+  if(!decoded||!decoded.name){showToast('❌ 코드가 잘못됐어요. 다시 받아주세요');return;}
+  localStorage.setItem(COMPARE_KEY,JSON.stringify(decoded));
+  renderCompare();
+  showToast(`✅ ${decoded.name}의 기록 가져옴!`);
+}
+let cmpView='stats';
+function openCompare(){
+  if(!localStorage.getItem(PLAYER_NAME_KEY)){
+    const n=prompt('코드에 표시될 본인 이름을 정해주세요\n(나중에 변경 가능, 와이프와 다르게)','주명');
+    if(n)setPlayerName(n.trim().slice(0,10));
+  }
+  document.getElementById('cmpNameInfo').innerHTML=
+    `내 이름: <strong>${getPlayerName()}</strong> · <a onclick="changeMyName()">변경</a>`;
+  cmpView='stats';
+  document.querySelectorAll('#cmpSubTabs .rtab').forEach(b=>b.classList.toggle('active',b.dataset.cmp==='stats'));
+  renderCompare();
+  document.getElementById('compareModal').classList.remove('hidden');
+}
+function switchCmpView(v){
+  cmpView=v;
+  document.querySelectorAll('#cmpSubTabs .rtab').forEach(b=>b.classList.toggle('active',b.dataset.cmp===v));
+  renderCompare();
+}
+function closeCompare(){document.getElementById('compareModal').classList.add('hidden')}
+function changeMyName(){
+  const n=prompt('새 이름:',getPlayerName());
+  if(n){setPlayerName(n.trim().slice(0,10));openCompare();}
+}
+function renderCompare(){
+  const me=buildMyStats();
+  let opp=null;
+  try{opp=JSON.parse(localStorage.getItem(COMPARE_KEY)||'null')}catch(e){}
+  const el=document.getElementById('compareContent');
+  if(!opp){
+    el.innerHTML=`<div class="cmp-empty">
+      📭 아직 친구 기록이 없어요<br><br>
+      <div style="text-align:left;display:inline-block">
+        <div style="margin-bottom:6px"><span class="num">1</span>"📋 내 코드 복사" → 카톡 친구에게</div>
+        <div style="margin-bottom:6px"><span class="num">2</span>친구도 같은 방법으로 코드 보내줌</div>
+        <div style="margin-bottom:6px"><span class="num">3</span>"📥 친구 코드"로 입력</div>
+        <div><span class="num">4</span>📊 통계 / 🏞 농장 / 🎁 선물 모두 가능!</div>
+      </div>
+    </div>`;
+    return;
+  }
+  if(cmpView==='farm'){renderFriendFarm(opp);return;}
+  if(cmpView==='gift'){renderGiftSection(opp);return;}
+  // Comparison rows
+  const rows=[
+    {k:'coins',l:'🪙 코인',f:n=>n.toLocaleString(),h:'higher'},
+    {k:'houseLevel',l:'🏠 집 레벨',f:n=>`LV ${n}`,h:'higher'},
+    {k:'legendary',l:'🐉 전설',f:n=>`${n}/${ITEMS.filter(i=>i.r==='legendary').length}`,h:'higher'},
+    {k:'epic',l:'💜 영웅',f:n=>`${n}/${ITEMS.filter(i=>i.r==='epic').length}`,h:'higher'},
+    {k:'uniqueItems',l:'📦 컬렉션',f:n=>`${n}/${ITEMS.length}`,h:'higher'},
+    {k:'totalItems',l:'📊 총 보유',f:n=>`${n}`,h:'higher'},
+    {k:'longestStreak',l:'🏆 최장 연속',f:n=>`${n}일`,h:'higher'},
+    {k:'dailyStreak',l:'🔥 현재 연속',f:n=>`${n}일`,h:'higher'},
+    {k:'totalWins',l:'✅ 완성',f:n=>`${n}회`,h:'higher'},
+    {k:'totalGames',l:'🎮 플레이',f:n=>`${n}판`,h:'higher'},
+    {k:'totalTime',l:'⏱ 시간',f:n=>fmtTimeLong(n),h:'higher'},
+    {k:'totalMistakes',l:'✗ 실수',f:n=>`${n}회`,h:'lower'},
+  ];
+  let myWins=0,oppWins=0,ties=0;
+  // Time since opponent generated
+  const ageMs=Date.now()-(opp.ts||0);
+  const ageMin=Math.floor(ageMs/60000);
+  const ageHr=Math.floor(ageMin/60);
+  const ageDay=Math.floor(ageHr/24);
+  let ageStr='';
+  if(ageDay>0)ageStr=`${ageDay}일 전`;
+  else if(ageHr>0)ageStr=`${ageHr}시간 전`;
+  else ageStr=`${Math.max(1,ageMin)}분 전`;
+  const stale=ageHr>=24;
+  let html=`<div class="cmp-content">`;
+  html+=`<div class="cmp-age ${stale?'stale':''}">📅 ${opp.name}의 기록: ${ageStr}${stale?' · 오래됐어요!':''}</div>`;
+  html+=`<div class="cmp-header">
+    <div class="lbl">📊 항목</div>
+    <div class="me">${me.name}</div>
+    <div class="opp">${opp.name}</div>
+  </div>`;
+  rows.forEach(r=>{
+    const mv=me[r.k]||0,ov=opp[r.k]||0;
+    let mWin=false,oWin=false;
+    if(r.h==='higher'){if(mv>ov){mWin=true;myWins++;}else if(ov>mv){oWin=true;oppWins++;}else ties++;}
+    else{if(mv<ov){mWin=true;myWins++;}else if(ov<mv){oWin=true;oppWins++;}else ties++;}
+    html+=`<div class="cmp-row">
+      <div class="lbl">${r.l}</div>
+      <div class="v ${mWin?'win':''}">${r.f(mv)}${mWin?' 👑':''}</div>
+      <div class="v ${oWin?'win':''}">${r.f(ov)}${oWin?' 👑':''}</div>
+    </div>`;
+  });
+  // Summary
+  let cls,header,sub;
+  if(myWins>oppWins){
+    cls='win';header=`🏆 ${me.name} 승!`;sub=`${myWins}승 ${oppWins}패 ${ties?ties+'무':''}`;
+  }else if(oppWins>myWins){
+    cls='lose';header=`👑 ${opp.name} 승`;sub=`${myWins}승 ${oppWins}패 ${ties?ties+'무':''}`;
+  }else{
+    cls='tie';header='🤝 동률';sub=`${myWins}승 ${oppWins}패 ${ties?ties+'무':''}`;
+  }
+  html+=`<div class="cmp-summary ${cls}">
+    <div class="sub">종합 결과</div>
+    <div class="res">${header}</div>
+    <div style="font-size:12px;font-weight:700;margin-top:6px;opacity:.85">${sub}</div>
+  </div>`;
+  // Coin difference highlight
+  const coinDiff=me.coins-opp.coins;
+  if(coinDiff!==0){
+    html+=`<div style="margin-top:10px;text-align:center;font-size:12px;color:var(--muted)">
+      💰 부의 차이: ${coinDiff>0?'+':''}${coinDiff.toLocaleString()} 코인 ${coinDiff>0?'(내가 더 부자)':'(와이프가 더 부자)'}
+    </div>`;
+  }
+  html+=`</div>`;
+  el.innerHTML=html;
+}
+function renderFriendFarm(opp){
+  const el=document.getElementById('compareContent');
+  if(!opp.layout||!opp.fullProfile){
+    el.innerHTML=`<div class="cmp-empty">
+      📭 친구 농장 정보가 없어요<br><small>친구가 새 코드를 다시 보내야 농장 풍경을 볼 수 있어요<br>(이전 버전 코드일 수 있음)</small>
+    </div>`;
+    return;
+  }
+  const ageMs=Date.now()-(opp.ts||0);
+  const ageHr=Math.floor(ageMs/3600000);
+  const ageMin=Math.floor(ageMs/60000);
+  const ageStr=ageHr>24?`${Math.floor(ageHr/24)}일 전`:(ageHr>0?`${ageHr}시간 전`:`${Math.max(1,ageMin)}분 전`);
+  const house=HOUSES[Math.max(0,Math.min(4,(opp.houseLevel||1)-1))];
+  let html=`<div class="friend-farm-wrap">
+    <div class="friend-info">
+      <div class="em">${house.e}</div>
+      <div class="info">
+        <div class="nm">${opp.name}의 농장</div>
+        <div class="stats">${house.n} (LV ${house.lv}) · 🪙 ${(opp.coins||0).toLocaleString()} · 🐉${opp.legendary||0} 💜${opp.epic||0}</div>
+        <div class="stats">📅 ${ageStr} 기준</div>
+      </div>
+    </div>
+    <div class="friend-scene" id="friendScene"></div>
+    <div style="margin-top:10px;display:flex;gap:6px">
+      <button class="cmp-btn" onclick="switchCmpView('gift')" style="flex:1"><span class="em">🎁</span><span>${opp.name}에게 선물</span></button>
+    </div>
+  </div>`;
+  el.innerHTML=html;
+  // Render friend's farm into the scene
+  const scene=document.getElementById('friendScene');
+  // Add house
+  const hEl=document.createElement('div');
+  hEl.className=`placed-item house lv${house.lv}`;
+  hEl.textContent=house.e;
+  hEl.style.left='50%';hEl.style.bottom='48%';
+  hEl.style.fontSize=house.size+'px';
+  hEl.style.zIndex='80';
+  scene.appendChild(hEl);
+  // Add layout items
+  (opp.layout||[]).forEach(p=>{
+    const item=ITEMS.find(i=>i.id===p.id);
+    if(!item)return;
+    const e=document.createElement('div');
+    e.className=`placed-item ${item.c} ${item.r}`;
+    e.textContent=item.e;
+    e.style.left=p.x+'%';e.style.bottom=p.y+'%';
+    e.style.zIndex=Math.round(150-p.y);
+    // Apply stage scaling
+    const stage=p.stage||3;
+    if(item.c==='animal'&&stage<3){
+      const baseSize=30;
+      e.style.fontSize=(baseSize*STAGE_SCALE[stage])+'px';
+      if(stage===1){const b=document.createElement('div');b.className='baby-badge';b.textContent='🍼';e.appendChild(b)}
+    }
+    scene.appendChild(e);
+  });
+}
+// ═══════════════════════════════════════
+// GIFT SYSTEM
+// ═══════════════════════════════════════
+const CLAIMED_GIFTS_KEY='sudoku_claimed_gifts';
+function getClaimedGifts(){try{return JSON.parse(localStorage.getItem(CLAIMED_GIFTS_KEY)||'[]')}catch(e){return[]}}
+function markGiftClaimed(id){
+  const g=getClaimedGifts();g.push(id);
+  // Keep last 200
+  localStorage.setItem(CLAIMED_GIFTS_KEY,JSON.stringify(g.slice(-200)));
+}
+function genGiftId(){return'g_'+Date.now().toString(36)+Math.random().toString(36).substr(2,4)}
+async function sendGiftCoins(amount){
+  let opp=null;try{opp=JSON.parse(localStorage.getItem(COMPARE_KEY)||'null')}catch(e){}
+  if(!opp){showToast('❌ 먼저 친구 코드 받으세요');return;}
+  const e=getEconomy();
+  if(e.coins<amount){showToast(`💸 ${amount-e.coins} 코인 부족!`);return;}
+  if(!confirm(`${opp.name}에게 🪙 ${amount} 코인 선물?\n(선물 후 코인 차감됨)`))return;
+  e.coins-=amount;
+  saveEconomy(e);
+  updateCoinsDisplay();
+  const gift={type:'gift',giftId:genGiftId(),from:getPlayerName(),to:opp.name,
+    payload:{coins:amount},ts:Date.now()};
+  const code=encodeStats(gift);
+  let copied=false;
+  try{await navigator.clipboard.writeText(code);copied=true}catch(e){}
+  if(copied)showToast(`📋 선물 코드 복사! ${opp.name}에게 카톡으로 전송하세요`);
+  else prompt('이 코드를 친구에게 보내세요:',code);
+  if(cmpView==='gift')renderGiftSection(opp);
+}
+async function sendGiftItem(itemId){
+  let opp=null;try{opp=JSON.parse(localStorage.getItem(COMPARE_KEY)||'null')}catch(e){}
+  if(!opp){showToast('❌ 먼저 친구 코드 받으세요');return;}
+  const item=ITEMS.find(i=>i.id===itemId);
+  if(!item)return;
+  const farm=getFarm();
+  if((farm[itemId]||0)<=0){showToast('재고 부족');return;}
+  if(!confirm(`${opp.name}에게 ${item.e} ${item.n} 선물?\n(보관함에서 차감)`))return;
+  farm[itemId]-=1;if(farm[itemId]===0)delete farm[itemId];
+  saveFarm(farm);
+  // Also remove from layout if visible
+  const idx=farmLayout.findIndex(p=>p.id===itemId);
+  if(idx>=0){farmLayout.splice(idx,1);saveLayout()}
+  const gift={type:'gift',giftId:genGiftId(),from:getPlayerName(),to:opp.name,
+    payload:{item:itemId},ts:Date.now()};
+  const code=encodeStats(gift);
+  let copied=false;
+  try{await navigator.clipboard.writeText(code);copied=true}catch(e){}
+  if(copied)showToast(`📋 선물 코드 복사! ${opp.name}에게 카톡 전송`);
+  else prompt('이 코드를 친구에게 보내세요:',code);
+  if(cmpView==='gift')renderGiftSection(opp);
+}
+function pasteGiftCode(){
+  const code=prompt('받은 선물 코드를 붙여넣으세요:','');
+  if(!code)return;
+  const decoded=decodeStats(code);
+  if(!decoded||decoded.type!=='gift'){showToast('❌ 선물 코드가 아니에요');return;}
+  const claimed=getClaimedGifts();
+  if(claimed.includes(decoded.giftId)){showToast('⚠️ 이미 받은 선물이에요');return;}
+  // Apply payload
+  if(decoded.payload.coins){
+    const e=getEconomy();
+    e.coins+=decoded.payload.coins;
+    saveEconomy(e);
+    updateCoinsDisplay();
+    showToast(`🎁 ${decoded.from}님이 🪙 ${decoded.payload.coins} 코인 선물!`);
+  }else if(decoded.payload.item){
+    const item=ITEMS.find(i=>i.id===decoded.payload.item);
+    if(!item){showToast('❌ 알 수 없는 아이템');return;}
+    const farm=getFarm();
+    farm[item.id]=(farm[item.id]||0)+1;
+    saveFarm(farm);
+    showToast(`🎁 ${decoded.from}님이 ${item.e} ${item.n} 선물!`);
+  }
+  markGiftClaimed(decoded.giftId);
+  launchConfetti();
+}
+function renderGiftSection(opp){
+  const el=document.getElementById('compareContent');
+  const myEcon=getEconomy();
+  const myFarm=getFarm();
+  const oppName=opp?opp.name:'친구';
+  const oppExists=!!opp;
+  let html=`<div class="gift-section">`;
+  if(!oppExists){
+    html+=`<div class="cmp-empty">먼저 친구 코드를 입력하세요</div></div>`;
+    el.innerHTML=html;return;
+  }
+  html+=`<div class="shop-h"><span class="em">🪙</span>코인 선물</div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:6px">현재 보유: 🪙 ${myEcon.coins.toLocaleString()}</div>
+    <div class="gift-grid">`;
+  [50,200,500,1000,2000,5000].forEach(amt=>{
+    const can=myEcon.coins>=amt;
+    html+=`<div class="gift-card" ${can?`onclick="sendGiftCoins(${amt})"`:'style="opacity:.4;cursor:not-allowed"'}>
+      <div class="em">🪙</div>
+      <div class="nm">${amt.toLocaleString()} 코인</div>
+      <div class="pr">${oppName}에게</div>
+    </div>`;
+  });
+  html+=`</div>`;
+  // Item gift
+  const ownedItems=Object.entries(myFarm).filter(([,n])=>n>0);
+  if(ownedItems.length>0){
+    html+=`<div class="shop-h"><span class="em">🎁</span>아이템 선물 (1개 차감)</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:6px">탭하면 ${oppName}에게 선물 코드 생성</div>
+      <div class="gift-item-grid">`;
+    const rOrder={legendary:0,epic:1,rare:2,common:3};
+    ownedItems.sort((a,b)=>{
+      const ia=ITEMS.find(i=>i.id===a[0]),ib=ITEMS.find(i=>i.id===b[0]);
+      if(!ia||!ib)return 0;return rOrder[ia.r]-rOrder[ib.r];
+    });
+    ownedItems.forEach(([id,n])=>{
+      const item=ITEMS.find(i=>i.id===id);if(!item)return;
+      html+=`<div class="gift-item-card" onclick="sendGiftItem('${id}')" title="${item.n}">
+        ${item.e}<span class="ct">×${n}</span>
+      </div>`;
+    });
+    html+=`</div>`;
+  }
+  html+=`<div style="margin-top:14px;font-size:11px;color:var(--muted);background:var(--bg);padding:10px;border-radius:8px;line-height:1.6">
+    💡 선물 받기: 친구가 보낸 선물 코드는 위쪽 "🎁 선물 받기" 버튼으로 받아요<br>
+    💡 한 번 사용한 선물 코드는 재사용 불가
+  </div>`;
+  html+=`</div>`;
+  el.innerHTML=html;
+}
+// ═══════════════════════════════════════
+// SCHEMA MIGRATIONS — keep player data safe across updates
+// ═══════════════════════════════════════
+const CURRENT_SCHEMA=2;
+const SCHEMA_KEY='sudoku_schema_v';
+function runMigrations(){
+  let v=parseInt(localStorage.getItem(SCHEMA_KEY)||'0');
+  if(v===CURRENT_SCHEMA)return;
+  // v0 → v1: ensure all default fields exist (defensive)
+  if(v<1){v=1}
+  // v1 → v2: ensure layout entries have stage and bornAt fields
+  if(v<2){
+    try{
+      const layout=JSON.parse(localStorage.getItem(LAYOUT_KEY)||'[]');
+      let changed=false;
+      layout.forEach(p=>{
+        if(typeof p.stage==='undefined'){p.stage=3;changed=true;} // existing items are adult
+        if(typeof p.bornAt==='undefined'){p.bornAt=0;changed=true;}
+      });
+      if(changed)localStorage.setItem(LAYOUT_KEY,JSON.stringify(layout));
+    }catch(e){}
+    v=2;
+  }
+  // Future migrations go here:
+  // if(v<3){...; v=3}
+  localStorage.setItem(SCHEMA_KEY,String(v));
+  console.log('[migration] schema upgraded to v'+v);
+}
+runMigrations();
+// ═══════════════════════════════════════
+// SETTINGS / BACKUP / RESTORE
+// ═══════════════════════════════════════
+const ALL_KEYS=[
+  'sudoku_records_v2','sudoku_stats_v1','sudoku_daily_v1',
+  'sudoku_farm_v1','sudoku_farm_layout_v1','sudoku_economy_v1',
+  'sudoku_player_name','sudoku_compare_friend','sudoku_claimed_gifts',
+  SCHEMA_KEY
+];
+function openSettings(){
+  document.getElementById('settingsPlayerName').textContent=getPlayerName();
+  document.getElementById('settingsModal').classList.remove('hidden');
+}
+function closeSettings(){document.getElementById('settingsModal').classList.add('hidden')}
+async function exportBackup(){
+  const data={};
+  ALL_KEYS.forEach(k=>{
+    const v=localStorage.getItem(k);
+    if(v!==null)data[k]=v;
+  });
+  const backup={type:'backup',v:CURRENT_SCHEMA,name:getPlayerName(),ts:Date.now(),data};
+  const code=encodeStats(backup);
+  let copied=false;
+  try{await navigator.clipboard.writeText(code);copied=true}catch(e){}
+  if(copied){
+    showToast(`💾 백업 코드 복사됨! (${code.length}자) 카톡/메모장에 저장하세요`);
+  }else{
+    prompt(`💾 이 코드를 안전한 곳에 저장하세요 (${code.length}자):`,code);
+  }
+}
+function importBackup(){
+  const code=prompt('백업 코드를 붙여넣으세요:\n(주의: 현재 진행 사항은 모두 덮어씌워짐)','');
+  if(!code)return;
+  const decoded=decodeStats(code);
+  if(!decoded||decoded.type!=='backup'||!decoded.data){
+    showToast('❌ 백업 코드가 아니에요');return;
+  }
+  const ageDay=Math.floor((Date.now()-(decoded.ts||0))/86400000);
+  const msg=`📥 ${decoded.name||'?'}님의 백업 (${ageDay}일 전)으로 복원하시겠어요?\n\n⚠️ 현재 진행 사항이 모두 덮어씌워집니다!\n돌이킬 수 없어요.`;
+  if(!confirm(msg))return;
+  // Apply
+  ALL_KEYS.forEach(k=>{
+    if(decoded.data[k]!==undefined)localStorage.setItem(k,decoded.data[k]);
+  });
+  showToast('✅ 복원 완료! 페이지를 새로고침합니다...');
+  setTimeout(()=>location.reload(),800);
+}
+function resetAllData(){
+  const msg='🚨 정말로 모든 진행 사항을 삭제하시겠어요?\n\n• 코인 0\n• 집 LV 1로 리셋\n• 모든 동물·아이템 삭제\n• 일일 연속 기록 삭제\n\n이 작업은 되돌릴 수 없습니다!';
+  if(!confirm(msg))return;
+  const finalCheck=prompt('정말 초기화하려면 "초기화"라고 입력하세요:','');
+  if(finalCheck!=='초기화'){showToast('취소됨');return;}
+  ALL_KEYS.forEach(k=>localStorage.removeItem(k));
+  showToast('🗑 초기화 완료. 새로고침합니다...');
+  setTimeout(()=>location.reload(),800);
+}
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js')
+      .then(reg => console.log('[PWA] SW registered'))
+      .catch(err => console.log('[PWA] SW failed:', err));
+  });
+}
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  const dismissed = localStorage.getItem('pwa_dismissed_at');
+  if(!dismissed || Date.now() - +dismissed > 7*24*60*60*1000){
+    setTimeout(() => {
+      document.getElementById('installBanner').classList.add('show');
+    }, 30000);
+  }
+});
+document.getElementById('installBanner').addEventListener('click', async () => {
+  if(!deferredPrompt) return;
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  if(outcome === 'accepted') showToast('🎉 설치 완료!');
+  deferredPrompt = null;
+  document.getElementById('installBanner').classList.remove('show');
+});
+function dismissInstall(){
+  localStorage.setItem('pwa_dismissed_at', Date.now());
+  document.getElementById('installBanner').classList.remove('show');
+}
+window.addEventListener('appinstalled', () => {
+  document.getElementById('installBanner').classList.remove('show');
+  showToast('🎉 앱 설치 완료!');
+});
+</script>
+</body>
+</html>
