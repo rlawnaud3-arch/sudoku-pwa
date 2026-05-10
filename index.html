@@ -37,8 +37,13 @@ header{width:100%;max-width:420px;display:flex;align-items:center;
 .timer{font-size:17px;font-weight:700;color:var(--given);
   font-variant-numeric:tabular-nums;letter-spacing:1px;margin-right:4px}
 .icon-btn{background:var(--pl);border:none;border-radius:50%;
-  width:30px;height:30px;font-size:12.5px;font-weight:700;color:var(--primary);cursor:pointer;
+  width:28px;height:28px;font-size:12px;font-weight:700;color:var(--primary);cursor:pointer;
   display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
+.icon-btn.trophy{background:#fff3bf;color:#e67700}
+.icon-btn.trophy:hover{background:#e67700;color:#fff}
+.icon-btn.has-new{position:relative}
+.icon-btn.has-new::after{content:'';position:absolute;top:-1px;right:-1px;
+  width:8px;height:8px;background:var(--err);border-radius:50%;border:1.5px solid #fff}
 .icon-btn:hover{background:var(--primary);color:#fff}
 .icon-btn:active{transform:scale(.92)}
 .icon-btn.pause{background:#fff3bf;color:#e67700}
@@ -70,6 +75,138 @@ header{width:100%;max-width:420px;display:flex;align-items:center;
 .settings-info{background:#fff3bf;border-radius:10px;padding:10px;font-size:11px;
   color:#5c4400;margin-bottom:10px;line-height:1.6}
 .settings-info strong{color:#a52020}
+/* ── TROPHY MODAL (업적/퀘스트) ── */
+.trophy-stats{padding:12px 14px 0;display:flex;gap:8px;justify-content:space-between}
+.trophy-stat-card{flex:1;background:linear-gradient(135deg,#fff3bf,#ffd43b);border-radius:10px;
+  padding:10px 8px;text-align:center;color:#5c4400}
+.trophy-stat-card .n{font-size:20px;font-weight:900;line-height:1}
+.trophy-stat-card .l{font-size:10px;font-weight:700;margin-top:2px;opacity:.8}
+.quest-list{padding:8px 14px}
+.quest-item{background:linear-gradient(135deg,#fff,var(--bg));border-radius:10px;
+  padding:10px 12px;margin-bottom:6px;display:flex;align-items:center;gap:10px;border:2px solid #e9ecef;transition:all .15s}
+.quest-item.complete{border-color:var(--ok);background:linear-gradient(135deg,#fff,#d3f9d8)}
+.quest-item.claimed{opacity:.55;border-color:#adb5bd}
+.quest-item .em{font-size:24px;flex-shrink:0}
+.quest-item .info{flex:1;min-width:0}
+.quest-item .nm{font-size:13px;font-weight:700;color:var(--given);line-height:1.2}
+.quest-item .pr{font-size:10px;color:var(--muted);margin-top:2px}
+.quest-item .bar{height:5px;background:#e9ecef;border-radius:3px;margin-top:4px;overflow:hidden}
+.quest-item .bar-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--accent));border-radius:3px;transition:width .4s}
+.quest-item.complete .bar-fill{background:linear-gradient(90deg,#51cf66,#2f9e44)}
+.quest-item .reward{flex-shrink:0;text-align:right}
+.quest-item .reward .amt{font-size:13px;font-weight:800;color:var(--primary)}
+.quest-item .reward button{margin-top:3px;background:var(--ok);color:#fff;border:none;border-radius:6px;
+  padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer}
+.quest-item .reward button:hover{background:#1f7a32}
+.quest-item .reward button:disabled{background:#adb5bd;cursor:not-allowed}
+.quest-item .reward .done{font-size:11px;color:var(--ok);font-weight:700}
+.ach-cat{padding:6px 14px 4px}
+.ach-cat-h{font-size:12px;font-weight:800;color:var(--given);margin:10px 0 6px;
+  display:flex;align-items:center;gap:6px}
+.ach-cat-h .em{font-size:16px}
+.ach-cat-h .ct{margin-left:auto;font-size:11px;font-weight:700;color:var(--muted)}
+.ach-list{display:grid;grid-template-columns:1fr;gap:5px}
+.ach-item{background:#fff;border:2px solid #e9ecef;border-radius:10px;padding:9px 11px;
+  display:flex;align-items:center;gap:10px;transition:all .15s}
+.ach-item.unlocked{background:linear-gradient(135deg,#fff,#fff3bf);border-color:#ffd43b}
+.ach-item.unlocked.legendary{background:linear-gradient(135deg,#fff,#ffec99);border-color:#f59f00;
+  box-shadow:0 0 8px rgba(245,159,0,.25)}
+.ach-item .em{font-size:22px;flex-shrink:0;width:28px;text-align:center;
+  filter:grayscale(.8);opacity:.5}
+.ach-item.unlocked .em{filter:none;opacity:1}
+.ach-item .info{flex:1;min-width:0}
+.ach-item .nm{font-size:12px;font-weight:700;color:var(--given);line-height:1.2}
+.ach-item.unlocked .nm{font-weight:800}
+.ach-item .d{font-size:10px;color:var(--muted);margin-top:1px}
+.ach-item .reward-tag{font-size:9px;color:var(--ok);font-weight:700;margin-top:2px}
+.ach-item .progress-text{flex-shrink:0;font-size:11px;font-weight:800;color:var(--muted);text-align:right}
+.ach-item.unlocked .progress-text{color:var(--ok)}
+.ach-item .check{font-size:18px;flex-shrink:0}
+.no-quests{text-align:center;color:var(--muted);font-size:12px;padding:20px}
+/* ── SEASON PASS ── */
+.season-header{padding:14px;background:linear-gradient(135deg,#7048e8,#3b5bdb);color:#fff;
+  border-radius:14px;margin:8px 14px;text-align:center}
+.season-header .nm{font-size:14px;font-weight:800;opacity:.9}
+.season-header .xp{font-size:32px;font-weight:900;margin:4px 0;font-variant-numeric:tabular-nums}
+.season-header .meta{font-size:11px;opacity:.85}
+.season-bar{height:10px;background:rgba(255,255,255,.2);border-radius:5px;overflow:hidden;margin:8px 0}
+.season-bar-fill{height:100%;background:linear-gradient(90deg,#ffd43b,#fab005);border-radius:5px;transition:width .6s}
+.season-tier{background:#fff;border:2px solid #e9ecef;border-radius:12px;padding:12px;
+  margin:6px 14px;display:flex;align-items:center;gap:12px;transition:all .15s;position:relative}
+.season-tier.unlocked{border-color:var(--ok);background:linear-gradient(135deg,#fff,#d3f9d8)}
+.season-tier.claimed{opacity:.6}
+.season-tier.locked{opacity:.55}
+.season-tier .lvl{flex-shrink:0;width:44px;height:44px;border-radius:50%;
+  background:linear-gradient(135deg,#7048e8,#3b5bdb);color:#fff;font-weight:900;
+  font-size:18px;display:flex;align-items:center;justify-content:center}
+.season-tier.locked .lvl{background:#adb5bd}
+.season-tier.unlocked:not(.claimed) .lvl{background:linear-gradient(135deg,#ffd43b,#fab005);color:#5c4400}
+.season-tier .info{flex:1;min-width:0}
+.season-tier .nm{font-size:13px;font-weight:800;color:var(--given)}
+.season-tier .xp-need{font-size:10px;color:var(--muted);margin-top:1px}
+.season-tier .reward{font-size:11px;color:var(--primary);font-weight:700;margin-top:2px}
+.season-tier button{flex-shrink:0;background:var(--ok);color:#fff;border:none;border-radius:8px;
+  padding:8px 14px;font-size:12px;font-weight:800;cursor:pointer}
+.season-tier button:hover{background:#1f7a32}
+.season-tier button:disabled{background:#adb5bd;cursor:not-allowed}
+.season-tier .check{font-size:24px;color:var(--ok)}
+/* ═══════════════════════════════════════
+   DESKTOP RESPONSIVE LAYOUT (>= 900px)
+   ═══════════════════════════════════════ */
+@media (min-width:900px){
+  body{
+    display:grid;
+    grid-template-columns:560px 380px;
+    column-gap:30px;
+    row-gap:14px;
+    align-items:start;
+    align-content:start;
+    max-width:1000px;
+    margin:0 auto;
+    padding:30px 20px;
+  }
+  /* Header — full width across both columns */
+  header{grid-column:1/3;max-width:none;width:100%}
+  header .logo{font-size:32px}
+  header .timer{font-size:22px}
+  header .icon-btn{width:34px;height:34px;font-size:14px}
+  /* Main column (left) — board + numpad + actions */
+  .board-wrap{grid-column:1;grid-row:2/span 4;max-width:none;padding:14px}
+  .note-ind{grid-column:1;max-width:none}
+  .numpad-wrap{grid-column:1;max-width:none}
+  .actions{grid-column:1;max-width:none;grid-template-columns:repeat(4,1fr)}
+  .actions .abtn{padding:12px 6px;font-size:12px}
+  .actions .abtn .ic{font-size:20px}
+  /* Sidebar (right) — diff tabs, banner, mission, progress */
+  .diff-tabs{grid-column:2;grid-row:2;max-width:none}
+  .daily-banner{grid-column:2;grid-row:3;max-width:none}
+  .mission-card{grid-column:2;grid-row:4;max-width:none}
+  .prog-wrap{grid-column:2;grid-row:5;max-width:none}
+  .numpad{gap:8px}
+  .numpad .nbtn{padding:14px 0;font-size:22px}
+  /* Wider modals on desktop */
+  .rec-box{max-width:680px;max-height:85vh}
+  /* Bigger baby/shop grids */
+  .baby-grid{grid-template-columns:repeat(5,1fr)}
+  .farm-grid{grid-template-columns:repeat(6,1fr)}
+  .gift-grid{grid-template-columns:repeat(3,1fr)}
+  .gift-item-grid{grid-template-columns:repeat(8,1fr)}
+  .stat-grid{grid-template-columns:repeat(4,1fr)}
+  /* Bigger farm scene */
+  .farm-scene{height:420px}
+  .friend-scene{height:380px}
+  /* Reward cards bigger */
+  .rcard{width:200px;height:280px}
+  .rcard-emoji{font-size:80px}
+  /* Compare modal — wider table */
+  .cmp-header .me,.cmp-header .opp{width:120px}
+  .cmp-row .v{width:120px;font-size:14px}
+}
+/* Even wider on big screens */
+@media (min-width:1200px){
+  body{grid-template-columns:620px 440px;column-gap:40px;max-width:1120px}
+  .farm-scene{height:480px}
+}
 .diff-tabs{display:flex;background:#fff;border-radius:12px;padding:4px;gap:2px;
   box-shadow:0 2px 8px rgba(59,91,219,.12);margin-bottom:10px;
   width:100%;max-width:420px}
@@ -380,7 +517,8 @@ header{width:100%;max-width:420px;display:flex;align-items:center;
   color:var(--muted);font-size:12px;font-weight:700;cursor:pointer;transition:all .15s}
 .fvtab.active{background:var(--primary);color:#fff;box-shadow:0 2px 6px rgba(59,91,219,.3)}
 .farm-section{display:none}
-.farm-section.show{display:block}
+.farm-section.show{display:block;flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.rec-list{flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px 16px 18px}
 /* ── FARM SCENE (Stardew Valley pixel style) ── */
 .farm-scene-wrap{padding:8px 10px 6px}
 .farm-scene{width:100%;height:400px;border-radius:6px;position:relative;overflow:hidden;
@@ -648,7 +786,8 @@ header{width:100%;max-width:420px;display:flex;align-items:center;
     <div class="mistakes-wrap" id="mistakeWrap"></div>
     <button class="icon-btn pause" id="pauseBtn" onclick="togglePause()" title="일시정지">⏸</button>
     <button class="icon-btn farm" onclick="openFarm()" title="내 농장">🌾</button>
-    <button class="icon-btn compare" onclick="openCompare()" title="와이프와 비교">👥</button>
+    <button class="icon-btn compare" onclick="openCompare()" title="친구와 비교">👥</button>
+    <button class="icon-btn trophy" onclick="openTrophy()" title="업적/퀘스트">🏆</button>
     <button class="icon-btn" onclick="openStats()" title="통계">📊</button>
     <button class="icon-btn" onclick="openRecords()" title="기록">🏅</button>
     <button class="icon-btn settings" onclick="openSettings()" title="설정/백업">⚙️</button>
@@ -754,6 +893,23 @@ header{width:100%;max-width:420px;display:flex;align-items:center;
     <div class="rec-list" id="statsList"></div>
   </div>
 </div>
+<!-- Trophy Modal (업적 + 일일퀘스트) -->
+<div class="overlay hidden" id="trophyModal">
+  <div class="rec-box">
+    <div class="rec-head">
+      <h2>🏆 업적 & 퀘스트</h2>
+      <button class="rec-close" onclick="closeTrophy()">✕</button>
+    </div>
+    <div class="rec-tabs" id="trophyTabs">
+      <button class="rtab active" data-tt="quest" onclick="switchTrophyView('quest')">📜 퀘스트</button>
+      <button class="rtab" data-tt="season" onclick="switchTrophyView('season')">🎫 시즌패스</button>
+      <button class="rtab" data-tt="ach" onclick="switchTrophyView('ach')">🏆 업적</button>
+    </div>
+    <div class="rec-list">
+      <div id="trophyContent"></div>
+    </div>
+  </div>
+</div>
 <!-- Settings Modal -->
 <div class="overlay hidden" id="settingsModal">
   <div class="rec-box">
@@ -776,6 +932,22 @@ header{width:100%;max-width:420px;display:flex;align-items:center;
             <div class="desc">친구 비교/선물 코드에 표시되는 이름</div>
           </div>
           <button onclick="changeMyName();openSettings()">변경</button>
+        </div>
+        <div class="settings-row">
+          <div class="ic" id="soundIc">🔊</div>
+          <div class="info">
+            <div class="nm">효과음: <span id="soundLabel">ON</span></div>
+            <div class="desc">숫자 입력·완성·가챠 사운드 토글</div>
+          </div>
+          <button onclick="toggleSound();openSettings()" id="soundToggleBtn">OFF</button>
+        </div>
+        <div class="settings-row">
+          <div class="ic" id="strictIc">🔥</div>
+          <div class="info">
+            <div class="nm">엄격 모드: <span id="strictLabel">OFF</span></div>
+            <div class="desc">틀려도 빨강 표시 X, 실수 카운터 X — 진짜 실력 테스트</div>
+          </div>
+          <button onclick="toggleStrict();openSettings()" id="strictToggleBtn">ON</button>
         </div>
         <h3>💾 백업 / 복원</h3>
         <div class="settings-row">
@@ -820,7 +992,7 @@ header{width:100%;max-width:420px;display:flex;align-items:center;
 <div class="overlay hidden" id="compareModal">
   <div class="rec-box">
     <div class="rec-head">
-      <h2>👥 와이프와 함께</h2>
+      <h2>👥 친구와 함께</h2>
       <button class="rec-close" onclick="closeCompare()">✕</button>
     </div>
     <div class="cmp-name" id="cmpNameInfo"></div>
@@ -987,6 +1159,9 @@ let mission=null, missionFailed=false;
 let recDiff='easy', statsTab='all';
 let isDaily=false;
 let isPaused=false;
+let strictMode=localStorage.getItem('sudoku_strict_mode')==='1';
+// Track row/col/box completion for bonus drops
+let completedRows=new Set(), completedCols=new Set(), completedBoxes=new Set();
 // ═══════════════════════════════════════
 // PUZZLE GENERATION
 // ═══════════════════════════════════════
@@ -1187,6 +1362,7 @@ function initGame(d, daily=false){
   hintsLeft=3;hintsUsed=0;mistakes=0;
   notesUsed=false;undoUsed=false;
   history=[];noteMode=false;sel=null;missionFailed=false;
+  completedRows=new Set();completedCols=new Set();completedBoxes=new Set();
   // Reset pause state
   if(isPaused){
     isPaused=false;
@@ -1221,6 +1397,7 @@ function startTimer(){
   timerInt=setInterval(()=>{
     timerVal++;
     document.getElementById('timer').textContent=fmtTime(timerVal);
+    trackQuest('todayPlayTime',1);
     if(mission&&mission.failOn==='time'&&!missionFailed&&!completed)updateMissionCard();
   },1000);
 }
@@ -1259,7 +1436,8 @@ function refreshCell(r,c){
     cell.classList.add('given');val.textContent=v;nts.style.display='none';
   } else if(v!==0){
     cell.classList.add('user');
-    if(v!==solution[r][c])cell.classList.add('error');else cell.classList.add('correct');
+    if(v!==solution[r][c]){if(!strictMode)cell.classList.add('error')}
+    else cell.classList.add('correct');
     val.textContent=v;nts.style.display='none';
   } else {
     val.textContent='';
@@ -1317,10 +1495,57 @@ function input(n){
     const wasErr=board[r][c]!==0&&board[r][c]!==solution[r][c];
     board[r][c]=n;notes[r][c].clear();
     if(n!==solution[r][c]){
-      if(!wasErr){mistakes++;updateMistakeWrap();if(mission)triggerFail('mistake')}
-    } else clearPeerNotes(r,c,n);
+      if(!wasErr){mistakes++;updateMistakeWrap();playSound('error');if(mission)triggerFail('mistake')}
+    } else {clearPeerNotes(r,c,n);playSound('correct');checkLineCompletion(r,c);}
   }
   refreshCell(r,c);renderNumpad();highlight();updateProgress();checkWin();
+}
+// Check if row/col/box was just completed → chance for legendary bonus
+function checkLineCompletion(r,c){
+  const isRowComplete=board[r].every((v,i)=>v===solution[r][i]);
+  const isColComplete=board.every((row,i)=>row[c]===solution[i][c]);
+  const br=Math.floor(r/3),bc=Math.floor(c/3);
+  let isBoxComplete=true;
+  for(let i=0;i<3;i++)for(let j=0;j<3;j++){
+    if(board[br*3+i][bc*3+j]!==solution[br*3+i][bc*3+j]){isBoxComplete=false;break;}
+  }
+  const boxId=br*3+bc;
+  if(isRowComplete && !completedRows.has(r)){completedRows.add(r);tryBonusDrop('행',r);}
+  if(isColComplete && !completedCols.has(c)){completedCols.add(c);tryBonusDrop('열',c);}
+  if(isBoxComplete && !completedBoxes.has(boxId)){completedBoxes.add(boxId);tryBonusDrop('3×3 박스',boxId);}
+}
+function tryBonusDrop(type,idx){
+  // Drop probability: row/col=3%, box=5%
+  const prob=type==='3×3 박스'?0.05:0.03;
+  const isLucky=Math.random()<prob;
+  if(!isLucky)return; // No flash for non-drops (avoid noise)
+  // Use current difficulty's gacha weights to pick rarity
+  const weights=rarityWeights(diff,false,isDaily);
+  const item=rollOneItem(weights);
+  if(!item)return;
+  // Add to inventory
+  const farm=getFarm();
+  farm[item.id]=(farm[item.id]||0)+1;
+  saveFarm(farm);
+  // Sound + confetti based on rarity
+  const sndMap={common:'coin',rare:'rare',epic:'epic',legendary:'legendary'};
+  playSound(sndMap[item.r]);
+  if(item.r==='legendary'||item.r==='epic')launchConfetti();
+  // Visual flash with rarity color
+  const colorMap={common:'#adb5bd',rare:'#4dabf7',epic:'#b197fc',legendary:'#ffd43b'};
+  const flash=document.createElement('div');
+  flash.style.cssText=`position:fixed;top:30%;left:50%;transform:translate(-50%,-50%);
+    background:rgba(0,0,0,.9);color:#fff;padding:14px 20px;border-radius:14px;font-size:14px;
+    font-weight:800;z-index:500;pointer-events:none;
+    box-shadow:0 4px 24px ${colorMap[item.r]},0 0 0 2px ${colorMap[item.r]} inset;
+    animation:fadeIn .3s`;
+  flash.innerHTML=`🎁 ${type} 완성 보너스!<br>
+    <span style="font-size:24px;display:block;margin:6px 0">${item.e}</span>
+    <span style="color:${colorMap[item.r]};font-size:13px">${item.n} (${RARITY_INFO[item.r].label})</span>`;
+  document.body.appendChild(flash);
+  setTimeout(()=>flash.style.transition='opacity .3s',2000);
+  setTimeout(()=>flash.style.opacity='0',2200);
+  setTimeout(()=>flash.remove(),2600);
 }
 function clearPeerNotes(r,c,n){
   for(let i=0;i<9;i++){notes[r][i].delete(n);refreshCell(r,i);notes[i][c].delete(n);refreshCell(i,c)}
@@ -1397,6 +1622,26 @@ function showWin(){
   updateDailyBanner();
   // Generate and queue rewards (shown when user closes win modal)
   pendingRewardData=generateRewards(diff,!!mOk,isDaily);
+  // Track for achievements + quests
+  playSound('win');
+  trackQuest('todayWins',1);
+  if(diff==='hard'||diff==='expert')trackQuest('todayHardWins',1);
+  if(isDaily)trackQuest('todayDaily',1);
+  if(mistakes===0)trackQuest('todayNoMistake',1);
+  if(timerVal<=300)trackQuest('todaySpeedWin',1);
+  // Season XP
+  addSeasonXp('win',SEASON_XP['win_'+diff]||5);
+  if(isDaily)addSeasonXp('daily',SEASON_XP.win_daily);
+  if(mOk)addSeasonXp('perfect',SEASON_XP.win_perfect);
+  if(mistakes===0)addSeasonXp('nomistake',SEASON_XP.win_no_mistake);
+  // Track for achievements
+  const stats=getStats();
+  if(mistakes===0)stats.noMistakeRuns=(stats.noMistakeRuns||0)+1;
+  if(mOk)stats.missionPerfect=(stats.missionPerfect||0)+1;
+  const h=new Date().getHours();
+  if(h>=0 && h<4)stats.midnightWin=(stats.midnightWin||0)+1;
+  saveStats(stats);
+  setTimeout(()=>checkAllAchievements(),300);
 }
 // Show rewards when win modal closes
 function showRewardsAfterWin(){
@@ -1578,6 +1823,7 @@ function updateProgress(){
 }
 function updateMistakeWrap(){
   const w=document.getElementById('mistakeWrap');
+  if(strictMode){w.innerHTML='';return}
   w.innerHTML=mistakes>0?`<span style="font-size:12px;font-weight:700;color:var(--err)">✗${mistakes}</span>`:'';
 }
 function launchConfetti(){
@@ -1657,6 +1903,22 @@ const ITEMS=[
   {id:'a12',n:'드래곤',e:'🐉',r:'legendary',c:'animal'},
   {id:'a13',n:'유니콘',e:'🦄',r:'legendary',c:'animal'},
   {id:'a14',n:'봉황',e:'🦅',r:'legendary',c:'animal'},
+  // Common animals (extra)
+  {id:'a15',n:'강아지',e:'🐶',r:'common',c:'animal'},
+  {id:'a16',n:'고양이',e:'🐱',r:'common',c:'animal'},
+  {id:'a17',n:'햄스터',e:'🐹',r:'common',c:'animal'},
+  {id:'a18',n:'오리',e:'🦆',r:'common',c:'animal'},
+  {id:'a19',n:'거북이',e:'🐢',r:'common',c:'animal'},
+  // Rare animals (extra)
+  {id:'a20',n:'고슴도치',e:'🦔',r:'rare',c:'animal'},
+  {id:'a21',n:'너구리',e:'🦝',r:'rare',c:'animal'},
+  {id:'a22',n:'수달',e:'🦦',r:'rare',c:'animal'},
+  {id:'a23',n:'늑대',e:'🐺',r:'rare',c:'animal'},
+  // Epic animals (extra)
+  {id:'a24',n:'얼룩말',e:'🦓',r:'epic',c:'animal'},
+  {id:'a25',n:'멧돼지',e:'🐗',r:'epic',c:'animal'},
+  {id:'a26',n:'기린',e:'🦒',r:'epic',c:'animal'},
+  {id:'a27',n:'코뿔소',e:'🦏',r:'epic',c:'animal'},
   // plants
   {id:'p01',n:'나무',e:'🌳',r:'common',c:'plant'},
   {id:'p02',n:'해바라기',e:'🌻',r:'common',c:'plant'},
@@ -1689,6 +1951,13 @@ const ITEMS=[
   {id:'d06',n:'모닥불',e:'🔥',r:'epic',c:'deco'},
   {id:'d07',n:'석상',e:'🗿',r:'epic',c:'deco'},
   {id:'d08',n:'황금트로피',e:'🏆',r:'legendary',c:'deco'},
+  // ─── Special items (achievement rewards) ───
+  {id:'sp_jeokToMa',n:'적토마',e:'🐎',r:'legendary',c:'animal',sp:true},
+  {id:'sp_goldChicken',n:'황금알닭',e:'🐓',r:'legendary',c:'animal',sp:true},
+  {id:'sp_phoenixKing',n:'불사조왕',e:'🦤',r:'legendary',c:'animal',sp:true},
+  {id:'sp_coinMine',n:'코인광산',e:'⛏️',r:'legendary',c:'building',sp:true},
+  {id:'sp_chalice',n:'황금성배',e:'🏆',r:'legendary',c:'deco',sp:true},
+  {id:'sp_streakRing',n:'연속의반지',e:'💍',r:'legendary',c:'deco',sp:true},
 ];
 const RARITY_INFO={
   common:{label:'일반',color:'#adb5bd',weight:60},
@@ -1707,6 +1976,7 @@ function saveFarm(f){localStorage.setItem(FARM_KEY,JSON.stringify(f))}
 function togglePause(){
   if(completed)return;
   isPaused=!isPaused;
+  playSound('pause');
   const overlay=document.getElementById('pauseOverlay');
   const btn=document.getElementById('pauseBtn');
   if(isPaused){
@@ -1823,7 +2093,10 @@ function showRewards(rewards){
       if(card.classList.contains('flipped'))return;
       card.classList.add('flipped');
       openedCount++;
-      // Legendary triggers extra confetti
+      playSound('flip');
+      // Sound by rarity
+      const sndMap={common:'click',rare:'rare',epic:'epic',legendary:'legendary'};
+      setTimeout(()=>playSound(sndMap[item.r]||'click'),200);
       if(item.r==='legendary')launchConfetti();
       if(openedCount>=rewards.length){
         const btn=document.getElementById('rewardConfirm');
@@ -2135,6 +2408,8 @@ const RESOURCES={
   gem:{n:'보석',e:'💎',price:250},
   star:{n:'별가루',e:'⭐',price:600},
   mana:{n:'마나석',e:'🔮',price:1500},
+  goldEgg:{n:'황금알',e:'🟡',price:120},
+  coinOre:{n:'코인광석',e:'💰',price:600},
 };
 const HOUSES=[
   {lv:1,e:'🛖',n:'오두막',cost:0,size:50,perk:'시작 단계'},
@@ -2158,6 +2433,22 @@ const PROD={
   // Legendary animals
   a12:{r:'gem', s:3600},   a13:{r:'star',s:7200},
   a14:{r:'mana',s:3600},
+  // Common (new)
+  a15:{r:'meat', s:1500},  // 강아지
+  a16:{r:'wool', s:600},   // 고양이
+  a17:{r:'fruit',s:300},   // 햄스터
+  a18:{r:'egg',  s:300},   // 오리
+  a19:{r:'fish', s:1200},  // 거북이
+  // Rare (new)
+  a20:{r:'fruit',s:900},   // 고슴도치
+  a21:{r:'meat', s:600},   // 너구리
+  a22:{r:'fish', s:600},   // 수달
+  a23:{r:'meat', s:700},   // 늑대
+  // Epic (new)
+  a24:{r:'meat', s:800},   // 얼룩말
+  a25:{r:'meat', s:600},   // 멧돼지
+  a26:{r:'fruit',s:1500},  // 기린
+  a27:{r:'gem',  s:5400},  // 코뿔소
   // Plants
   p01:{r:'fruit',s:1800},  p02:{r:'fruit',s:1500},
   p03:{r:'fruit',s:600},   p04:{r:'fruit',s:600},
@@ -2165,6 +2456,11 @@ const PROD={
   p07:{r:'fruit',s:1200},  p08:{r:'honey',s:1800},
   p09:{r:'gem', s:3600},   p10:{r:'star',s:5400},
   p11:{r:'star',s:5400},
+  // Special items (achievement rewards) — better rates
+  sp_jeokToMa:{r:'star',s:3600},      // 별가루 1시간 (유니콘의 2배)
+  sp_goldChicken:{r:'goldEgg',s:600}, // 황금알 10분
+  sp_phoenixKing:{r:'mana',s:1800},   // 마나석 30분 (봉황의 2배)
+  sp_coinMine:{r:'coinOre',s:3600},   // 코인광석 1시간
 };
 const MAX_STACK=12; // max accumulated per item
 // Baby system
@@ -2260,13 +2556,14 @@ function collectAll(){
   });
   e.lastCollect=Date.now();
   saveEconomy(e);
-  // Show what was collected
   const items=Object.entries(produced).map(([r,n])=>`${RESOURCES[r].e}×${n}`).join(' ');
   showToast(`🌾 수확! ${items}`);
+  playSound('coin');
+  trackQuest('todayCollect',1);
   updateCoinsDisplay();
-  // If shop is open, refresh
   if(document.getElementById('farmShopSection').classList.contains('show'))renderShop();
   updatePendingBadges();
+  setTimeout(()=>checkAllAchievements(),200);
 }
 function sellResource(resId,amount){
   const e=getEconomy();
@@ -2280,8 +2577,11 @@ function sellResource(resId,amount){
   e.coins+=earn;
   saveEconomy(e);
   showToast(`💰 ${RESOURCES[resId].e}×${sellN} 판매 → +${earn} 코인!`);
+  playSound('coin');
+  trackQuest('todaySold',sellN);
   updateCoinsDisplay();
   renderShop();
+  setTimeout(()=>checkAllAchievements(),200);
 }
 function sellAllResource(resId){
   const e=getEconomy();
@@ -2308,6 +2608,8 @@ function buyBaby(itemId){
   renderFarmScene();
   updateCoinsDisplay();
   renderShop();
+  playSound('coin');
+  trackQuest('todayBabies',1);
   showToast(`🐣 ${item.n} 새끼 입양! 정성껏 키워주세요`);
 }
 function buyHouseUpgrade(){
@@ -2319,10 +2621,14 @@ function buyHouseUpgrade(){
   e.houseLevel=next.lv;
   saveEconomy(e);
   showToast(`🎉 ${next.e} ${next.n}으로 업그레이드 완료!`);
+  playSound('levelup');
+  trackQuest('todayUpgrade',1);
+  addSeasonXp('upgrade',SEASON_XP.house_upgrade);
   updateCoinsDisplay();
   renderShop();
   renderFarmScene();
   launchConfetti();
+  setTimeout(()=>checkAllAchievements(),200);
 }
 function updateCoinsDisplay(){
   const e=getEconomy();
@@ -2593,14 +2899,14 @@ async function generateMyCode(){
   let copied=false;
   try{await navigator.clipboard.writeText(code);copied=true}catch(e){}
   if(copied){
-    showToast('📋 내 코드 복사완료! 카톡으로 와이프에게 보내세요');
+    showToast('📋 내 코드 복사완료! 카톡으로 친구에게 보내세요');
   }else{
     // Fallback: prompt with code for manual copy
     prompt('아래 코드를 길게 눌러 복사해서 보내세요:',code);
   }
 }
 function pasteFriendCode(){
-  const code=prompt('와이프한테 받은 코드를 붙여넣으세요:','');
+  const code=prompt('친구한테 받은 코드를 붙여넣으세요:','');
   if(!code)return;
   const decoded=decodeStats(code);
   if(!decoded||!decoded.name){showToast('❌ 코드가 잘못됐어요. 다시 받아주세요');return;}
@@ -2611,7 +2917,7 @@ function pasteFriendCode(){
 let cmpView='stats';
 function openCompare(){
   if(!localStorage.getItem(PLAYER_NAME_KEY)){
-    const n=prompt('코드에 표시될 본인 이름을 정해주세요\n(나중에 변경 가능, 와이프와 다르게)','주명');
+    const n=prompt('코드에 표시될 본인 이름을 정해주세요\n(나중에 변경 가능, 친구와 다르게)','주명');
     if(n)setPlayerName(n.trim().slice(0,10));
   }
   document.getElementById('cmpNameInfo').innerHTML=
@@ -2712,7 +3018,7 @@ function renderCompare(){
   const coinDiff=me.coins-opp.coins;
   if(coinDiff!==0){
     html+=`<div style="margin-top:10px;text-align:center;font-size:12px;color:var(--muted)">
-      💰 부의 차이: ${coinDiff>0?'+':''}${coinDiff.toLocaleString()} 코인 ${coinDiff>0?'(내가 더 부자)':'(와이프가 더 부자)'}
+      💰 부의 차이: ${coinDiff>0?'+':''}${coinDiff.toLocaleString()} 코인 ${coinDiff>0?'(내가 더 부자)':'(친구가 더 부자)'}
     </div>`;
   }
   html+=`</div>`;
@@ -2929,6 +3235,8 @@ function runMigrations(){
   console.log('[migration] schema upgraded to v'+v);
 }
 runMigrations();
+// Daily season login XP (call once per day on first load)
+setTimeout(()=>{try{trackSeasonLogin()}catch(e){}},500);
 // ═══════════════════════════════════════
 // SETTINGS / BACKUP / RESTORE
 // ═══════════════════════════════════════
@@ -2940,7 +3248,19 @@ const ALL_KEYS=[
 ];
 function openSettings(){
   document.getElementById('settingsPlayerName').textContent=getPlayerName();
+  document.getElementById('soundLabel').textContent=soundEnabled?'ON':'OFF';
+  document.getElementById('soundIc').textContent=soundEnabled?'🔊':'🔇';
+  document.getElementById('soundToggleBtn').textContent=soundEnabled?'끄기':'켜기';
+  document.getElementById('strictLabel').textContent=strictMode?'ON':'OFF';
+  document.getElementById('strictIc').textContent=strictMode?'🔥':'🛡';
+  document.getElementById('strictToggleBtn').textContent=strictMode?'끄기':'켜기';
   document.getElementById('settingsModal').classList.remove('hidden');
+}
+function toggleStrict(){
+  strictMode=!strictMode;
+  localStorage.setItem('sudoku_strict_mode',strictMode?'1':'0');
+  showToast(strictMode?'🔥 엄격 모드 ON — 틀려도 안 알려줌':'🛡 일반 모드 — 틀리면 빨갛게');
+  refreshAll();updateMistakeWrap();
 }
 function closeSettings(){document.getElementById('settingsModal').classList.add('hidden')}
 async function exportBackup(){
@@ -2984,6 +3304,491 @@ function resetAllData(){
   ALL_KEYS.forEach(k=>localStorage.removeItem(k));
   showToast('🗑 초기화 완료. 새로고침합니다...');
   setTimeout(()=>location.reload(),800);
+}
+// ═══════════════════════════════════════
+// SOUND SYSTEM (Web Audio, generated tones)
+// ═══════════════════════════════════════
+const SOUND_KEY='sudoku_sound_enabled';
+let audioCtx=null;
+let soundEnabled=localStorage.getItem(SOUND_KEY)!=='0';
+function initAudio(){
+  if(audioCtx)return;
+  try{audioCtx=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}
+}
+function playTone(freq,duration=0.1,type='sine',volume=0.12){
+  if(!soundEnabled||!audioCtx)return;
+  try{
+    const osc=audioCtx.createOscillator();
+    const gain=audioCtx.createGain();
+    osc.type=type;
+    osc.frequency.value=freq;
+    gain.gain.setValueAtTime(volume,audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.0001,audioCtx.currentTime+duration);
+    osc.connect(gain);gain.connect(audioCtx.destination);
+    osc.start();osc.stop(audioCtx.currentTime+duration);
+  }catch(e){}
+}
+function playMelody(notes,interval=80,type='sine',volume=0.14){
+  notes.forEach((freq,i)=>setTimeout(()=>playTone(freq,0.15,type,volume),i*interval));
+}
+function playSound(name){
+  initAudio();
+  if(!audioCtx||!soundEnabled)return;
+  switch(name){
+    case'click':playTone(800,0.04,'sine',0.06);break;
+    case'correct':playTone(880,0.12,'sine',0.10);break;
+    case'error':playTone(180,0.18,'sawtooth',0.12);break;
+    case'win':playMelody([523,659,784,1047],100,'sine',0.14);break;
+    case'coin':playTone(1318,0.05,'square',0.08);setTimeout(()=>playTone(1568,0.08,'square',0.08),50);break;
+    case'rare':playMelody([659,784,988],90,'triangle',0.14);break;
+    case'epic':playMelody([523,659,784,1047],90,'triangle',0.16);break;
+    case'legendary':playMelody([523,659,784,1047,1318,1568],80,'sine',0.18);break;
+    case'achievement':playMelody([523,784,1047,1318],70,'triangle',0.16);break;
+    case'flip':playTone(600,0.04,'square',0.06);break;
+    case'pause':playTone(440,0.08,'sine',0.08);break;
+    case'levelup':playMelody([523,659,784,1047,1318],60,'sine',0.18);break;
+  }
+}
+function toggleSound(){
+  soundEnabled=!soundEnabled;
+  localStorage.setItem(SOUND_KEY,soundEnabled?'1':'0');
+  if(soundEnabled)playSound('correct');
+  showToast(soundEnabled?'🔊 효과음 ON':'🔇 효과음 OFF');
+}
+// ═══════════════════════════════════════
+// ACHIEVEMENTS (30) — granted on stat thresholds
+// ═══════════════════════════════════════
+const ACHIEVE_KEY='sudoku_achievements_v1';
+const ACHIEVEMENTS=[
+  // 풀이
+  {id:'solve1',n:'첫걸음',d:'스도쿠 1판 클리어',e:'🌱',cat:'solve',target:1,stat:'totalWins'},
+  {id:'solve10',n:'열정의 시작',d:'10판 클리어',e:'📗',cat:'solve',target:10,stat:'totalWins',reward:{coins:200}},
+  {id:'solve50',n:'쌓이는 실력',d:'50판 클리어',e:'📚',cat:'solve',target:50,stat:'totalWins',reward:{coins:800}},
+  {id:'solve100',n:'백판의 마스터',d:'100판 클리어',e:'🎓',cat:'solve',target:100,stat:'totalWins',reward:{coins:2000}},
+  {id:'solve500',n:'스도쿠 영웅',d:'500판 클리어',e:'🏅',cat:'solve',target:500,stat:'totalWins',reward:{coins:10000}},
+  {id:'solve1000',n:'천판의 전설',d:'1000판 클리어',e:'👑',cat:'solve',target:1000,stat:'totalWins',reward:{item:'sp_jeokToMa'},title:'스도쿠황'},
+  // 부자
+  {id:'wealth1k',n:'주머니 무거워짐',d:'코인 1,000 보유',e:'💵',cat:'wealth',target:1000,stat:'coins'},
+  {id:'wealth10k',n:'1만 코인',d:'코인 10,000 보유',e:'💰',cat:'wealth',target:10000,stat:'coins',reward:{coins:1000}},
+  {id:'wealth100k',n:'부자',d:'코인 100,000 보유',e:'🏦',cat:'wealth',target:100000,stat:'coins',reward:{item:'sp_coinMine'}},
+  {id:'wealth1m',n:'백만장자',d:'코인 1,000,000 보유',e:'💎',cat:'wealth',target:1000000,stat:'coins',title:'부의황제'},
+  // 컬렉션
+  {id:'col_l3',n:'전설의 시작',d:'전설 3종 수집',e:'🌟',cat:'collect',target:3,stat:'uniqueLegendary',reward:{coins:1500}},
+  {id:'col_l8',n:'전설 컬렉터',d:'전설 8종 모두 수집',e:'✨',cat:'collect',target:8,stat:'uniqueLegendary',reward:{item:'sp_phoenixKing'}},
+  {id:'col_e9',n:'영웅 컬렉터',d:'영웅 13종 모두 수집',e:'💜',cat:'collect',target:13,stat:'uniqueEpic',reward:{coins:5000}},
+  {id:'col_all',n:'완전체',d:'56종 모두 수집',e:'🏆',cat:'collect',target:56,stat:'uniqueAll',reward:{item:'sp_chalice'},title:'완벽수집가'},
+  // 꾸준함
+  {id:'streak3',n:'3일째',d:'일일 챌린지 3일 연속',e:'🔥',cat:'streak',target:3,stat:'longestStreak',reward:{coins:300}},
+  {id:'streak7',n:'1주일',d:'7일 연속 챌린지',e:'📅',cat:'streak',target:7,stat:'longestStreak',reward:{coins:1000}},
+  {id:'streak30',n:'30일 연속',d:'한달 연속 챌린지',e:'🗓️',cat:'streak',target:30,stat:'longestStreak',reward:{item:'sp_streakRing'}},
+  {id:'streak100',n:'100일 연속',d:'백일 연속 챌린지',e:'💯',cat:'streak',target:100,stat:'longestStreak',title:'끈기왕'},
+  // 농장
+  {id:'house2',n:'농가 입주',d:'집 LV 2 도달',e:'🏠',cat:'farm',target:2,stat:'houseLevel',reward:{coins:200}},
+  {id:'house3',n:'별장 주인',d:'집 LV 3 도달',e:'🏡',cat:'farm',target:3,stat:'houseLevel',reward:{coins:1000}},
+  {id:'house4',n:'성탑 군주',d:'집 LV 4 도달',e:'🏰',cat:'farm',target:4,stat:'houseLevel',reward:{coins:3000}},
+  {id:'house5',n:'황금성 군주',d:'집 LV 5 (최고)',e:'🏯',cat:'farm',target:5,stat:'houseLevel',reward:{item:'sp_goldChicken'},title:'금성주'},
+  {id:'baby1',n:'육아 시작',d:'새끼 1마리 성체로',e:'👶',cat:'farm',target:1,stat:'babyGrown'},
+  {id:'baby10',n:'양육의 달인',d:'새끼 10마리 성체로',e:'🎈',cat:'farm',target:10,stat:'babyGrown',reward:{coins:1500}},
+  {id:'baby50',n:'대가족',d:'새끼 50마리 성체로',e:'🌳',cat:'farm',target:50,stat:'babyGrown',title:'대가족장'},
+  // 무실수/미션
+  {id:'nomis5',n:'완벽주의 시작',d:'무실수 5판',e:'🎯',cat:'mission',target:5,stat:'noMistakeRuns',reward:{coins:300}},
+  {id:'nomis25',n:'완벽주의자',d:'무실수 25판',e:'🏹',cat:'mission',target:25,stat:'noMistakeRuns',reward:{coins:2000}},
+  {id:'nomis100',n:'무결점',d:'무실수 100판',e:'⚜️',cat:'mission',target:100,stat:'noMistakeRuns',title:'무결점'},
+  {id:'perfect5',n:'퍼펙트',d:'퍼펙트 클리어 5회',e:'👑',cat:'mission',target:5,stat:'missionPerfect',reward:{coins:1500}},
+  // 숨겨진
+  {id:'hid_owl',n:'올빼미족',d:'자정~새벽4시 클리어',e:'🦉',cat:'hidden',target:1,stat:'midnightWin',reward:{coins:500}},
+];
+function getAchieveData(){
+  try{return JSON.parse(localStorage.getItem(ACHIEVE_KEY)||'{}')}catch(e){return{}}
+}
+function saveAchieveData(d){localStorage.setItem(ACHIEVE_KEY,JSON.stringify(d))}
+function getStatsValue(stat){
+  const s=getStats();const farm=getFarm();const econ=getEconomy();
+  switch(stat){
+    case'totalWins':return Object.values(s.wins||{}).reduce((a,b)=>a+b,0);
+    case'coins':return econ.coins||0;
+    case'uniqueLegendary':return ITEMS.filter(i=>i.r==='legendary'&&farm[i.id]).length;
+    case'uniqueEpic':return ITEMS.filter(i=>i.r==='epic'&&farm[i.id]).length;
+    case'uniqueAll':return Object.keys(farm).length;
+    case'longestStreak':return s.daily?.longestStreak||0;
+    case'houseLevel':return econ.houseLevel||1;
+    case'babyGrown':return s.babyGrown||0;
+    case'noMistakeRuns':return s.noMistakeRuns||0;
+    case'missionPerfect':return s.missionPerfect||0;
+    case'midnightWin':return s.midnightWin||0;
+  }
+  return 0;
+}
+function checkAllAchievements(){
+  const data=getAchieveData();
+  if(!data.unlocked)data.unlocked=[];
+  let newUnlocks=[];
+  ACHIEVEMENTS.forEach(a=>{
+    if(data.unlocked.includes(a.id))return;
+    const v=getStatsValue(a.stat);
+    if(v>=a.target){
+      data.unlocked.push(a.id);
+      newUnlocks.push(a);
+    }
+  });
+  if(newUnlocks.length>0){
+    saveAchieveData(data);
+    newUnlocks.forEach(a=>grantAchievementReward(a));
+  }
+  return newUnlocks;
+}
+function grantAchievementReward(a){
+  const econ=getEconomy();
+  let msg=`🏆 업적 달성: ${a.n}!`;
+  if(a.reward){
+    if(a.reward.coins){
+      econ.coins+=a.reward.coins;
+      saveEconomy(econ);updateCoinsDisplay();
+      msg+=` (+🪙 ${a.reward.coins})`;
+    }
+    if(a.reward.item){
+      const farm=getFarm();
+      farm[a.reward.item]=(farm[a.reward.item]||0)+1;
+      saveFarm(farm);
+      const item=ITEMS.find(i=>i.id===a.reward.item);
+      if(item)msg+=` (+${item.e} ${item.n}!)`;
+    }
+  }
+  if(a.title)msg+=` 칭호 "${a.title}" 획득`;
+  showToast(msg);
+  playSound('achievement');
+  setTimeout(()=>launchConfetti(),200);
+}
+// ═══════════════════════════════════════
+// DAILY QUESTS (10 pool, 3 random per day)
+// ═══════════════════════════════════════
+const QUESTS_KEY='sudoku_quests_v1';
+const QUEST_POOL=[
+  {id:'q_solve3',n:'스도쿠 3판 클리어',e:'🎯',target:3,stat:'todayWins',coins:100},
+  {id:'q_hard',n:'어려움 1판 클리어',e:'🔥',target:1,stat:'todayHardWins',coins:200},
+  {id:'q_daily',n:'일일 챌린지 완료',e:'⭐',target:1,stat:'todayDaily',coins:300},
+  {id:'q_nomis',n:'무실수로 1판',e:'🎪',target:1,stat:'todayNoMistake',coins:200},
+  {id:'q_collect5',n:'자원 수확 5번',e:'🌾',target:5,stat:'todayCollect',coins:100},
+  {id:'q_sell10',n:'자원 10개 판매',e:'💰',target:10,stat:'todaySold',coins:150},
+  {id:'q_baby1',n:'새끼 1마리 입양',e:'🐣',target:1,stat:'todayBabies',coins:100},
+  {id:'q_speed5',n:'5분 안에 1판',e:'⚡',target:1,stat:'todaySpeedWin',coins:250},
+  {id:'q_play30',n:'30분 플레이',e:'⏱',target:1800,stat:'todayPlayTime',coins:150},
+  {id:'q_upgrade',n:'집 업그레이드',e:'🏠',target:1,stat:'todayUpgrade',coins:500},
+];
+function getQuestData(){
+  const d=todayKey();
+  try{
+    const raw=JSON.parse(localStorage.getItem(QUESTS_KEY)||'{}');
+    if(raw.date!==d){
+      // New day — generate 3 random
+      const pool=[...QUEST_POOL];
+      const picks=[];
+      for(let i=0;i<3 && pool.length>0;i++){
+        picks.push(pool.splice(Math.floor(Math.random()*pool.length),1)[0]);
+      }
+      const fresh={date:d,quests:picks.map(q=>({id:q.id,progress:0,claimed:false})),tracker:{}};
+      localStorage.setItem(QUESTS_KEY,JSON.stringify(fresh));
+      return fresh;
+    }
+    return raw;
+  }catch(e){return{date:d,quests:[],tracker:{}}}
+}
+function saveQuestData(d){localStorage.setItem(QUESTS_KEY,JSON.stringify(d))}
+function trackQuest(stat,amount=1){
+  const d=getQuestData();
+  d.tracker=d.tracker||{};
+  d.tracker[stat]=(d.tracker[stat]||0)+amount;
+  // Update quest progress
+  let anyComplete=false;
+  d.quests.forEach(q=>{
+    const def=QUEST_POOL.find(p=>p.id===q.id);
+    if(!def||q.claimed)return;
+    if(def.stat===stat){
+      const wasIncomplete=q.progress<def.target;
+      q.progress=Math.min(def.target,(d.tracker[stat]||0));
+      if(wasIncomplete && q.progress>=def.target){
+        anyComplete=true;
+        playSound('coin');
+        showToast(`✅ 퀘스트 완료: ${def.n} (코인 받기 가능!)`);
+      }
+    }
+  });
+  saveQuestData(d);
+  return anyComplete;
+}
+// ═══════════════════════════════════════
+// SEASON PASS (15-day cycle)
+// ═══════════════════════════════════════
+const SEASON_KEY='sudoku_season_v1';
+const SEASON_LENGTH_DAYS=15;
+const SEASON_TIERS=[
+  {xp:50,   reward:{coins:500},  name:'시즌 1단계'},
+  {xp:150,  reward:{coins:1500}, name:'시즌 2단계'},
+  {xp:300,  reward:{baby:'rare'},name:'시즌 3단계'}, // rare baby random
+  {xp:500,  reward:{baby:'epic'},name:'시즌 4단계'},
+  {xp:750,  reward:{item:'sp_chalice',coins:5000,title:'시즌마스터'},name:'시즌 5단계 (최종)'},
+];
+const SEASON_XP={
+  win_easy:3, win_medium:5, win_hard:10, win_expert:15,
+  win_daily:30, win_perfect:20, win_no_mistake:10,
+  daily_login:20, achievement:30, new_legendary:50,
+  baby_grown:15, house_upgrade:50, line_complete:1,
+};
+function getSeason(){
+  const def={seasonId:1,startDate:todayKey(),xp:0,claimedTiers:[],loginDates:[]};
+  try{
+    const s=JSON.parse(localStorage.getItem(SEASON_KEY)||'{}');
+    if(!s.startDate)return def;
+    // Check if expired
+    const elapsed=Math.floor((Date.now()-new Date(s.startDate).getTime())/86400000);
+    if(elapsed>=SEASON_LENGTH_DAYS){
+      // Auto-rollover
+      return{seasonId:(s.seasonId||1)+1,startDate:todayKey(),xp:0,claimedTiers:[],loginDates:[]};
+    }
+    return Object.assign(def,s);
+  }catch(e){return def}
+}
+function saveSeason(s){localStorage.setItem(SEASON_KEY,JSON.stringify(s))}
+function addSeasonXp(reason,amount){
+  const s=getSeason();
+  s.xp+=amount;
+  saveSeason(s);
+  // Check tier unlock
+  SEASON_TIERS.forEach((tier,i)=>{
+    if(s.xp>=tier.xp && !s.claimedTiers.includes(i)){
+      // Player can now claim this tier
+    }
+  });
+}
+function trackSeasonLogin(){
+  const s=getSeason();
+  const today=todayKey();
+  if(!s.loginDates.includes(today)){
+    s.loginDates.push(today);
+    s.xp+=SEASON_XP.daily_login;
+    saveSeason(s);
+    showToast(`🎫 시즌패스 일일 로그인 +${SEASON_XP.daily_login}XP`);
+  }
+}
+function claimSeasonTier(tierIdx){
+  const s=getSeason();
+  const tier=SEASON_TIERS[tierIdx];
+  if(!tier||s.claimedTiers.includes(tierIdx)||s.xp<tier.xp)return;
+  s.claimedTiers.push(tierIdx);
+  saveSeason(s);
+  // Grant rewards
+  const econ=getEconomy();
+  let msg=`🎫 ${tier.name} 보상!`;
+  if(tier.reward.coins){econ.coins+=tier.reward.coins;msg+=` +🪙${tier.reward.coins}`}
+  if(tier.reward.item){
+    const farm=getFarm();
+    farm[tier.reward.item]=(farm[tier.reward.item]||0)+1;
+    saveFarm(farm);
+    const it=ITEMS.find(i=>i.id===tier.reward.item);
+    if(it)msg+=` +${it.e}${it.n}`;
+  }
+  if(tier.reward.baby){
+    // Random baby of given rarity
+    const animals=ITEMS.filter(i=>i.c==='animal'&&i.r===tier.reward.baby&&!i.sp);
+    if(animals.length){
+      const baby=animals[Math.floor(Math.random()*animals.length)];
+      const farm=getFarm();
+      farm[baby.id]=(farm[baby.id]||0)+1;
+      saveFarm(farm);
+      farmLayout.push({uid:genUid(),id:baby.id,x:50,y:10,stage:1,bornAt:Date.now()});
+      saveLayout();
+      msg+=` +🐣${baby.e}${baby.n} 새끼!`;
+    }
+  }
+  if(tier.reward.title)msg+=` 칭호"${tier.reward.title}"`;
+  saveEconomy(econ);
+  updateCoinsDisplay();
+  showToast(msg);
+  playSound('levelup');
+  launchConfetti();
+  renderTrophyModal();
+}
+function fmtDaysLeft(s){
+  const elapsed=Math.floor((Date.now()-new Date(s.startDate).getTime())/86400000);
+  return Math.max(0,SEASON_LENGTH_DAYS-elapsed);
+}
+function claimQuest(qid){
+  const d=getQuestData();
+  const q=d.quests.find(x=>x.id===qid);
+  const def=QUEST_POOL.find(p=>p.id===qid);
+  if(!q||!def||q.claimed||q.progress<def.target)return;
+  q.claimed=true;
+  saveQuestData(d);
+  const econ=getEconomy();
+  econ.coins+=def.coins;
+  saveEconomy(econ);
+  updateCoinsDisplay();
+  playSound('coin');
+  showToast(`🪙 +${def.coins} 코인 획득!`);
+  renderTrophyModal();
+}
+// ═══════════════════════════════════════
+// TROPHY MODAL UI
+// ═══════════════════════════════════════
+let trophyView='quest';
+function openTrophy(){
+  trophyView='quest';
+  document.querySelectorAll('#trophyTabs .rtab').forEach(b=>b.classList.toggle('active',b.dataset.tt==='quest'));
+  renderTrophyModal();
+  document.getElementById('trophyModal').classList.remove('hidden');
+}
+function closeTrophy(){document.getElementById('trophyModal').classList.add('hidden')}
+function switchTrophyView(v){
+  trophyView=v;
+  document.querySelectorAll('#trophyTabs .rtab').forEach(b=>b.classList.toggle('active',b.dataset.tt===v));
+  renderTrophyModal();
+}
+function renderTrophyModal(){
+  const el=document.getElementById('trophyContent');
+  if(trophyView==='quest'){renderQuestList(el);}
+  else if(trophyView==='season'){renderSeasonPass(el);}
+  else if(trophyView==='ach'){renderAchievementList(el);}
+}
+function renderSeasonPass(el){
+  const s=getSeason();
+  const daysLeft=fmtDaysLeft(s);
+  const elapsed=SEASON_LENGTH_DAYS-daysLeft;
+  const maxXp=SEASON_TIERS[SEASON_TIERS.length-1].xp;
+  const pct=Math.min(100,(s.xp/maxXp)*100);
+  let html=`<div class="season-header">
+    <div class="nm">🎫 시즌 ${s.seasonId}</div>
+    <div class="xp">${s.xp} / ${maxXp} XP</div>
+    <div class="season-bar"><div class="season-bar-fill" style="width:${pct}%"></div></div>
+    <div class="meta">📅 ${elapsed}/${SEASON_LENGTH_DAYS}일 경과 · ${daysLeft}일 후 새 시즌</div>
+  </div>`;
+  // Tiers
+  SEASON_TIERS.forEach((tier,i)=>{
+    const claimed=s.claimedTiers.includes(i);
+    const unlocked=s.xp>=tier.xp && !claimed;
+    const cls=claimed?'season-tier claimed':(unlocked?'season-tier unlocked':'season-tier locked');
+    let rewardStr='';
+    if(tier.reward.coins)rewardStr+=`🪙 ${tier.reward.coins.toLocaleString()} `;
+    if(tier.reward.item){
+      const it=ITEMS.find(x=>x.id===tier.reward.item);
+      if(it)rewardStr+=`+${it.e}${it.n} `;
+    }
+    if(tier.reward.baby)rewardStr+=`+🐣 ${tier.reward.baby==='rare'?'레어':'영웅'} 새끼 `;
+    if(tier.reward.title)rewardStr+=`+칭호"${tier.reward.title}"`;
+    html+=`<div class="${cls}">
+      <div class="lvl">${i+1}</div>
+      <div class="info">
+        <div class="nm">${tier.name}</div>
+        <div class="xp-need">${tier.xp} XP 필요${claimed?' (받음)':(unlocked?' ✨ 받기 가능!':'')}</div>
+        <div class="reward">${rewardStr}</div>
+      </div>
+      ${claimed?'<div class="check">✓</div>':
+        (unlocked?`<button onclick="claimSeasonTier(${i})">받기</button>`:
+        `<div style="font-size:11px;color:#999;font-weight:700">${tier.xp-s.xp} XP</div>`)}
+    </div>`;
+  });
+  // XP guide
+  html+=`<div style="margin:14px;padding:12px;background:var(--bg);border-radius:10px;font-size:11px;color:var(--given);line-height:1.7">
+    <strong style="color:var(--primary)">📌 시즌 XP 획득 방법</strong><br>
+    • 일일 로그인 +20 XP<br>
+    • 스도쿠 클리어 (난이도별) +3~15 XP<br>
+    • 일일 챌린지 +30 XP<br>
+    • 퍼펙트 클리어 +20 XP<br>
+    • 무실수 +10 XP<br>
+    • 새 전설 수집 +50 XP<br>
+    • 새끼 성체로 +15 XP<br>
+    • 집 업그레이드 +50 XP<br>
+    • 업적 달성 +30 XP<br>
+    <br><strong style="color:var(--accent)">⏰ 15일마다 자동 새 시즌 + 보상 추가</strong>
+  </div>`;
+  el.innerHTML=html;
+}
+function renderQuestList(el){
+  const d=getQuestData();
+  if(!d.quests||d.quests.length===0){el.innerHTML='<div class="no-quests">오늘 퀘스트 로딩중...</div>';return}
+  let html='<div class="trophy-stats">';
+  const completed=d.quests.filter(q=>q.claimed).length;
+  const total=d.quests.length;
+  html+=`<div class="trophy-stat-card"><div class="n">${completed}/${total}</div><div class="l">완료</div></div>`;
+  const totalCoins=d.quests.filter(q=>q.claimed).reduce((s,q)=>{
+    const def=QUEST_POOL.find(p=>p.id===q.id);return s+(def?.coins||0)
+  },0);
+  html+=`<div class="trophy-stat-card"><div class="n">${totalCoins.toLocaleString()}</div><div class="l">획득 코인</div></div>`;
+  html+=`<div class="trophy-stat-card"><div class="n">${d.date.slice(5)}</div><div class="l">오늘 날짜</div></div>`;
+  html+='</div><div class="quest-list">';
+  d.quests.forEach(q=>{
+    const def=QUEST_POOL.find(p=>p.id===q.id);
+    if(!def)return;
+    const pct=Math.round(q.progress/def.target*100);
+    const complete=q.progress>=def.target;
+    const isPlayTime=def.stat==='todayPlayTime';
+    const progressStr=isPlayTime?`${Math.floor(q.progress/60)}/${Math.floor(def.target/60)}분`:`${q.progress}/${def.target}`;
+    html+=`<div class="quest-item ${complete?'complete':''} ${q.claimed?'claimed':''}">
+      <div class="em">${def.e}</div>
+      <div class="info">
+        <div class="nm">${def.n}</div>
+        <div class="pr">${progressStr}</div>
+        <div class="bar"><div class="bar-fill" style="width:${pct}%"></div></div>
+      </div>
+      <div class="reward">
+        <div class="amt">🪙 ${def.coins}</div>
+        ${q.claimed?'<div class="done">✓ 받음</div>':
+          (complete?`<button onclick="claimQuest('${q.id}')">받기</button>`:
+          '<div style="font-size:10px;color:#aaa">진행중</div>')}
+      </div>
+    </div>`;
+  });
+  html+='</div>';
+  html+='<div style="padding:0 14px 16px;font-size:11px;color:var(--muted);text-align:center;line-height:1.5">💡 자정에 새 퀘스트 3개로 갱신됩니다</div>';
+  el.innerHTML=html;
+}
+function renderAchievementList(el){
+  checkAllAchievements(); // refresh
+  const data=getAchieveData();
+  const unlocked=data.unlocked||[];
+  const cats={
+    solve:{name:'풀이',em:'🎯'},
+    wealth:{name:'부자',em:'💰'},
+    collect:{name:'컬렉션',em:'📦'},
+    streak:{name:'꾸준함',em:'🔥'},
+    farm:{name:'농장',em:'🏘'},
+    mission:{name:'미션',em:'⚜️'},
+    hidden:{name:'숨겨진',em:'❓'},
+  };
+  let html='<div class="trophy-stats">';
+  html+=`<div class="trophy-stat-card"><div class="n">${unlocked.length}/${ACHIEVEMENTS.length}</div><div class="l">달성</div></div>`;
+  const pct=Math.round(unlocked.length/ACHIEVEMENTS.length*100);
+  html+=`<div class="trophy-stat-card"><div class="n">${pct}%</div><div class="l">달성률</div></div>`;
+  const titles=ACHIEVEMENTS.filter(a=>unlocked.includes(a.id)&&a.title);
+  html+=`<div class="trophy-stat-card"><div class="n">${titles.length}</div><div class="l">칭호</div></div>`;
+  html+='</div>';
+  Object.entries(cats).forEach(([cat,info])=>{
+    const list=ACHIEVEMENTS.filter(a=>a.cat===cat);
+    if(list.length===0)return;
+    const catUnlocked=list.filter(a=>unlocked.includes(a.id)).length;
+    html+=`<div class="ach-cat"><div class="ach-cat-h">
+      <span class="em">${info.em}</span>${info.name}<span class="ct">${catUnlocked}/${list.length}</span>
+    </div><div class="ach-list">`;
+    list.forEach(a=>{
+      const u=unlocked.includes(a.id);
+      const v=getStatsValue(a.stat);
+      const pct=Math.min(100,Math.round(v/a.target*100));
+      let rTag='';
+      if(a.reward?.coins)rTag+=`+🪙${a.reward.coins.toLocaleString()} `;
+      if(a.reward?.item){const it=ITEMS.find(i=>i.id===a.reward.item);if(it)rTag+=`+${it.e}${it.n} `}
+      if(a.title)rTag+=`+칭호"${a.title}"`;
+      html+=`<div class="ach-item ${u?'unlocked':''} ${a.title?'legendary':''}">
+        <div class="em">${a.e}</div>
+        <div class="info">
+          <div class="nm">${a.n}</div>
+          <div class="d">${a.d}</div>
+          ${rTag?`<div class="reward-tag">보상: ${rTag}</div>`:''}
+        </div>
+        ${u?'<div class="check">✓</div>':`<div class="progress-text">${v}/${a.target}<br>(${pct}%)</div>`}
+      </div>`;
+    });
+    html+='</div></div>';
+  });
+  el.innerHTML=html;
 }
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => {
