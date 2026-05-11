@@ -25,7 +25,25 @@
   --note:#868e96;--border:#c5cae9;--ok:#2f9e44;--muted:#868e96;
   --gold:#f59f00;--silver:#868e96;--bronze:#c47b2b;
   --daily:#fa5252;--daily-bg:#fff5f5;
+  --cell-bg:#fff;
 }
+body.dark{
+  --bg:#1a1a2e;--surface:#22223a;--primary:#7c93ff;--pl:#2a2a44;
+  --accent:#9775fa;--given:#e9ecef;--input:#74c0fc;
+  --err:#ff6b6b;--err-bg:#3a1f1f;
+  --sel:#2d3a6e;--rel:#252848;--same:#3a2c5c;
+  --note:#6c757d;--border:#3a3a5e;--ok:#51cf66;--muted:#868e96;
+  --cell-bg:#22223a;
+}
+body.dark .cell{background:var(--cell-bg);border-color:#3a3a5e}
+body.dark .board{border-color:var(--primary)}
+body.dark .cell.given .cell-val{color:#fff}
+body.dark .cell.user .cell-val{color:var(--input)}
+body.dark .nbtn{background:var(--surface);color:var(--primary);border-color:var(--border)}
+body.dark .abtn{background:var(--surface);color:var(--given);border-color:var(--border)}
+body.dark .mission-card,body.dark .board-wrap{background:var(--surface)}
+body.dark .diff-tabs{background:var(--surface)}
+body.dark .rec-box,body.dark .mbox{background:var(--surface);color:var(--given)}
 body{background:var(--bg);font-family:'Segoe UI','Malgun Gothic',system-ui,sans-serif;
   min-height:100vh;display:flex;flex-direction:column;align-items:center;
   padding:max(10px,env(safe-area-inset-top)) 8px max(60px,env(safe-area-inset-bottom));user-select:none}
@@ -34,8 +52,10 @@ header{width:100%;max-width:420px;display:flex;align-items:center;
 .logo{font-size:24px;font-weight:900;color:var(--primary);letter-spacing:-1px;flex-shrink:0}
 .logo span{color:var(--accent)}
 .hright{display:flex;align-items:center;gap:4px;flex-shrink:0;flex-wrap:nowrap}
+.timer-wrap{display:flex;flex-direction:column;align-items:flex-end;margin-right:4px}
 .timer{font-size:17px;font-weight:700;color:var(--given);
-  font-variant-numeric:tabular-nums;letter-spacing:1px;margin-right:4px}
+  font-variant-numeric:tabular-nums;letter-spacing:1px;line-height:1}
+.best-time{font-size:9px;color:var(--ok);font-weight:700;font-variant-numeric:tabular-nums;margin-top:1px}
 .icon-btn{background:var(--pl);border:none;border-radius:50%;
   width:28px;height:28px;font-size:12px;font-weight:700;color:var(--primary);cursor:pointer;
   display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
@@ -209,6 +229,7 @@ header{width:100%;max-width:420px;display:flex;align-items:center;
   .daily-banner{grid-column:2;grid-row:3;max-width:none}
   .mission-card{grid-column:2;grid-row:4;max-width:none}
   .prog-wrap{grid-column:2;grid-row:5;max-width:none}
+  .main-farm-widget{grid-column:2;grid-row:6;max-width:none}
   .numpad{gap:8px}
   .numpad .nbtn{padding:14px 0;font-size:22px}
   /* Wider modals on desktop */
@@ -220,8 +241,8 @@ header{width:100%;max-width:420px;display:flex;align-items:center;
   .gift-item-grid{grid-template-columns:repeat(8,1fr)}
   .stat-grid{grid-template-columns:repeat(4,1fr)}
   /* Bigger farm scene */
-  .farm-scene{height:420px}
-  .friend-scene{height:380px}
+  .farm-scene{height:640px}
+  .friend-scene{height:480px}
   /* Reward cards bigger */
   .rcard{width:200px;height:280px}
   .rcard-emoji{font-size:80px}
@@ -232,13 +253,16 @@ header{width:100%;max-width:420px;display:flex;align-items:center;
 /* Even wider on big screens */
 @media (min-width:1200px){
   body{grid-template-columns:620px 440px;column-gap:40px;max-width:1120px}
-  .farm-scene{height:480px}
+  .farm-scene{height:720px}
 }
 .diff-tabs{display:flex;background:#fff;border-radius:12px;padding:4px;gap:2px;
   box-shadow:0 2px 8px rgba(59,91,219,.12);margin-bottom:10px;
   width:100%;max-width:420px}
-.dtab{flex:1;padding:7px 0;border:none;border-radius:9px;background:transparent;
-  color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;transition:all .18s}
+.dtab{flex:1;padding:5px 0;border:none;border-radius:9px;background:transparent;
+  color:var(--muted);font-size:11px;font-weight:600;cursor:pointer;transition:all .18s;
+  display:flex;flex-direction:column;align-items:center;gap:1px;line-height:1.1}
+.dtab .d-stars{font-size:8px;letter-spacing:-1px}
+.dtab .d-name{font-size:11px;font-weight:700}
 .dtab.active{background:var(--primary);color:#fff;box-shadow:0 2px 8px rgba(59,91,219,.3)}
 /* Daily Challenge Banner */
 .daily-banner{width:100%;max-width:420px;border-radius:14px;padding:12px 16px;
@@ -280,6 +304,44 @@ header{width:100%;max-width:420px;display:flex;align-items:center;
 .prog-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--accent));
   border-radius:3px;transition:width .4s ease}
 .prog-label{font-size:10px;color:var(--muted);text-align:right;margin-top:3px}
+/* Main Farm Widget — always-visible compact farm panel */
+.main-farm-widget{width:100%;max-width:420px;margin-bottom:12px;
+  background:linear-gradient(135deg,#a8e6a3 0%,#7dcb78 100%);
+  border-radius:14px;padding:10px;
+  box-shadow:0 4px 16px rgba(45,160,80,.25);position:relative}
+.mfw-header{display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:8px;color:#1c4a1e;font-weight:800;font-size:13px}
+.mfw-title{display:flex;align-items:center;gap:6px}
+.mfw-coins{background:rgba(255,255,255,.85);padding:3px 10px;border-radius:10px;
+  font-weight:900;color:#b8860b;font-size:13px;display:flex;align-items:center;gap:4px}
+.mfw-scene{width:100%;height:120px;border-radius:10px;overflow:hidden;
+  background:linear-gradient(to bottom,#87ceeb 0%,#87ceeb 60%,#9bd49b 60%,#7dc97d 100%);
+  position:relative;cursor:pointer;border:2px solid rgba(255,255,255,.5)}
+.mfw-scene .mfw-item{position:absolute;font-size:18px;line-height:1;
+  filter:drop-shadow(0 1px 1px rgba(0,0,0,.3));transition:left 2s linear,bottom .4s ease;
+  user-select:none;pointer-events:none}
+.mfw-scene .mfw-empty{position:absolute;inset:0;display:flex;align-items:center;
+  justify-content:center;color:rgba(255,255,255,.95);font-weight:700;font-size:12px;
+  text-shadow:0 1px 2px rgba(0,0,0,.4)}
+.mfw-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:8px}
+.mfw-btn{background:rgba(255,255,255,.9);border:none;border-radius:9px;
+  padding:7px 4px;font-size:10px;font-weight:700;color:#2d5a2d;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  transition:transform .15s;position:relative}
+.mfw-btn:hover{transform:translateY(-1px);background:#fff}
+.mfw-btn:active{transform:translateY(0)}
+.mfw-btn .mfw-ic{font-size:18px;line-height:1}
+.mfw-btn .mfw-lb{font-size:9px;letter-spacing:-.3px}
+.mfw-badge{position:absolute;top:-4px;right:-4px;background:#ff4444;color:#fff;
+  border-radius:10px;padding:1px 5px;font-size:9px;font-weight:900;
+  min-width:14px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.3);
+  animation:mfwPulse 1.6s ease-in-out infinite}
+@keyframes mfwPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+body.dark .main-farm-widget{background:linear-gradient(135deg,#3d6b3d 0%,#2d4f2d 100%)}
+body.dark .mfw-header{color:#c8f0c8}
+body.dark .mfw-coins{background:rgba(0,0,0,.35);color:#ffd700}
+body.dark .mfw-btn{background:rgba(255,255,255,.12);color:#e8f5e8}
+body.dark .mfw-btn:hover{background:rgba(255,255,255,.2)}
 .board-wrap{background:#fff;border-radius:16px;padding:10px;position:relative;
   box-shadow:0 4px 24px rgba(59,91,219,.15);margin-bottom:12px;
   width:100%;max-width:420px}
@@ -291,10 +353,33 @@ header{width:100%;max-width:420px;display:flex;align-items:center;
 .cell[data-c="3"],.cell[data-c="6"]{border-left:2.5px solid var(--primary)}
 .cell[data-r="2"],.cell[data-r="5"]{border-bottom:2.5px solid var(--primary)}
 .cell[data-r="3"],.cell[data-r="6"]{border-top:2.5px solid var(--primary)}
-.cell.selected{background:var(--sel)!important}
+.cell.selected{background:var(--sel)!important;
+  box-shadow:inset 0 0 0 2.5px var(--primary);
+  animation:cellPulse 1.8s ease-in-out infinite;z-index:5}
+@keyframes cellPulse{
+  0%,100%{box-shadow:inset 0 0 0 2.5px var(--primary)}
+  50%{box-shadow:inset 0 0 0 2.5px var(--accent)}
+}
 .cell.related{background:var(--rel)}
-.cell.same-num{background:var(--same)}
+.cell.same-num{background:linear-gradient(135deg,#fff3bf,#ffd43b)!important}
 .cell.error{background:var(--err-bg)}
+.cell.conflict-flash{animation:conflictFlash 1.2s ease-out;z-index:4}
+@keyframes conflictFlash{
+  0%,100%{background:#fff}
+  20%,60%{background:#ff8787;box-shadow:inset 0 0 0 2px var(--err)}
+}
+.cell.line-complete{animation:lineSparkle 1s ease-out;z-index:6}
+@keyframes lineSparkle{
+  0%{background:#fff;transform:scale(1)}
+  40%{background:linear-gradient(135deg,#ffd43b,#fab005);transform:scale(1.08);box-shadow:0 0 16px #ffd43b}
+  100%{background:#fff;transform:scale(1)}
+}
+.cell.just-filled{animation:cellPop .35s ease-out}
+@keyframes cellPop{
+  0%{transform:scale(.4);opacity:.3}
+  60%{transform:scale(1.15);opacity:1}
+  100%{transform:scale(1);opacity:1}
+}
 .cell-val{font-size:clamp(13px,3.2vw,21px);font-weight:700;line-height:1;z-index:1}
 .cell.given .cell-val{color:var(--given)}
 .cell.user .cell-val{color:var(--input)}
@@ -322,11 +407,11 @@ header{width:100%;max-width:420px;display:flex;align-items:center;
 .nbtn:active{transform:translateY(0)}
 .nbtn.done{opacity:.25;pointer-events:none}
 .nbtn.del{color:var(--err);border-color:#fcc;font-size:17px}
-.actions{width:100%;max-width:420px;display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.actions{width:100%;max-width:420px;display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
 .abtn{background:#fff;border:2px solid var(--border);border-radius:10px;
-  padding:9px 4px;font-size:10.5px;font-weight:600;color:var(--given);cursor:pointer;
-  transition:all .13s;display:flex;flex-direction:column;align-items:center;gap:3px;
-  box-shadow:0 2px 5px rgba(0,0,0,.05)}
+  padding:8px 2px;font-size:9.5px;font-weight:600;color:var(--given);cursor:pointer;
+  transition:all .13s;display:flex;flex-direction:column;align-items:center;gap:2px;
+  box-shadow:0 2px 5px rgba(0,0,0,.05);line-height:1.1}
 .abtn .ic{font-size:17px}
 .abtn:hover{background:var(--pl);border-color:var(--primary);color:var(--primary)}
 .abtn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
@@ -548,7 +633,7 @@ header{width:100%;max-width:420px;display:flex;align-items:center;
 .rec-list{flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px 16px 18px}
 /* ── FARM SCENE (Stardew Valley pixel style) ── */
 .farm-scene-wrap{padding:8px 10px 6px}
-.farm-scene{width:100%;height:400px;border-radius:6px;position:relative;overflow:hidden;
+.farm-scene{width:100%;height:520px;border-radius:6px;position:relative;overflow:hidden;
   background-color:#7cb342;
   background-image:
     /* Pixel grid: vertical lines */
@@ -575,10 +660,12 @@ header{width:100%;max-width:420px;display:flex;align-items:center;
 .placed-item{position:absolute;transform:translate(-50%,0);cursor:pointer;text-align:center;
   line-height:1;transition:left .5s cubic-bezier(.34,1.2,.64,1),bottom .5s cubic-bezier(.34,1.2,.64,1);
   filter:drop-shadow(2px 3px 0 rgba(0,0,0,.25));image-rendering:pixelated}
-.placed-item.building{font-size:46px}
-.placed-item.plant{font-size:36px;animation:plantSway 4s ease-in-out infinite alternate}
-.placed-item.animal{font-size:30px;animation:idleBreathe 1.8s ease-in-out infinite alternate}
-.placed-item.deco{font-size:30px}
+.placed-item.building{font-size:36px}
+.placed-item.plant{font-size:26px;animation:plantSway 4s ease-in-out infinite alternate}
+.placed-item.animal{font-size:24px;animation:idleBreathe 1.8s ease-in-out infinite alternate}
+.placed-item.deco{font-size:22px}
+.placed-item.fish{font-size:22px;animation:fishSwim 6s ease-in-out infinite alternate}
+@keyframes fishSwim{from{translate:0 0}to{translate:8px -3px}}
 .placed-item.legendary{filter:drop-shadow(0 0 10px #f59f00) drop-shadow(2px 3px 0 rgba(0,0,0,.25));
   animation:legendaryPulse 2s ease-in-out infinite alternate}
 .placed-item.epic{filter:drop-shadow(0 0 7px #7048e8) drop-shadow(2px 3px 0 rgba(0,0,0,.25))}
@@ -613,6 +700,180 @@ header{width:100%;max-width:420px;display:flex;align-items:center;
 @keyframes weatherFall{
   from{transform:translateY(-20px) rotate(0)}
   to{transform:translateY(360px) rotate(180deg)}
+}
+/* ── BACKGROUND DETAILS ── */
+.farm-bg-layer{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.bg-tree{position:absolute;line-height:1;filter:brightness(.78) saturate(.9);pointer-events:none}
+.bg-stone{position:absolute;line-height:1;opacity:.55;font-size:14px;pointer-events:none}
+.bg-flower{position:absolute;line-height:1;font-size:11px;opacity:.85;pointer-events:none;
+  animation:flowerSway 5s ease-in-out infinite alternate}
+@keyframes flowerSway{from{transform:rotate(-3deg)}to{transform:rotate(3deg)}}
+.bg-grass{position:absolute;line-height:1;font-size:13px;opacity:.5;pointer-events:none}
+.bg-shrub{position:absolute;line-height:1;font-size:18px;opacity:.7;pointer-events:none}
+.bg-mushroom{position:absolute;line-height:1;font-size:11px;opacity:.85;pointer-events:none}
+/* Pond */
+.pond{position:absolute;border-radius:50%;
+  background:radial-gradient(ellipse at 35% 35%,#a5d8ff 0%,#74c0fc 40%,#1971c2 100%);
+  box-shadow:inset 0 -4px 8px rgba(0,0,0,.2),inset 0 2px 4px rgba(255,255,255,.4),
+    0 2px 6px rgba(0,0,0,.15);pointer-events:none}
+.pond::before,.pond::after{content:'';position:absolute;inset:15%;border-radius:50%;
+  border:1.5px solid rgba(255,255,255,.5);animation:pondRipple 3.5s ease-out infinite}
+.pond::after{animation-delay:1.75s}
+@keyframes pondRipple{0%{transform:scale(.3);opacity:1}100%{transform:scale(1.3);opacity:0}}
+/* ── ZONE BOUNDARIES (fence/garden) ── */
+.zone-fence{position:absolute;pointer-events:none;border-radius:6px;
+  background:rgba(255,248,220,.06);
+  box-shadow:inset 0 0 0 1px rgba(120,80,40,.4),
+    inset 0 0 0 2px rgba(160,110,60,.2)}
+.zone-fence::before{content:'';position:absolute;inset:0;
+  background-image:repeating-linear-gradient(0deg,transparent 0,transparent 8px,
+    rgba(120,80,40,.4) 8px,rgba(120,80,40,.4) 10px,transparent 10px,transparent 22px);
+  border-radius:6px;opacity:.6}
+.zone-fence.animal::after{content:'🐾';position:absolute;top:-8px;left:6px;font-size:10px;
+  background:#fff;padding:1px 4px;border-radius:6px;opacity:.85}
+.zone-fence.garden{background:rgba(116,184,22,.08);
+  box-shadow:inset 0 0 0 1px rgba(46,125,50,.4)}
+.zone-fence.garden::before{display:none}
+.zone-fence.garden::after{content:'🌱';position:absolute;top:-8px;left:6px;font-size:10px;
+  background:#fff;padding:1px 4px;border-radius:6px;opacity:.85}
+/* Path */
+.path-tile{position:absolute;width:14px;height:14px;border-radius:3px;
+  background:radial-gradient(#d4a574,#a67c52);opacity:.75;pointer-events:none}
+/* ── AMBIENT LIFE ── */
+.amb-layer{position:absolute;inset:0;pointer-events:none;z-index:120;overflow:hidden}
+.butterfly{position:absolute;font-size:16px;pointer-events:none;
+  animation:butterflyPath 18s ease-in-out infinite,butterflyFlap .4s ease-in-out infinite alternate;
+  transform-origin:center}
+.butterfly.b2{animation-duration:22s,.45s;animation-delay:-6s,0s;font-size:14px}
+.butterfly.b3{animation-duration:25s,.5s;animation-delay:-12s,-.2s;font-size:15px}
+@keyframes butterflyPath{
+  0%{left:5%;bottom:30%}
+  20%{left:30%;bottom:55%}
+  40%{left:55%;bottom:25%}
+  60%{left:75%;bottom:60%}
+  80%{left:40%;bottom:40%}
+  100%{left:5%;bottom:30%}
+}
+@keyframes butterflyFlap{from{transform:scaleX(.7)}to{transform:scaleX(1)}}
+.bird{position:absolute;font-size:14px;top:8%;pointer-events:none;
+  animation:birdCross 28s linear infinite,birdBob 1.5s ease-in-out infinite alternate;
+  animation-delay:0s,0s}
+.bird.b2{animation-delay:-14s,-.7s}
+@keyframes birdCross{
+  0%{left:-10%}
+  100%{left:110%}
+}
+@keyframes birdBob{from{transform:translateY(0)}to{transform:translateY(-6px)}}
+/* Chimney smoke */
+.smoke{position:absolute;font-size:14px;pointer-events:none;opacity:0;
+  animation:smokeRise 4s ease-out infinite}
+.smoke.s2{animation-delay:1.3s;font-size:12px}
+.smoke.s3{animation-delay:2.6s;font-size:10px}
+@keyframes smokeRise{
+  0%{opacity:0;transform:translateY(0) scale(.5)}
+  30%{opacity:.6}
+  100%{opacity:0;transform:translateY(-50px) scale(1.5)}
+}
+/* Fireflies for night */
+.firefly{position:absolute;width:4px;height:4px;background:#ffd43b;border-radius:50%;
+  box-shadow:0 0 8px #ffd43b,0 0 16px rgba(255,212,59,.5);pointer-events:none;
+  animation:fireflyDrift 8s ease-in-out infinite,fireflyBlink 1.2s ease-in-out infinite alternate}
+@keyframes fireflyDrift{
+  0%,100%{transform:translate(0,0)}
+  25%{transform:translate(30px,-20px)}
+  50%{transform:translate(-15px,-35px)}
+  75%{transform:translate(20px,-15px)}
+}
+@keyframes fireflyBlink{from{opacity:.3}to{opacity:1}}
+.farm-scene.night .firefly{display:block}
+.firefly{display:none}
+.farm-scene.night .smoke,.farm-scene.evening .smoke{opacity:.4}
+/* ── ZONE VARIANTS (5 zones) ── */
+.zone-fence.crop{background:rgba(245,159,0,.07);
+  box-shadow:inset 0 0 0 1px rgba(180,120,40,.4)}
+.zone-fence.crop::before{display:none}
+.zone-fence.crop::after{content:'🌾';position:absolute;top:-8px;left:6px;font-size:10px;
+  background:#fff;padding:1px 4px;border-radius:6px;opacity:.85}
+.zone-fence.water{background:radial-gradient(ellipse,rgba(116,192,252,.18),rgba(25,113,194,.1));
+  box-shadow:inset 0 0 0 1px rgba(25,113,194,.4);border-radius:14px}
+.zone-fence.water::before{display:none}
+.zone-fence.water::after{content:'💧';position:absolute;top:-8px;left:6px;font-size:10px;
+  background:#fff;padding:1px 4px;border-radius:6px;opacity:.85}
+.zone-fence.house-plaza{background:rgba(245,159,0,.05);
+  box-shadow:inset 0 0 0 1px rgba(160,110,60,.3);border-radius:8px}
+.zone-fence.house-plaza::before{display:none}
+.zone-fence.house-plaza::after{content:'🏠';position:absolute;top:-8px;left:6px;font-size:10px;
+  background:#fff;padding:1px 4px;border-radius:6px;opacity:.85}
+/* ── LIVELY (placeable animated items) ── */
+.placed-item.lively{will-change:left,bottom,translate}
+.placed-item.lively.live-d09{animation:liveBfly 14s ease-in-out infinite,butterflyFlap .4s ease-in-out infinite alternate}
+.placed-item.lively.live-d10{animation:liveBee 10s ease-in-out infinite,butterflyFlap .25s ease-in-out infinite alternate}
+.placed-item.lively.live-d11{animation:liveFirefly 8s ease-in-out infinite,fireflyBlink 1s ease-in-out infinite alternate}
+.placed-item.lively.live-d12{animation:liveBird 12s ease-in-out infinite,birdBob 1.5s ease-in-out infinite alternate}
+.placed-item.lively.live-d13{animation:livePetal 6s ease-in-out infinite}
+@keyframes liveBfly{
+  0%,100%{translate:0 0}
+  25%{translate:18px -14px}
+  50%{translate:-10px -20px}
+  75%{translate:14px -8px}
+}
+@keyframes liveBee{
+  0%,100%{translate:0 0}
+  20%{translate:8px -4px}
+  40%{translate:-6px -8px}
+  60%{translate:10px -2px}
+  80%{translate:-4px -6px}
+}
+@keyframes liveFirefly{
+  0%,100%{translate:0 0}
+  33%{translate:20px -15px}
+  66%{translate:-15px -10px}
+}
+@keyframes liveBird{
+  0%,100%{translate:0 0}
+  50%{translate:25px -8px}
+}
+@keyframes livePetal{
+  0%{translate:0 0;opacity:1}
+  50%{translate:5px -8px;opacity:.7}
+  100%{translate:-3px -16px;opacity:0}
+}
+/* ── INTERACTION: floating hearts/sparkles ── */
+.floating-effect{position:absolute;font-size:18px;pointer-events:none;z-index:300;
+  animation:floatRise 1.5s ease-out forwards}
+@keyframes floatRise{
+  0%{opacity:0;transform:translate(-50%,0) scale(.5)}
+  20%{opacity:1;transform:translate(-50%,-10px) scale(1.2)}
+  100%{opacity:0;transform:translate(-50%,-50px) scale(.9)}
+}
+/* ── CROP PLOTS ── */
+.crop-plot{position:absolute;font-size:24px;cursor:pointer;text-align:center;line-height:1;
+  transform:translate(-50%,0);transition:transform .2s;
+  filter:drop-shadow(2px 3px 0 rgba(0,0,0,.2))}
+.crop-plot:hover{transform:translate(-50%,-2px) scale(1.1)}
+.crop-plot.empty{font-size:22px;opacity:.7;animation:plotPulse 3s ease-in-out infinite}
+@keyframes plotPulse{0%,100%{opacity:.5}50%{opacity:.85}}
+.crop-plot.growing{animation:cropSway 4s ease-in-out infinite alternate}
+@keyframes cropSway{from{transform:translate(-50%,0) rotate(-2deg)}to{transform:translate(-50%,0) rotate(2deg)}}
+.crop-plot.ready{animation:cropReady 1s ease-in-out infinite alternate;font-size:28px}
+@keyframes cropReady{from{transform:translate(-50%,0) scale(1)}to{transform:translate(-50%,-3px) scale(1.08)}}
+.crop-countdown{position:absolute;top:-12px;left:50%;transform:translateX(-50%);
+  background:rgba(0,0,0,.7);color:#fff;font-size:8px;font-weight:800;padding:1px 4px;
+  border-radius:5px;white-space:nowrap;letter-spacing:.5px}
+/* Fishing bobber */
+#fishingBobber.biting{animation:bobberShake .15s linear infinite}
+@keyframes bobberShake{
+  0%,100%{transform:translate(0,0)}
+  25%{transform:translate(-3px,2px) rotate(-5deg)}
+  75%{transform:translate(3px,-2px) rotate(5deg)}
+}
+/* Pond ripple burst (on click) */
+.pond-burst{position:absolute;border:3px solid rgba(255,255,255,.7);
+  border-radius:50%;pointer-events:none;z-index:50;
+  animation:pondBurst .8s ease-out forwards}
+@keyframes pondBurst{
+  0%{transform:scale(.3);opacity:1;border-width:3px}
+  100%{transform:scale(2.5);opacity:0;border-width:1px}
 }
 .farm-counter{background:rgba(255,255,255,.92);position:absolute;bottom:8px;left:8px;
   padding:4px 10px;border-radius:14px;font-size:11px;font-weight:700;color:var(--given);
@@ -875,7 +1136,10 @@ window.dispatchEvent(new Event('fb-ready'));
 <header>
   <div class="logo">스<span>도</span>쿠</div>
   <div class="hright">
-    <div class="timer" id="timer">00:00</div>
+    <div class="timer-wrap">
+      <div class="timer" id="timer">00:00</div>
+      <div class="best-time" id="bestTime"></div>
+    </div>
     <div class="mistakes-wrap" id="mistakeWrap"></div>
     <button class="icon-btn pause" id="pauseBtn" onclick="togglePause()" title="일시정지">⏸</button>
     <button class="icon-btn farm" onclick="openFarm()" title="내 농장">🌾</button>
@@ -887,10 +1151,10 @@ window.dispatchEvent(new Event('fb-ready'));
   </div>
 </header>
 <div class="diff-tabs" id="diffTabs">
-  <button class="dtab" data-d="easy">쉬움</button>
-  <button class="dtab active" data-d="medium">보통</button>
-  <button class="dtab" data-d="hard">어려움</button>
-  <button class="dtab" data-d="expert">전문가</button>
+  <button class="dtab" data-d="easy"><span class="d-stars">⭐</span><span class="d-name">쉬움</span></button>
+  <button class="dtab active" data-d="medium"><span class="d-stars">⭐⭐</span><span class="d-name">보통</span></button>
+  <button class="dtab" data-d="hard"><span class="d-stars">⭐⭐⭐</span><span class="d-name">어려움</span></button>
+  <button class="dtab" data-d="expert"><span class="d-stars">⭐⭐⭐⭐</span><span class="d-name">전문가</span></button>
 </div>
 <!-- Daily Challenge Banner -->
 <div class="daily-banner" id="dailyBanner" onclick="startDailyChallenge()">
@@ -914,6 +1178,29 @@ window.dispatchEvent(new Event('fb-ready'));
   <div class="prog-bar"><div class="prog-fill" id="pFill" style="width:0%"></div></div>
   <div class="prog-label" id="pLabel">0 / 81</div>
 </div>
+<!-- Main Farm Widget — always visible -->
+<div class="main-farm-widget" id="mainFarmWidget">
+  <div class="mfw-header">
+    <div class="mfw-title">🌾 내 농장</div>
+    <div class="mfw-coins">🪙 <span id="mfwCoins">0</span></div>
+  </div>
+  <div class="mfw-scene" id="mfwScene" onclick="openFarm()"></div>
+  <div class="mfw-actions">
+    <button class="mfw-btn" onclick="openFarm()">
+      <span class="mfw-ic">🏡</span><span class="mfw-lb">농장</span>
+    </button>
+    <button class="mfw-btn" onclick="quickFish()">
+      <span class="mfw-ic">🎣</span><span class="mfw-lb">낚시</span>
+    </button>
+    <button class="mfw-btn" onclick="quickChests()">
+      <span class="mfw-ic">📦</span><span class="mfw-lb">상자</span>
+      <span class="mfw-badge" id="mfwChestBadge" style="display:none">0</span>
+    </button>
+    <button class="mfw-btn" onclick="quickFishEncy()">
+      <span class="mfw-ic">🐠</span><span class="mfw-lb">족보</span>
+    </button>
+  </div>
+</div>
 <div class="board-wrap">
   <div class="board" id="board"></div>
   <div class="pause-overlay" id="pauseOverlay" onclick="togglePause()">
@@ -930,6 +1217,7 @@ window.dispatchEvent(new Event('fb-ready'));
 </div>
 <div class="actions">
   <button class="abtn" id="undoBtn" onclick="undo()"><span class="ic">↩</span>실행취소</button>
+  <button class="abtn" onclick="autoPencil()"><span class="ic">🪄</span>자동메모</button>
   <button class="abtn" id="noteBtn" onclick="toggleNote()"><span class="ic">✏️</span>메모</button>
   <button class="abtn" id="hintBtn" onclick="giveHint()"><span class="ic">💡</span>힌트(<span id="hCnt">3</span>)</button>
   <button class="abtn" onclick="startNewGame()"><span class="ic">🎲</span>새 게임</button>
@@ -1003,6 +1291,22 @@ window.dispatchEvent(new Event('fb-ready'));
     </div>
   </div>
 </div>
+<!-- Fishing Modal -->
+<div class="overlay hidden" id="fishingModal" style="z-index:400">
+  <div class="mbox" style="max-width:340px">
+    <div class="m-h1">🎣 낚시</div>
+    <div style="width:100%;height:160px;background:linear-gradient(to bottom,#74c0fc 0%,#1971c2 100%);
+      border-radius:12px;display:flex;align-items:center;justify-content:center;margin:14px 0;
+      position:relative;overflow:hidden">
+      <div id="fishingBobber" style="font-size:48px;transition:transform .3s">🎣</div>
+    </div>
+    <div id="fishingMsg" style="font-size:13px;color:var(--muted);margin:10px 0;min-height:40px;line-height:1.5"></div>
+    <div class="mbtns">
+      <button class="mbtn out" onclick="closeFishingModal()">닫기</button>
+      <button class="mbtn pri" id="fishingBtn" onclick="reelInFish()">🎣 시작</button>
+    </div>
+  </div>
+</div>
 <!-- Settings Modal -->
 <div class="overlay hidden" id="settingsModal">
   <div class="rec-box">
@@ -1049,6 +1353,14 @@ window.dispatchEvent(new Event('fb-ready'));
             <div class="desc">잔잔한 4-코드 루프. 스도쿠 집중 도움</div>
           </div>
           <button onclick="toggleBgm();openSettings()" id="bgmToggleBtn">ON</button>
+        </div>
+        <div class="settings-row">
+          <div class="ic" id="darkIc">🌙</div>
+          <div class="info">
+            <div class="nm">다크 모드: <span id="darkLabel">OFF</span></div>
+            <div class="desc">어두운 테마. 밤 사용시 눈 편함</div>
+          </div>
+          <button onclick="toggleDark();openSettings()" id="darkToggleBtn">ON</button>
         </div>
         <h3>☁️ 클라우드 동기화</h3>
         <div class="settings-row">
@@ -1141,6 +1453,7 @@ window.dispatchEvent(new Event('fb-ready'));
     <div class="farm-view-tabs">
       <button class="fvtab active" data-v="scene" onclick="switchFarmView('scene')">🏞 풍경</button>
       <button class="fvtab" data-v="shop" onclick="switchFarmView('shop')">🏪 상점</button>
+      <button class="fvtab" data-v="fish" onclick="switchFarmView('fish')">🐠 족보</button>
       <button class="fvtab" data-v="inv" onclick="switchFarmView('inv')">📦 보관함</button>
     </div>
     <!-- SCENE view -->
@@ -1166,6 +1479,12 @@ window.dispatchEvent(new Event('fb-ready'));
     <div class="farm-section" id="farmShopSection">
       <div class="rec-list" style="padding:0">
         <div class="shop-section" id="shopContent"></div>
+      </div>
+    </div>
+    <!-- FISH ENCYCLOPEDIA view -->
+    <div class="farm-section" id="farmFishSection">
+      <div class="rec-list" style="padding:0">
+        <div id="fishEncyContent"></div>
       </div>
     </div>
     <!-- INVENTORY view -->
@@ -1491,7 +1810,7 @@ function initGame(d, daily=false){
   stopTimer();timerVal=0;
   document.getElementById('timer').textContent='00:00';
   startTimer();
-  updateHintBtn();updateMistakeWrap();
+  updateHintBtn();updateMistakeWrap();updateBestTime();
   renderBoard();renderNumpad();
   document.getElementById('noteBtn').classList.remove('active');
   document.getElementById('noteInd').classList.remove('on');
@@ -1605,12 +1924,17 @@ function input(n){
     const wasErr=board[r][c]!==0&&board[r][c]!==solution[r][c];
     board[r][c]=n;notes[r][c].clear();
     if(n!==solution[r][c]){
-      if(!wasErr){mistakes++;updateMistakeWrap();playSound('error');if(mission)triggerFail('mistake')}
+      if(!wasErr){
+        mistakes++;updateMistakeWrap();playSound('error');
+        if(mission)triggerFail('mistake');
+        // Highlight conflicting cells (if not strict mode)
+        if(!strictMode)highlightConflicts(r,c,n);
+      }
     } else {clearPeerNotes(r,c,n);playSound('correct');checkLineCompletion(r,c);}
   }
   refreshCell(r,c);renderNumpad();highlight();updateProgress();checkWin();
 }
-// Check if row/col/box was just completed → chance for legendary bonus
+// Check if row/col/box was just completed → sparkle + chance for bonus drop
 function checkLineCompletion(r,c){
   const isRowComplete=board[r].every((v,i)=>v===solution[r][i]);
   const isColComplete=board.every((row,i)=>row[c]===solution[i][c]);
@@ -1620,9 +1944,39 @@ function checkLineCompletion(r,c){
     if(board[br*3+i][bc*3+j]!==solution[br*3+i][bc*3+j]){isBoxComplete=false;break;}
   }
   const boxId=br*3+bc;
-  if(isRowComplete && !completedRows.has(r)){completedRows.add(r);tryBonusDrop('행',r);}
-  if(isColComplete && !completedCols.has(c)){completedCols.add(c);tryBonusDrop('열',c);}
-  if(isBoxComplete && !completedBoxes.has(boxId)){completedBoxes.add(boxId);tryBonusDrop('3×3 박스',boxId);}
+  if(isRowComplete && !completedRows.has(r)){
+    completedRows.add(r);
+    celebrateLine('row',r);
+    tryBonusDrop('행',r);
+  }
+  if(isColComplete && !completedCols.has(c)){
+    completedCols.add(c);
+    celebrateLine('col',c);
+    tryBonusDrop('열',c);
+  }
+  if(isBoxComplete && !completedBoxes.has(boxId)){
+    completedBoxes.add(boxId);
+    celebrateLine('box',boxId);
+    tryBonusDrop('3×3 박스',boxId);
+  }
+}
+function celebrateLine(type,idx){
+  // Add sparkle class to cells, staggered for wave effect
+  const cells=[];
+  if(type==='row')for(let c=0;c<9;c++)cells.push({r:idx,c});
+  else if(type==='col')for(let r=0;r<9;r++)cells.push({r,c:idx});
+  else{const br=Math.floor(idx/3),bc=idx%3;
+    for(let i=0;i<3;i++)for(let j=0;j<3;j++)cells.push({r:br*3+i,c:bc*3+j});}
+  cells.forEach((cell,i)=>{
+    setTimeout(()=>{
+      const el=document.querySelector(`.cell[data-r="${cell.r}"][data-c="${cell.c}"]`);
+      if(el){
+        el.classList.add('line-complete');
+        setTimeout(()=>el.classList.remove('line-complete'),1000);
+      }
+    },i*60); // 60ms stagger for wave effect
+  });
+  playSound('rare');
 }
 function tryBonusDrop(type,idx){
   // Drop probability: row/col=3%, box=5%
@@ -1657,6 +2011,32 @@ function tryBonusDrop(type,idx){
   setTimeout(()=>flash.style.opacity='0',2200);
   setTimeout(()=>flash.remove(),2600);
 }
+function highlightConflicts(r,c,n){
+  // Find cells in same row/col/box with same number
+  const conflicts=[];
+  for(let i=0;i<9;i++){
+    if(i!==c && board[r][i]===n)conflicts.push({r,c:i});
+    if(i!==r && board[i][c]===n)conflicts.push({r:i,c});
+  }
+  const br=Math.floor(r/3)*3,bc=Math.floor(c/3)*3;
+  for(let i=0;i<3;i++)for(let j=0;j<3;j++){
+    const rr=br+i,cc=bc+j;
+    if((rr!==r||cc!==c) && board[rr][cc]===n)conflicts.push({r:rr,c:cc});
+  }
+  conflicts.forEach(({r:cr,c:cc})=>{
+    const el=document.querySelector(`.cell[data-r="${cr}"][data-c="${cc}"]`);
+    if(el){
+      el.classList.add('conflict-flash');
+      setTimeout(()=>el.classList.remove('conflict-flash'),1200);
+    }
+  });
+  // Also flash the input cell
+  const inputEl=document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
+  if(inputEl){
+    inputEl.classList.add('conflict-flash');
+    setTimeout(()=>inputEl.classList.remove('conflict-flash'),1200);
+  }
+}
 function clearPeerNotes(r,c,n){
   for(let i=0;i<9;i++){notes[r][i].delete(n);refreshCell(r,i);notes[i][c].delete(n);refreshCell(i,c)}
   const br=Math.floor(r/3)*3,bc=Math.floor(c/3)*3;
@@ -1674,23 +2054,62 @@ function toggleNote(){
   document.getElementById('noteBtn').classList.toggle('active',noteMode);
   document.getElementById('noteInd').classList.toggle('on',noteMode);
 }
+function autoPencil(){
+  if(completed)return;
+  if(!notesUsed){notesUsed=true;if(mission)triggerFail('note')}
+  for(let r=0;r<9;r++)for(let c=0;c<9;c++){
+    if(board[r][c]===0){
+      const possible=cands(board,r,c);
+      possible.forEach(n=>notes[r][c].add(n));
+    }
+  }
+  refreshAll();
+  playSound('flip');
+  showToast('🪄 자동 메모 완료! 빈 칸에 가능 숫자가 표시됩니다');
+}
+let lastHintCellKey=null;
+let lastHintTime=0;
 function giveHint(){
   if(!sel)return showToast('먼저 칸을 선택하세요');
   if(hintsLeft<=0)return showToast('힌트를 모두 사용했습니다');
   const{r,c}=sel;
   if(given[r][c])return showToast('이미 채워진 칸입니다');
   if(board[r][c]===solution[r][c])return showToast('이미 정답입니다! ✨');
-  history.push({r,c,val:board[r][c],notes:new Set(notes[r][c])});
-  board[r][c]=solution[r][c];notes[r][c].clear();
-  hintsLeft--;hintsUsed++;
-  if(mission)triggerFail('hint');
-  updateHintBtn();clearPeerNotes(r,c,solution[r][c]);
-  refreshCell(r,c);renderNumpad();highlight();updateProgress();checkWin();
-  showToast('💡 힌트 적용!');
+  const cellKey=`${r}-${c}`;
+  const now=Date.now();
+  // If same cell within 5 sec → fill answer (graduated step 2)
+  if(lastHintCellKey===cellKey && (now-lastHintTime)<5000){
+    history.push({r,c,val:board[r][c],notes:new Set(notes[r][c])});
+    board[r][c]=solution[r][c];notes[r][c].clear();
+    hintsLeft--;hintsUsed++;
+    if(mission)triggerFail('hint');
+    updateHintBtn();clearPeerNotes(r,c,solution[r][c]);
+    refreshCell(r,c);renderNumpad();highlight();updateProgress();checkWin();
+    showToast('💡 정답 채움!');
+    lastHintCellKey=null;
+    playSound('correct');
+  }else{
+    // Step 1: show candidates (cheaper, 0.5 hint cost)
+    history.push({r,c,val:board[r][c],notes:new Set(notes[r][c])});
+    notes[r][c].clear();
+    cands(board,r,c).forEach(n=>notes[r][c].add(n));
+    refreshCell(r,c);
+    lastHintCellKey=cellKey;
+    lastHintTime=now;
+    showToast('💡 후보 숫자 표시 (5초 내 한번 더 누르면 정답)');
+    playSound('flip');
+  }
 }
 function updateHintBtn(){
   document.getElementById('hCnt').textContent=hintsLeft;
   document.getElementById('hintBtn').disabled=hintsLeft<=0;
+}
+function updateBestTime(){
+  const el=document.getElementById('bestTime');
+  if(!el)return;
+  const s=getStats();
+  const best=s.bestTime?.[diff]||0;
+  el.textContent=best?`🏆 ${fmtTime(best)}`:'';
 }
 function checkWin(){
   for(let r=0;r<9;r++)for(let c=0;c<9;c++)if(board[r][c]!==solution[r][c])return;
@@ -1732,6 +2151,8 @@ function showWin(){
   updateDailyBanner();
   // Generate and queue rewards (shown when user closes win modal)
   pendingRewardData=generateRewards(diff,!!mOk,isDaily);
+  // Grant 5 chests (time-gated coin rewards)
+  grantWinChests();
   // Track for achievements + quests
   playSound('win');
   trackQuest('todayWins',1);
@@ -1994,6 +2415,9 @@ document.querySelectorAll('.dtab').forEach(t=>t.classList.toggle('active',t.data
 initGame(diff);
 updateDailyBanner();
 updateFarmBadge();
+// Render main farm widget on load + refresh every 5s
+setTimeout(()=>{if(typeof renderMainFarmWidget==='function')renderMainFarmWidget()},500);
+setInterval(()=>{if(typeof renderMainFarmWidget==='function')renderMainFarmWidget()},5000);
 // ═══════════════════════════════════════
 // ITEMS CATALOG (43 items × 4 rarities × 4 categories)
 // ═══════════════════════════════════════
@@ -2003,32 +2427,49 @@ const ITEMS=[
   {id:'a02',n:'양',e:'🐑',r:'common',c:'animal'},
   {id:'a03',n:'소',e:'🐄',r:'common',c:'animal'},
   {id:'a04',n:'돼지',e:'🐖',r:'common',c:'animal'},
-  {id:'a05',n:'토끼',e:'🐰',r:'common',c:'animal'},
-  {id:'a06',n:'사슴',e:'🦌',r:'rare',c:'animal'},
-  {id:'a07',n:'여우',e:'🦊',r:'rare',c:'animal'},
-  {id:'a08',n:'부엉이',e:'🦉',r:'rare',c:'animal'},
-  {id:'a09',n:'곰',e:'🐻',r:'epic',c:'animal'},
-  {id:'a10',n:'사자',e:'🦁',r:'epic',c:'animal'},
-  {id:'a11',n:'호랑이',e:'🐯',r:'epic',c:'animal'},
+  {id:'a05',n:'토끼',e:'🐇',r:'common',c:'animal'},
+  {id:'a06',n:'염소',e:'🐐',r:'rare',c:'animal'},
+  {id:'a07',n:'거위',e:'🪿',r:'rare',c:'animal'},
+  {id:'a08',n:'라마',e:'🦙',r:'rare',c:'animal'},
+  {id:'a09',n:'말',e:'🐎',r:'epic',c:'animal'},
+  {id:'a10',n:'공작새',e:'🦚',r:'epic',c:'animal'},
+  {id:'a11',n:'백조',e:'🦢',r:'epic',c:'animal'},
   {id:'a12',n:'드래곤',e:'🐉',r:'legendary',c:'animal'},
   {id:'a13',n:'유니콘',e:'🦄',r:'legendary',c:'animal'},
   {id:'a14',n:'봉황',e:'🦅',r:'legendary',c:'animal'},
   // Common animals (extra)
-  {id:'a15',n:'강아지',e:'🐶',r:'common',c:'animal'},
-  {id:'a16',n:'고양이',e:'🐱',r:'common',c:'animal'},
+  {id:'a15',n:'강아지',e:'🐕',r:'common',c:'animal'},
+  {id:'a16',n:'고양이',e:'🐈',r:'common',c:'animal'},
   {id:'a17',n:'햄스터',e:'🐹',r:'common',c:'animal'},
   {id:'a18',n:'오리',e:'🦆',r:'common',c:'animal'},
   {id:'a19',n:'거북이',e:'🐢',r:'common',c:'animal'},
   // Rare animals (extra)
-  {id:'a20',n:'고슴도치',e:'🦔',r:'rare',c:'animal'},
-  {id:'a21',n:'너구리',e:'🦝',r:'rare',c:'animal'},
+  {id:'a20',n:'칠면조',e:'🦃',r:'rare',c:'animal'},
+  {id:'a21',n:'고슴도치',e:'🦔',r:'rare',c:'animal'},
   {id:'a22',n:'수달',e:'🦦',r:'rare',c:'animal'},
-  {id:'a23',n:'늑대',e:'🐺',r:'rare',c:'animal'},
-  // Epic animals (extra)
-  {id:'a24',n:'얼룩말',e:'🦓',r:'epic',c:'animal'},
+  {id:'a23',n:'사슴',e:'🦌',r:'rare',c:'animal'},
+  // Epic animals (extra) - 럭셔리 농장
+  {id:'a24',n:'캥거루',e:'🦘',r:'epic',c:'animal'},
   {id:'a25',n:'멧돼지',e:'🐗',r:'epic',c:'animal'},
-  {id:'a26',n:'기린',e:'🦒',r:'epic',c:'animal'},
+  {id:'a26',n:'악어',e:'🐊',r:'epic',c:'animal'},
   {id:'a27',n:'코뿔소',e:'🦏',r:'epic',c:'animal'},
+  // More epic animals
+  {id:'a28',n:'황소',e:'🐂',r:'epic',c:'animal'},
+  {id:'a29',n:'물소',e:'🐃',r:'epic',c:'animal'},
+  {id:'a30',n:'들소',e:'🦬',r:'epic',c:'animal'},
+  // Fish (aquatic - placeable in water zone)
+  {id:'f01',n:'잔챙이',e:'🐟',r:'common',c:'fish'},
+  {id:'f02',n:'붕어',e:'🐠',r:'common',c:'fish'},
+  {id:'f03',n:'열대어',e:'🐠',r:'rare',c:'fish'},
+  {id:'f04',n:'복어',e:'🐡',r:'rare',c:'fish'},
+  {id:'f05',n:'오징어',e:'🦑',r:'rare',c:'fish'},
+  {id:'f06',n:'문어',e:'🐙',r:'epic',c:'fish'},
+  {id:'f07',n:'바닷가재',e:'🦞',r:'epic',c:'fish'},
+  {id:'f08',n:'상어',e:'🦈',r:'epic',c:'fish'},
+  {id:'f09',n:'고래',e:'🐳',r:'legendary',c:'fish'},
+  {id:'f10',n:'전설용어',e:'🐲',r:'legendary',c:'fish'},
+  // Aquarium building
+  {id:'b16',n:'수족관',e:'🪟',r:'epic',c:'building'},
   // plants
   {id:'p01',n:'나무',e:'🌳',r:'common',c:'plant'},
   {id:'p02',n:'해바라기',e:'🌻',r:'common',c:'plant'},
@@ -2042,7 +2483,7 @@ const ITEMS=[
   {id:'p10',n:'세계수',e:'🌟',r:'legendary',c:'plant'},
   {id:'p11',n:'무지개나무',e:'🌈',r:'legendary',c:'plant'},
   // buildings
-  {id:'b01',n:'오두막',e:'🛖',r:'common',c:'building'},
+  {id:'b01',n:'우물',e:'🪣',r:'common',c:'building',perk:'plant_yield_plus'}, // 식물 수확량 +1
   {id:'b02',n:'텐트',e:'⛺',r:'common',c:'building'},
   {id:'b03',n:'폐가',e:'🏚',r:'common',c:'building'},
   {id:'b04',n:'농가',e:'🏠',r:'rare',c:'building'},
@@ -2052,6 +2493,12 @@ const ITEMS=[
   {id:'b08',n:'사원',e:'🏯',r:'epic',c:'building'},
   {id:'b09',n:'자유의여신상',e:'🗽',r:'legendary',c:'building'},
   {id:'b10',n:'신전',e:'🛕',r:'legendary',c:'building'},
+  // New buildings with functional perks
+  {id:'b11',n:'창고',e:'🏭',r:'rare',c:'building',perk:'stack_cap_plus6'},     // MAX_STACK +6
+  {id:'b12',n:'풍차',e:'🌬',r:'epic',c:'building',perk:'plant_speed_20'},      // 식물 생산 +20%
+  {id:'b13',n:'사일로',e:'🗼',r:'rare',c:'building',perk:'auto_sell_max'},     // MAX 자원 자동판매 80%
+  {id:'b14',n:'시장',e:'🏪',r:'epic',c:'building',perk:'daily_bonus_500'},    // 일일 +500코인
+  {id:'b15',n:'표지판',e:'🪧',r:'common',c:'building'},                          // 그냥 장식
   // decorations
   {id:'d01',n:'울타리',e:'🪵',r:'common',c:'deco'},
   {id:'d02',n:'등불',e:'🏮',r:'common',c:'deco'},
@@ -2061,6 +2508,28 @@ const ITEMS=[
   {id:'d06',n:'모닥불',e:'🔥',r:'epic',c:'deco'},
   {id:'d07',n:'석상',e:'🗿',r:'epic',c:'deco'},
   {id:'d08',n:'황금트로피',e:'🏆',r:'legendary',c:'deco'},
+  // Lively decorations (animated when placed)
+  {id:'d09',n:'나비',e:'🦋',r:'rare',c:'deco',live:true},
+  {id:'d10',n:'벌',e:'🐝',r:'common',c:'deco',live:true},
+  {id:'d11',n:'반딧불',e:'✨',r:'epic',c:'deco',live:true},
+  {id:'d12',n:'작은새',e:'🐦',r:'common',c:'deco',live:true},
+  {id:'d13',n:'꽃잎',e:'🌸',r:'common',c:'deco',live:true},
+  // Static decorations — pure visual, no production
+  {id:'d14',n:'선인장',e:'🌵',r:'common',c:'deco'},
+  {id:'d15',n:'화분',e:'🪴',r:'common',c:'deco'},
+  {id:'d16',n:'깃발',e:'🚩',r:'common',c:'deco'},
+  {id:'d17',n:'장미',e:'🌹',r:'common',c:'deco'},
+  {id:'d18',n:'라일락',e:'🪻',r:'common',c:'deco'},
+  {id:'d19',n:'항아리',e:'🏺',r:'common',c:'deco'},
+  {id:'d20',n:'크리스마스나무',e:'🎄',r:'common',c:'deco'},
+  {id:'d21',n:'대나무',e:'🎋',r:'rare',c:'deco'},
+  {id:'d22',n:'풍경',e:'🎐',r:'rare',c:'deco'},
+  {id:'d23',n:'부케',e:'💐',r:'rare',c:'deco'},
+  {id:'d24',n:'거울',e:'🪞',r:'rare',c:'deco'},
+  {id:'d25',n:'도리이',e:'⛩️',r:'rare',c:'deco'},
+  {id:'d26',n:'회전목마',e:'🎠',r:'epic',c:'deco'},
+  {id:'d27',n:'미끄럼틀',e:'🛝',r:'epic',c:'deco'},
+  {id:'d28',n:'관람차',e:'🎡',r:'legendary',c:'deco'},
   // ─── Special items (achievement rewards) ───
   {id:'sp_jeokToMa',n:'적토마',e:'🐎',r:'legendary',c:'animal',sp:true},
   {id:'sp_goldChicken',n:'황금알닭',e:'🐓',r:'legendary',c:'animal',sp:true},
@@ -2068,6 +2537,17 @@ const ITEMS=[
   {id:'sp_coinMine',n:'코인광산',e:'⛏️',r:'legendary',c:'building',sp:true},
   {id:'sp_chalice',n:'황금성배',e:'🏆',r:'legendary',c:'deco',sp:true},
   {id:'sp_streakRing',n:'연속의반지',e:'💍',r:'legendary',c:'deco',sp:true},
+  // 10 NEW special items
+  {id:'sp_hourglass', n:'시간의모래시계',e:'⏳',r:'legendary',c:'deco',sp:true},
+  {id:'sp_rainbow',   n:'무지개다리',  e:'🌈',r:'legendary',c:'deco',sp:true},
+  {id:'sp_grape',     n:'풍요의덩굴',  e:'🍇',r:'legendary',c:'plant',sp:true},
+  {id:'sp_mirror',    n:'신비한거울',  e:'🪞',r:'legendary',c:'deco',sp:true},
+  {id:'sp_scythe',    n:'황금낫',      e:'🌾',r:'legendary',c:'deco',sp:true},
+  {id:'sp_charm',     n:'번개부적',    e:'⚡',r:'legendary',c:'deco',sp:true},
+  {id:'sp_clover',    n:'행운의클로버',e:'🍀',r:'legendary',c:'plant',sp:true},
+  {id:'sp_jar',       n:'무한항아리',  e:'🏺',r:'legendary',c:'deco',sp:true},
+  {id:'sp_trumpet',   n:'알림나팔',    e:'🎺',r:'legendary',c:'deco',sp:true},
+  {id:'sp_moon',      n:'달의축복',    e:'🌙',r:'legendary',c:'deco',sp:true},
 ];
 const RARITY_INFO={
   common:{label:'일반',color:'#adb5bd',weight:60},
@@ -2076,6 +2556,405 @@ const RARITY_INFO={
   legendary:{label:'전설',color:'#f59f00',weight:3},
 };
 const FARM_KEY='sudoku_farm_v1';
+// ═══════════════════════════════════════
+// CHEST SYSTEM (5 chests per sudoku win, time-gated)
+// ═══════════════════════════════════════
+const CHEST_KEY='sudoku_chests_v1';
+const CHEST_TYPES={
+  bronze:   {n:'동상자',  e:'📦',sec:300,    coins:100,  color:'#cd7f32'},  // 5분
+  silver:   {n:'은상자',  e:'📦',sec:1800,   coins:500,  color:'#c0c0c0'},  // 30분
+  gold:     {n:'금상자',  e:'🎁',sec:7200,   coins:2500, color:'#ffd700'},  // 2시간
+  platinum: {n:'백금상자',e:'🎁',sec:21600,  coins:10000,color:'#e5e4e2'},  // 6시간
+  rainbow:  {n:'무지개상자',e:'🌈',sec:43200,coins:50000,color:'#ff69b4'},  // 12시간
+};
+const CHEST_PACK=['bronze','silver','gold','platinum','rainbow'];
+function getChests(){
+  try{return JSON.parse(localStorage.getItem(CHEST_KEY)||'[]')}catch(e){return[]}
+}
+function saveChests(c){localStorage.setItem(CHEST_KEY,JSON.stringify(c));scheduleSyncPush&&scheduleSyncPush()}
+function grantWinChests(){
+  // Grant all 5 chests, each starts timer NOW
+  const chests=getChests();
+  const now=Date.now();
+  CHEST_PACK.forEach(type=>{
+    chests.push({type,startedAt:now,id:'c_'+Math.random().toString(36).substr(2,7)});
+  });
+  saveChests(chests);
+}
+function openChest(chestId){
+  const chests=getChests();
+  const idx=chests.findIndex(c=>c.id===chestId);
+  if(idx<0)return;
+  const chest=chests[idx];
+  const def=CHEST_TYPES[chest.type];if(!def)return;
+  const elapsed=(Date.now()-chest.startedAt)/1000;
+  if(elapsed<def.sec){
+    showToast(`⏰ ${fmtCountdown(def.sec-elapsed)} 남음`);return;
+  }
+  // Open
+  chests.splice(idx,1);
+  saveChests(chests);
+  const econ=getEconomy();
+  econ.coins+=def.coins;
+  saveEconomy(econ);
+  updateCoinsDisplay();
+  playSound('coin');
+  setTimeout(()=>launchConfetti(),100);
+  showToast(`${def.e} ${def.n} 개봉! +🪙${def.coins.toLocaleString()}`);
+  renderShop&&renderShop();
+}
+function chestCountReady(){
+  const chests=getChests();
+  const now=Date.now();
+  return chests.filter(c=>{
+    const def=CHEST_TYPES[c.type];
+    return def && (now-c.startedAt)/1000>=def.sec;
+  }).length;
+}
+function renderChestsSection(e){
+  const chests=getChests();
+  if(chests.length===0)return '';
+  let html=`<div class="shop-h"><span class="em">📦</span>상자 (스도쿠 보상)</div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:6px">스도쿠 완성시 5개 상자 지급. 시간 지나면 열기 가능</div>`;
+  const now=Date.now();
+  chests.sort((a,b)=>{
+    const da=CHEST_TYPES[a.type]?.sec||0,db=CHEST_TYPES[b.type]?.sec||0;
+    return da-db;
+  });
+  chests.forEach(c=>{
+    const def=CHEST_TYPES[c.type];if(!def)return;
+    const elapsed=(now-c.startedAt)/1000;
+    const ready=elapsed>=def.sec;
+    const remain=Math.max(0,def.sec-elapsed);
+    html+=`<div class="res-row" style="border-left:3px solid ${def.color}">
+      <div class="em" style="font-size:28px">${def.e}</div>
+      <div class="info">
+        <div class="nm">${def.n}</div>
+        <div class="pr">${ready?'✨ 열기 가능!':`⏰ ${fmtCountdown(remain)} 남음`}</div>
+      </div>
+      <div class="ct">🪙 ${def.coins.toLocaleString()}</div>
+      <div class="actions">
+        <button class="res-btn ${ready?'':'opacity-50'}" onclick="openChest('${c.id}')" ${ready?'':'disabled'}>
+          ${ready?'열기':'대기'}
+        </button>
+      </div>
+    </div>`;
+  });
+  return html;
+}
+// ═══════════════════════════════════════
+// SEED / CROP PLANTING SYSTEM
+// ═══════════════════════════════════════
+const SEEDS={
+  carrot: {n:'당근',  e:'🥕',sprout:'🌱',cost:100, sec:300,  yield:5, res:'fruit'},
+  corn:   {n:'옥수수',e:'🌽',sprout:'🌱',cost:300, sec:600,  yield:8, res:'fruit'},
+  wheat:  {n:'밀',    e:'🌾',sprout:'🌾',cost:700, sec:1200, yield:12,res:'fruit'},
+  tomato: {n:'토마토',e:'🍅',sprout:'🌱',cost:1500,sec:1800, yield:18,res:'fruit'},
+  pumpkin:{n:'호박',  e:'🎃',sprout:'🌱',cost:3500,sec:3600, yield:35,res:'fruit'},
+};
+const CROPS_KEY='sudoku_crops_v1';
+// ═══════════════════════════════════════
+// FISHING MINIGAME
+// ═══════════════════════════════════════
+const FISH_PRICES={
+  f01:25,    // 잔챙이
+  f02:40,    // 붕어
+  f03:120,   // 열대어
+  f04:180,   // 복어
+  f05:150,   // 오징어
+  f06:400,   // 문어
+  f07:500,   // 바닷가재
+  f08:800,   // 상어
+  f09:3000,  // 고래
+  f10:8000,  // 전설용어
+};
+const FISH_WEIGHTS={common:55,rare:30,epic:13,legendary:2};
+const FISH_KEY='sudoku_last_fishing';
+let fishingState='idle'; // idle, casting, waiting, biting, missed
+let fishingTimer=null;
+function sellFish(fishId,amount){
+  const farm=getFarm();
+  const have=farm[fishId]||0;
+  const sellN=Math.min(have,amount||have);
+  if(sellN<=0){showToast('재고 없음');return;}
+  const price=FISH_PRICES[fishId]||0;
+  const total=sellN*price;
+  farm[fishId]=have-sellN;
+  if(farm[fishId]===0)delete farm[fishId];
+  saveFarm(farm);
+  const econ=getEconomy();
+  econ.coins+=total;
+  saveEconomy(econ);
+  updateCoinsDisplay();
+  playSound('coin');
+  const fish=ITEMS.find(i=>i.id===fishId);
+  showToast(`💰 ${fish.n}×${sellN} 판매 → +🪙${total.toLocaleString()}`);
+  renderFishEncyclopedia();
+}
+function sellAllFish(){
+  const farm=getFarm();
+  const fishesInStock=Object.entries(farm).filter(([id,n])=>{
+    const item=ITEMS.find(i=>i.id===id);return item&&item.c==='fish'&&n>0;
+  });
+  if(fishesInStock.length===0){showToast('판매할 물고기 없음');return;}
+  let total=0,count=0;
+  const econ=getEconomy();
+  fishesInStock.forEach(([id,n])=>{
+    const price=FISH_PRICES[id]||0;
+    total+=price*n;
+    count+=n;
+    delete farm[id];
+  });
+  saveFarm(farm);
+  econ.coins+=total;
+  saveEconomy(econ);
+  updateCoinsDisplay();
+  playSound('coin');
+  setTimeout(()=>launchConfetti(),100);
+  showToast(`🎣 ${count}마리 일괄 판매 → +🪙${total.toLocaleString()}`);
+  renderFishEncyclopedia();
+}
+function renderFishEncyclopedia(){
+  const el=document.getElementById('fishEncyContent');
+  if(!el)return;
+  const farm=getFarm();
+  const econ=getEconomy();
+  const lifetime=econ.fishCaughtTotal||{};
+  const fishes=ITEMS.filter(i=>i.c==='fish');
+  // Stats summary
+  const caughtCount=fishes.filter(f=>lifetime[f.id]).length;
+  const totalCaught=Object.values(lifetime).reduce((a,b)=>a+b,0);
+  const inStock=fishes.filter(f=>(farm[f.id]||0)>0).length;
+  const stockValue=Object.entries(farm).filter(([id])=>{
+    const i=ITEMS.find(x=>x.id===id);return i&&i.c==='fish';
+  }).reduce((s,[id,n])=>s+(FISH_PRICES[id]||0)*n,0);
+  let html=`<div class="trophy-stats">
+    <div class="trophy-stat-card"><div class="n">${caughtCount}/${fishes.length}</div><div class="l">발견 종</div></div>
+    <div class="trophy-stat-card"><div class="n">${totalCaught}</div><div class="l">총 잡음</div></div>
+    <div class="trophy-stat-card"><div class="n">${stockValue.toLocaleString()}</div><div class="l">보유 가치</div></div>
+  </div>`;
+  if(stockValue>0){
+    html+=`<div style="text-align:center;padding:6px 14px">
+      <button class="res-btn all" onclick="sellAllFish()" style="padding:8px 16px;font-size:13px">
+        💰 보유한 ${Object.values(farm).filter((n,i)=>{const id=Object.keys(farm)[i];const it=ITEMS.find(x=>x.id===id);return it&&it.c==='fish';}).reduce((a,b)=>a+b,0)}마리 일괄 판매 (+🪙${stockValue.toLocaleString()})
+      </button>
+    </div>`;
+  }
+  html+=`<div class="quest-list">`;
+  // Sort by rarity then price
+  const rOrder={legendary:0,epic:1,rare:2,common:3};
+  fishes.sort((a,b)=>{
+    if(rOrder[a.r]!==rOrder[b.r])return rOrder[a.r]-rOrder[b.r];
+    return (FISH_PRICES[b.id]||0)-(FISH_PRICES[a.id]||0);
+  });
+  fishes.forEach(fish=>{
+    const stock=farm[fish.id]||0;
+    const total=lifetime[fish.id]||0;
+    const caught=total>0;
+    const price=FISH_PRICES[fish.id]||0;
+    const colorMap={common:'#adb5bd',rare:'#1971c2',epic:'#7048e8',legendary:'#f59f00'};
+    html+=`<div class="quest-item" style="border-color:${caught?colorMap[fish.r]:'#e9ecef'};opacity:${caught?1:.5}">
+      <div class="em" style="font-size:32px">${caught?fish.e:'❓'}</div>
+      <div class="info">
+        <div class="nm">${caught?fish.n:'???'} <span style="font-size:9px;color:${colorMap[fish.r]};font-weight:800">${RARITY_INFO[fish.r].label.toUpperCase()}</span></div>
+        <div class="pr">${caught?`평생 ${total}마리 잡음 · 💰 ${price}코인/마리`:'아직 못 잡음'}</div>
+        ${stock>0?`<div style="font-size:10px;color:var(--ok);font-weight:700;margin-top:2px">보유: ${stock}마리 (총 ${(stock*price).toLocaleString()}코인)</div>`:''}
+      </div>
+      ${stock>0?`<div class="reward">
+        <button onclick="sellFish('${fish.id}',1)" style="margin-bottom:3px;background:var(--primary);color:#fff;border:none;border-radius:6px;padding:4px 8px;font-size:10px;font-weight:700;cursor:pointer">1팔기</button>
+        <button onclick="sellFish('${fish.id}',999)" style="background:var(--ok);color:#fff;border:none;border-radius:6px;padding:4px 8px;font-size:10px;font-weight:700;cursor:pointer">전체</button>
+      </div>`:''}
+    </div>`;
+  });
+  html+=`</div><div style="padding:0 14px 16px;font-size:11px;color:var(--muted);text-align:center;line-height:1.5">🎣 연못 클릭하여 낚시 · 30초 쿨다운</div>`;
+  el.innerHTML=html;
+}
+function canFish(){
+  const last=parseInt(localStorage.getItem(FISH_KEY)||'0');
+  return Date.now()-last>=30000; // 30 sec cooldown
+}
+function openFishingModal(){
+  if(!canFish()){
+    const last=parseInt(localStorage.getItem(FISH_KEY)||'0');
+    const remain=Math.ceil((30000-(Date.now()-last))/1000);
+    showToast(`🎣 ${remain}초 후 다시 낚시 가능`);
+    return;
+  }
+  document.getElementById('fishingModal').classList.remove('hidden');
+  startFishing();
+}
+function closeFishingModal(){
+  document.getElementById('fishingModal').classList.add('hidden');
+  if(fishingTimer){clearTimeout(fishingTimer);fishingTimer=null}
+  fishingState='idle';
+}
+function startFishing(){
+  fishingState='casting';
+  const bobber=document.getElementById('fishingBobber');
+  const msg=document.getElementById('fishingMsg');
+  const btn=document.getElementById('fishingBtn');
+  bobber.textContent='🎣';
+  bobber.classList.remove('biting');
+  msg.textContent='낚시줄을 던집니다...';
+  btn.textContent='기다리는 중...';
+  btn.disabled=true;
+  // Wait 2-5 seconds before bite
+  const waitTime=2000+Math.random()*3000;
+  fishingTimer=setTimeout(()=>{
+    fishingState='biting';
+    bobber.textContent='💥';
+    bobber.classList.add('biting');
+    msg.textContent='💥 물었다! 빨리 끌어올려!';
+    btn.textContent='🎣 끌어올리기!';
+    btn.disabled=false;
+    // Auto-miss after 1.5 sec
+    fishingTimer=setTimeout(()=>{
+      if(fishingState==='biting'){
+        fishingState='missed';
+        bobber.textContent='🎣';
+        bobber.classList.remove('biting');
+        msg.textContent='😞 놓쳤다... 다시 시도하세요';
+        btn.textContent='다시 낚시';
+        btn.disabled=false;
+      }
+    },1500);
+  },waitTime);
+}
+function reelInFish(){
+  if(fishingState==='biting'){
+    if(fishingTimer){clearTimeout(fishingTimer);fishingTimer=null}
+    // Catch a fish
+    const rarity=pickRarity(FISH_WEIGHTS);
+    const fishes=ITEMS.filter(i=>i.c==='fish'&&i.r===rarity);
+    if(fishes.length===0)return;
+    const fish=fishes[Math.floor(Math.random()*fishes.length)];
+    // Add to inventory + track lifetime
+    const farm=getFarm();
+    farm[fish.id]=(farm[fish.id]||0)+1;
+    saveFarm(farm);
+    // Track lifetime catches
+    const econ=getEconomy();
+    if(!econ.fishCaughtTotal)econ.fishCaughtTotal={};
+    econ.fishCaughtTotal[fish.id]=(econ.fishCaughtTotal[fish.id]||0)+1;
+    saveEconomy(econ);
+    // Update last fishing time
+    localStorage.setItem(FISH_KEY,String(Date.now()));
+    // Show result
+    fishingState='caught';
+    const bobber=document.getElementById('fishingBobber');
+    const msg=document.getElementById('fishingMsg');
+    const btn=document.getElementById('fishingBtn');
+    bobber.textContent=fish.e;
+    bobber.classList.remove('biting');
+    bobber.style.fontSize='60px';
+    msg.innerHTML=`🎉 <strong>${fish.n}</strong> 잡음! (${RARITY_INFO[fish.r].label})<br>판매가: 🪙 ${FISH_PRICES[fish.id]}`;
+    btn.textContent='✓ 보관함에 추가됨';
+    btn.disabled=true;
+    playSound(rarity==='legendary'?'legendary':rarity==='epic'?'epic':'rare');
+    if(rarity==='legendary'||rarity==='epic')launchConfetti();
+    setTimeout(()=>{bobber.style.fontSize='';closeFishingModal()},3000);
+  }else if(fishingState==='missed'||fishingState==='idle'){
+    startFishing();
+  }else if(fishingState==='casting'){
+    showToast('아직 안 물었어요. 물때까지 기다리세요');
+  }
+}
+// 8 plots in crop field zone (x=68-83, y=12-30)
+const CROP_PLOTS=[
+  {id:'p1',x:70,y:25},{id:'p2',x:75,y:25},{id:'p3',x:80,y:25},{id:'p4',x:85,y:25},
+  {id:'p5',x:70,y:18},{id:'p6',x:75,y:18},{id:'p7',x:80,y:18},{id:'p8',x:85,y:18},
+];
+let plantedCrops=[];
+function loadCrops(){
+  try{plantedCrops=JSON.parse(localStorage.getItem(CROPS_KEY)||'[]')}catch(e){plantedCrops=[]}
+}
+function saveCrops(){localStorage.setItem(CROPS_KEY,JSON.stringify(plantedCrops));scheduleSyncPush&&scheduleSyncPush()}
+function getCropAtPlot(plotId){return plantedCrops.find(c=>c.plotId===plotId)}
+function isCropReady(c){
+  if(!c)return false;
+  const seed=SEEDS[c.seedId];if(!seed)return false;
+  return(Date.now()-c.plantedAt)/1000>=seed.sec;
+}
+function plantSeed(plotId,seedId){
+  const seed=SEEDS[seedId];if(!seed)return;
+  const econ=getEconomy();
+  if(econ.coins<seed.cost){showToast(`💸 ${seed.cost-econ.coins} 코인 부족!`);return;}
+  if(getCropAtPlot(plotId)){showToast('이미 심어져 있어요');return;}
+  econ.coins-=seed.cost;saveEconomy(econ);updateCoinsDisplay();
+  plantedCrops.push({plotId,seedId,plantedAt:Date.now()});
+  saveCrops();
+  renderFarmScene();
+  playSound('coin');
+  showToast(`🌱 ${seed.n} 심음! ${fmtCountdown(seed.sec)} 후 수확`);
+}
+function harvestCrop(plotId){
+  const c=getCropAtPlot(plotId);
+  if(!c||!isCropReady(c))return;
+  const seed=SEEDS[c.seedId];if(!seed)return;
+  const econ=getEconomy();
+  econ.resources[seed.res]=(econ.resources[seed.res]||0)+seed.yield;
+  saveEconomy(econ);
+  plantedCrops=plantedCrops.filter(x=>x.plotId!==plotId);
+  saveCrops();
+  renderFarmScene();
+  playSound('coin');
+  trackQuest('todayCollect',1);
+  const res=RESOURCES[seed.res];
+  showToast(`🎉 ${seed.n} 수확! +${res.e} ${res.n}×${seed.yield}`);
+}
+function showSeedPicker(plotId){
+  const econ=getEconomy();
+  let html='어떤 씨앗 심을까요?\n\n';
+  Object.entries(SEEDS).forEach(([id,s],i)=>{
+    const can=econ.coins>=s.cost?'✓':'✗';
+    html+=`${i+1}. ${s.e} ${s.n} - 🪙${s.cost} (${fmtCountdown(s.sec)} → ${s.yield}개) ${can}\n`;
+  });
+  html+='\n번호 입력 (취소: 0)';
+  const choice=prompt(html);
+  if(!choice||choice==='0')return;
+  const idx=parseInt(choice)-1;
+  const seedIds=Object.keys(SEEDS);
+  if(idx<0||idx>=seedIds.length){showToast('잘못된 번호');return;}
+  plantSeed(plotId,seedIds[idx]);
+}
+function renderCropPlots(scene){
+  CROP_PLOTS.forEach(plot=>{
+    const c=getCropAtPlot(plot.id);
+    const el=document.createElement('div');
+    el.className='crop-plot';
+    el.style.left=plot.x+'%';
+    el.style.bottom=plot.y+'%';
+    el.style.zIndex=Math.round(150-plot.y);
+    if(!c){
+      // Empty plot - dirt
+      el.classList.add('empty');
+      el.textContent='🟫';
+      el.title='빈 밭 — 탭하여 씨앗 심기';
+      el.onclick=e=>{e.stopPropagation();if(!placeMode)showSeedPicker(plot.id)};
+    }else{
+      const seed=SEEDS[c.seedId];if(!seed){el.remove();return}
+      const ready=isCropReady(c);
+      if(ready){
+        el.classList.add('ready');
+        el.textContent=seed.e;
+        el.title=`${seed.n} 수확 가능! (${seed.yield}개)`;
+        el.onclick=e=>{e.stopPropagation();if(!placeMode)harvestCrop(plot.id)};
+      }else{
+        el.classList.add('growing');
+        el.textContent=seed.sprout;
+        const remaining=Math.max(0,seed.sec-(Date.now()-c.plantedAt)/1000);
+        el.title=`${seed.n} 키우는중 (${fmtCountdown(remaining)} 남음)`;
+        el.onclick=e=>{e.stopPropagation();showToast(`🌱 ${seed.n}: ${fmtCountdown(remaining)} 남음`)};
+        // Show countdown badge
+        const badge=document.createElement('div');
+        badge.className='crop-countdown';
+        badge.textContent=fmtCountdown(remaining);
+        el.appendChild(badge);
+      }
+    }
+    scene.appendChild(el);
+  });
+}
 function getFarm(){
   try{return JSON.parse(localStorage.getItem(FARM_KEY)||'{}')}catch(e){return{}}
 }
@@ -2232,6 +3111,89 @@ function closeReward(){
 // FARM VIEW
 // ═══════════════════════════════════════
 let farmFilter='all';
+// ═══════════════════════════════════════
+// MAIN FARM WIDGET — always visible on main screen
+// ═══════════════════════════════════════
+let mfwMovers=[];let mfwAnimTimer=null;
+function renderMainFarmWidget(){
+  const econ=getEconomy();
+  const coinsEl=document.getElementById('mfwCoins');
+  if(coinsEl)coinsEl.textContent=(econ.coins||0).toLocaleString();
+  // Chest ready badge
+  const ready=(typeof chestCountReady==='function')?chestCountReady():0;
+  const badge=document.getElementById('mfwChestBadge');
+  if(badge){
+    if(ready>0){badge.style.display='block';badge.textContent=ready}
+    else badge.style.display='none';
+  }
+  // Render compact farm scene
+  const scene=document.getElementById('mfwScene');
+  if(!scene)return;
+  const farm=getFarm();
+  const placed=[];
+  // Pick up to 6 most interesting items (prefer animals/special, then crops/decor)
+  const order=['legendary','epic','rare','common'];
+  const entries=Object.entries(farm).filter(([,n])=>n>0);
+  // Use ITEMS catalog to sort by rarity
+  entries.sort((a,b)=>{
+    const ia=ITEMS.find(i=>i.id===a[0]);
+    const ib=ITEMS.find(i=>i.id===b[0]);
+    return order.indexOf(ia?.rarity||'common')-order.indexOf(ib?.rarity||'common');
+  });
+  let count=0;
+  for(const[id,n]of entries){
+    if(count>=6)break;
+    const item=ITEMS.find(i=>i.id===id);
+    if(!item)continue;
+    if(item.c==='fish')continue; // no fish on widget
+    placed.push({id,emoji:item.emoji,cat:item.c});count++;
+  }
+  // House if owned
+  const house=(econ.houseLevel||0)>=1;
+  let html='';
+  if(house){
+    html+=`<div class="mfw-item" style="left:5%;bottom:12%;font-size:28px">🏡</div>`;
+  }
+  if(placed.length===0 && !house){
+    html=`<div class="mfw-empty">🌱 농장을 시작해보세요!</div>`;
+  }else{
+    placed.forEach((p,i)=>{
+      const x=15+i*14+Math.random()*4;
+      const y=8+(i%2)*15;
+      html+=`<div class="mfw-item" data-i="${i}" style="left:${x}%;bottom:${y}%">${p.emoji}</div>`;
+    });
+  }
+  scene.innerHTML=html;
+  // Animate items gently
+  if(mfwAnimTimer)clearInterval(mfwAnimTimer);
+  mfwAnimTimer=setInterval(()=>{
+    const items=scene.querySelectorAll('.mfw-item[data-i]');
+    items.forEach(el=>{
+      if(Math.random()<0.35)return; // idle
+      const cur=parseFloat(el.style.left);
+      const nx=Math.max(8,Math.min(88,cur+(Math.random()*8-4)));
+      el.style.left=nx+'%';
+    });
+  },2200);
+}
+function quickFish(){
+  if(typeof openFishingModal==='function')openFishingModal();
+  else showToast('🎣 낚시 시스템 준비 중');
+}
+function quickChests(){
+  const ready=(typeof chestCountReady==='function')?chestCountReady():0;
+  if(getChests().length===0){
+    showToast('📦 스도쿠 완성시 상자 5개 지급!');
+    return;
+  }
+  openFarm();
+  setTimeout(()=>switchFarmView('shop'),50);
+  if(ready>0)showToast(`✨ ${ready}개 상자 열기 가능!`);
+}
+function quickFishEncy(){
+  openFarm();
+  setTimeout(()=>switchFarmView('fish'),50);
+}
 function openFarm(){
   farmFilter='all';
   document.querySelectorAll('#farmFilter .ffilter').forEach(b=>b.classList.toggle('active',b.dataset.f==='all'));
@@ -2241,6 +3203,8 @@ function openFarm(){
   document.getElementById('farmSceneSection').classList.add('show');
   document.getElementById('farmShopSection').classList.remove('show');
   document.getElementById('farmInvSection').classList.remove('show');
+  const fishSec=document.getElementById('farmFishSection');
+  if(fishSec)fishSec.classList.remove('show');
   loadLayout();
   // First-time starter pack
   spawnStarterPack();
@@ -2248,11 +3212,15 @@ function openFarm(){
   else renderFarmScene();
   updateCoinsDisplay();
   document.getElementById('farmModal').classList.remove('hidden');
+  // Switch to farm BGM
+  if(bgmEnabled)startBgmType('farm');
 }
 function closeFarm(){
   document.getElementById('farmModal').classList.add('hidden');
   stopWalking();
   if(placeMode)togglePlaceMode();
+  // Switch back to sudoku BGM
+  if(bgmEnabled)startBgmType('sudoku');
 }
 document.getElementById('farmFilter').addEventListener('click',e=>{
   const b=e.target.closest('.ffilter');if(!b)return;
@@ -2339,13 +3307,36 @@ function autoArrangeFarm(){
     const visible=Math.min(3,count);
     for(let i=0;i<visible;i++)items.push(item);
   });
-  // Place by category in zones (snapped to 5% grid for pixel feel)
+  // Zone-based placement matching 5-zone visual layout:
+  //   Animal pen:  x=7-43,  y=15-40 (left, fenced)
+  //   Garden:      x=50-64, y=14-28 (식물)
+  //   Crop field:  x=70-83, y=14-28 (작물)
+  //   House plaza: x=42-60, y=44-58 (집 광장)
+  //   Decoration front: x=5-95, y=2-12
+  //   Water zone:  x=87-97, y=8-18 (pond area, mostly auto)
   items.forEach(item=>{
-    let x=10+Math.random()*80,y;
-    if(item.c==='building')y=42+Math.random()*20;
-    else if(item.c==='plant')y=8+Math.random()*52;
-    else if(item.c==='animal')y=4+Math.random()*30;
-    else y=5+Math.random()*55;
+    let x,y;
+    if(item.c==='fish')return; // Fish go in encyclopedia only, not on farm
+    if(item.c==='animal'){
+      x=8+Math.random()*35;
+      y=16+Math.random()*22;
+    }else if(item.c==='plant'){
+      // 50/50 garden vs crop
+      if(Math.random()<0.5){x=50+Math.random()*14;}
+      else{x=70+Math.random()*13;}
+      y=14+Math.random()*14;
+    }else if(item.c==='building'){
+      x=42+Math.random()*18;
+      if(Math.abs(x-50)<8)x=x<50?40:62;
+      y=44+Math.random()*14;
+    }else if(item.live){
+      // Lively items scatter around upper sky area
+      x=10+Math.random()*80;
+      y=20+Math.random()*40;
+    }else{ // static deco
+      x=5+Math.random()*90;
+      y=3+Math.random()*9;
+    }
     x=Math.round(x/5)*5;
     y=Math.round(y/5)*5;
     farmLayout.push({uid:genUid(),id:item.id,x,y});
@@ -2354,10 +3345,178 @@ function autoArrangeFarm(){
   renderFarmScene();
   if(placeMode)renderTray();
 }
+// Static background decoration generator (deterministic for stable layout)
+function buildFarmBackground(){
+  const bg=document.createElement('div');
+  bg.className='farm-bg-layer';
+  // Background trees on edges (far depth, low opacity)
+  const treePositions=[
+    {x:2,y:50,e:'🌲',s:36},{x:6,y:46,e:'🌳',s:32},
+    {x:94,y:48,e:'🌲',s:34},{x:90,y:52,e:'🌳',s:30},
+    {x:13,y:55,e:'🌲',s:26},{x:87,y:53,e:'🌳',s:28},
+    {x:50,y:64,e:'🏔️',s:30},{x:35,y:62,e:'🏔️',s:26},{x:65,y:63,e:'🏔️',s:28}
+  ];
+  treePositions.forEach(t=>{
+    const el=document.createElement('div');
+    el.className=t.e.includes('🏔')?'bg-tree':'bg-tree';
+    el.textContent=t.e;
+    el.style.left=t.x+'%';
+    el.style.bottom=t.y+'%';
+    el.style.fontSize=t.s+'px';
+    el.style.zIndex=Math.round(150-t.y);
+    bg.appendChild(el);
+  });
+  // Stones scattered
+  const stones=[
+    {x:6,y:8},{x:22,y:6},{x:41,y:3},{x:62,y:4},{x:78,y:7},
+    {x:14,y:14},{x:34,y:11},{x:71,y:12},{x:88,y:9},
+    {x:18,y:36},{x:80,y:38}
+  ];
+  stones.forEach(s=>{
+    const el=document.createElement('div');
+    el.className='bg-stone';
+    el.textContent=Math.random()<.4?'🪨':'🪨';
+    el.style.left=s.x+'%';
+    el.style.bottom=s.y+'%';
+    el.style.zIndex=Math.round(150-s.y);
+    bg.appendChild(el);
+  });
+  // Grass tufts (small grass clusters)
+  const grass=[
+    {x:9,y:5,e:'🌿'},{x:30,y:7,e:'🌿'},{x:48,y:5,e:'🌿'},
+    {x:65,y:6,e:'🌿'},{x:82,y:5,e:'🌿'},{x:20,y:18,e:'🌿'},
+    {x:75,y:20,e:'🌿'},{x:42,y:14,e:'🌿'}
+  ];
+  grass.forEach(g=>{
+    const el=document.createElement('div');
+    el.className='bg-grass';
+    el.textContent=g.e;
+    el.style.left=g.x+'%';
+    el.style.bottom=g.y+'%';
+    el.style.zIndex=Math.round(150-g.y);
+    bg.appendChild(el);
+  });
+  // Flowers
+  const flowers=[
+    {x:11,y:9,e:'🌷'},{x:25,y:8,e:'🌼'},{x:38,y:9,e:'🌸'},
+    {x:55,y:7,e:'🌷'},{x:69,y:8,e:'🌼'},{x:83,y:9,e:'🌸'},
+    {x:5,y:16,e:'🌼'},{x:92,y:17,e:'🌷'}
+  ];
+  flowers.forEach(f=>{
+    const el=document.createElement('div');
+    el.className='bg-flower';
+    el.textContent=f.e;
+    el.style.left=f.x+'%';
+    el.style.bottom=f.y+'%';
+    el.style.zIndex=Math.round(150-f.y);
+    bg.appendChild(el);
+  });
+  // Shrubs
+  [{x:16,y:8},{x:84,y:8},{x:48,y:38}].forEach(b=>{
+    const el=document.createElement('div');
+    el.className='bg-shrub';
+    el.textContent='🌳';
+    el.style.left=b.x+'%';
+    el.style.bottom=b.y+'%';
+    el.style.zIndex=Math.round(150-b.y);
+    bg.appendChild(el);
+  });
+  // Mushrooms (forest feel)
+  [{x:4,y:25},{x:96,y:24}].forEach(m=>{
+    const el=document.createElement('div');
+    el.className='bg-mushroom';
+    el.textContent='🍄';
+    el.style.left=m.x+'%';
+    el.style.bottom=m.y+'%';
+    el.style.zIndex=Math.round(150-m.y);
+    bg.appendChild(el);
+  });
+  // Pond (in water zone)
+  const pond=document.createElement('div');
+  pond.className='pond';
+  pond.id='farmPond';
+  pond.style.left='91%';pond.style.bottom='9%';
+  pond.style.width='70px';pond.style.height='36px';
+  pond.style.transform='translateX(-50%)';
+  pond.style.zIndex=Math.round(150-9);
+  pond.style.cursor='pointer';
+  pond.style.pointerEvents='auto';
+  bg.appendChild(pond);
+  // Zone fences (5 zones)
+  const zones=[
+    {cls:'animal',left:5, bottom:12, w:40, h:30},   // 🐾 동물 우리 (좌측 큼)
+    {cls:'garden',left:48,bottom:12, w:18, h:18},   // 🌱 정원 (식물)
+    {cls:'crop', left:68, bottom:12, w:17, h:18},   // 🌾 작물밭
+    {cls:'house-plaza',left:40,bottom:42,w:22,h:18},// 🏠 집 광장 (중앙)
+    {cls:'water',left:85,bottom:6,  w:13, h:14},    // 💧 연못 영역
+  ];
+  zones.forEach(z=>{
+    const el=document.createElement('div');
+    el.className='zone-fence '+z.cls;
+    el.style.left=z.left+'%';
+    el.style.bottom=z.bottom+'%';
+    el.style.width=z.w+'%';
+    el.style.height=z.h+'%';
+    el.style.zIndex='25';
+    bg.appendChild(el);
+  });
+  return bg;
+}
+// Ambient life layer (butterflies, birds, smoke, fireflies)
+function buildAmbientLayer(){
+  // Background ambient is now minimal - lively items are placeable via inventory
+  const amb=document.createElement('div');
+  amb.className='amb-layer';
+  amb.innerHTML=`
+    <div class="bird" style="animation-delay:-5s,-.4s">🐦</div>
+    <div class="firefly" style="left:15%;bottom:25%"></div>
+    <div class="firefly" style="left:55%;bottom:40%;animation-delay:-3s,-.4s"></div>
+    <div class="firefly" style="left:80%;bottom:30%;animation-delay:-6s,-.8s"></div>
+  `;
+  return amb;
+}
+// Chimney smoke (above house)
+function buildChimneySmoke(houseLeft,houseBottom,houseSize){
+  const smokeWrap=document.createElement('div');
+  smokeWrap.style.cssText=`position:absolute;left:${houseLeft}%;bottom:${houseBottom+houseSize*0.08}%;
+    transform:translateX(-50%);pointer-events:none;z-index:81`;
+  smokeWrap.innerHTML=`
+    <div class="smoke">💨</div>
+    <div class="smoke s2">💨</div>
+    <div class="smoke s3">💨</div>
+  `;
+  return smokeWrap;
+}
+function spawnFloatEffect(emoji,x,y,scene){
+  if(!scene)return;
+  const el=document.createElement('div');
+  el.className='floating-effect';
+  el.textContent=emoji;
+  el.style.left=x+'%';
+  el.style.bottom=(y+8)+'%';
+  scene.appendChild(el);
+  setTimeout(()=>el.remove(),1600);
+}
 function renderFarmScene(){
   const scene=document.getElementById('farmScene');
   if(!scene)return;
-  scene.querySelectorAll('.placed-item').forEach(el=>el.remove());
+  // Clear everything except day-badge, counter
+  scene.querySelectorAll('.placed-item,.farm-bg-layer,.amb-layer,.chimney-smoke').forEach(el=>el.remove());
+  // Add background layer first (lowest z)
+  scene.appendChild(buildFarmBackground());
+  // Load + render crop plots
+  loadCrops();
+  scene.querySelectorAll('.crop-plot').forEach(el=>el.remove());
+  renderCropPlots(scene);
+  // Pond click → open fishing minigame
+  const pondEl=scene.querySelector('#farmPond');
+  if(pondEl){
+    pondEl.addEventListener('click',e=>{
+      e.stopPropagation();
+      playSound('flip');
+      openFishingModal();
+    });
+  }
   // Render house first (always present, fixed position)
   const econ=getEconomy();
   const h=houseInfo(econ.houseLevel);
@@ -2375,11 +3534,18 @@ function renderFarmScene(){
     showToast(`🏘 ${h.n} (LV ${h.lv}): ${h.perk}`);
   });
   scene.appendChild(hEl);
+  // Chimney smoke (LV 2+ houses have visible smoke)
+  if(h.lv>=2){
+    const smoke=buildChimneySmoke(50,48+h.size*0.08,h.size);
+    scene.appendChild(smoke);
+  }
   farmLayout.forEach(p=>{
     const item=ITEMS.find(i=>i.id===p.id);
     if(!item)return;
     const el=document.createElement('div');
-    el.className=`placed-item ${item.c} ${item.r}`;
+    let cls=`placed-item ${item.c} ${item.r}`;
+    if(item.live)cls+=` lively live-${item.id}`;
+    el.className=cls;
     el.dataset.uid=p.uid;
     el.textContent=getStageEmoji(p,item);
     el.style.left=p.x+'%';
@@ -2388,7 +3554,7 @@ function renderFarmScene(){
     // Apply stage scale for animals (1=juvenile, 2=adult)
     const stage=getCurrentStage(p);
     if(item.c==='animal' && stage<2){
-      const baseSize=30;
+      const baseSize=24;
       el.style.fontSize=(baseSize*STAGE_SCALE[stage])+'px';
       // Juvenile growing indicator
       const label=document.createElement('div');
@@ -2405,14 +3571,46 @@ function renderFarmScene(){
           farmLayout=farmLayout.filter(x=>x.uid!==p.uid);
           saveLayout();renderFarmScene();renderTray();
         }
+        return;
+      }
+      // Click interactions based on category
+      if(item.c==='animal'){
+        el.classList.add('hopping');
+        setTimeout(()=>el.classList.remove('hopping'),500);
+        playSound('correct');
+        spawnFloatEffect('❤️',p.x,p.y,scene);
+        // 25% chance for instant resource (adult only)
+        if(Math.random()<0.25 && PROD[p.id] && stage===2){
+          const econ=getEconomy();
+          econ.resources[PROD[p.id].r]=(econ.resources[PROD[p.id].r]||0)+1;
+          saveEconomy(econ);updateCoinsDisplay();
+          const res=RESOURCES[PROD[p.id].r];
+          showToast(`💕 ${item.n}이(가) 좋아해요! +${res.e} ${res.n}1`);
+        }
+      }else if(item.c==='plant'){
+        // Shake + chance of fruit
+        el.style.animation='plantSway .3s ease-in-out 3';
+        setTimeout(()=>{el.style.animation=''},900);
+        playSound('flip');
+        spawnFloatEffect('✨',p.x,p.y,scene);
+        if(Math.random()<0.20 && PROD[p.id]){
+          const econ=getEconomy();
+          econ.resources[PROD[p.id].r]=(econ.resources[PROD[p.id].r]||0)+1;
+          saveEconomy(econ);updateCoinsDisplay();
+          const res=RESOURCES[PROD[p.id].r];
+          showToast(`🌳 ${item.n}에서 ${res.e} ${res.n}1 떨어짐!`);
+        }
+      }else if(item.live){
+        spawnFloatEffect('💕',p.x,p.y,scene);
       }else{
-        const stageInfo=stage<3?` · ${STAGE_LABEL[stage]}`:'';
-        showToast(`${item.e} ${item.n} (${RARITY_INFO[item.r].label})${stageInfo}`);
+        showToast(`${item.e} ${item.n} (${RARITY_INFO[item.r].label})`);
       }
     });
     scene.appendChild(el);
   });
   document.getElementById('farmCounter').textContent=`${farmLayout.length}개 배치`;
+  // Ambient life layer (top)
+  scene.appendChild(buildAmbientLayer());
   startWalking();
   updatePendingBadges();
 }
@@ -2424,34 +3622,40 @@ function startWalking(){
   walkInterval=setInterval(()=>{
     if(document.getElementById('farmModal').classList.contains('hidden'))return;
     if(placeMode)return;
-    // Update day phase + collect button + production badges periodically
+    // Periodic updates
     applyDayPhase();
     updateCoinsDisplay();
     updatePendingBadges();
     farmLayout.forEach(p=>{
       const item=ITEMS.find(i=>i.id===p.id);
       if(!item||item.c!=='animal')return;
-      // Juveniles wander less than adults
+      // 35% chance to stay idle (more natural)
+      if(Math.random()<0.35)return;
       const stage=getCurrentStage(p);
-      // Snap to 5% grid for pixel-art feel; juvenile=narrow wander, adult=wide
-      const range=stage===1?15:25;
+      // Smaller, more natural wander range
+      const range=stage===1?6:12;
       let newX=p.x+(Math.random()*range*2-range);
-      newX=Math.max(8,Math.min(92,newX));
-      newX=Math.round(newX/5)*5; // snap to 5% increments
+      // Keep animals within left pen (5-45%) if they started there
+      if(p.x<=48){newX=Math.max(7,Math.min(45,newX));}
+      else{newX=Math.max(8,Math.min(92,newX));}
+      newX=Math.round(newX/5)*5;
       const oldX=p.x;
-      if(Math.abs(newX-oldX)<3)return; // skip tiny moves
+      if(Math.abs(newX-oldX)<3)return;
       p.x=newX;
       const el=document.querySelector(`[data-uid="${p.uid}"]`);
       if(el){
-        // Trigger hop animation
+        // Direction flip
         if(newX<oldX)el.classList.add('flipped');else el.classList.remove('flipped');
-        el.classList.add('hopping');
-        setTimeout(()=>el.classList.remove('hopping'),500);
+        // 35% chance to hop, 65% smooth glide (variety)
+        if(Math.random()<0.35){
+          el.classList.add('hopping');
+          setTimeout(()=>el.classList.remove('hopping'),500);
+        }
         el.style.left=p.x+'%';
       }
     });
     saveLayout();
-  },3000);
+  },1800);
 }
 function stopWalking(){if(walkInterval){clearInterval(walkInterval);walkInterval=null}}
 // Day/night cycle based on real time
@@ -2515,11 +3719,11 @@ const RESOURCES={
   coinOre:{n:'코인광석',e:'💰',price:600},
 };
 const HOUSES=[
-  {lv:1,e:'🛖',n:'오두막',cost:0,size:50,perk:'시작 단계'},
-  {lv:2,e:'🏠',n:'농가',cost:500,size:62,perk:'자원 가격 +10%'},
-  {lv:3,e:'🏡',n:'별장',cost:2500,size:74,perk:'자원 가격 +20%'},
-  {lv:4,e:'🏰',n:'성탑',cost:12000,size:86,perk:'자원 가격 +35%'},
-  {lv:5,e:'🏯',n:'황금성',cost:60000,size:100,perk:'자원 가격 +50%'},
+  {lv:1,e:'🛖',n:'오두막',cost:0,size:42,perk:'시작 단계'},
+  {lv:2,e:'🏠',n:'농가',cost:1500,size:50,perk:'자원 가격 +10%'},
+  {lv:3,e:'🏡',n:'별장',cost:8000,size:58,perk:'자원 가격 +20%'},
+  {lv:4,e:'🏰',n:'성탑',cost:40000,size:68,perk:'자원 가격 +35%'},
+  {lv:5,e:'🏯',n:'황금성',cost:200000,size:78,perk:'자원 가격 +50%'},
 ];
 // Production (seconds per 1 unit)
 const PROD={
@@ -2527,12 +3731,14 @@ const PROD={
   a01:{r:'egg',  s:300},   a02:{r:'wool',s:480},
   a03:{r:'milk', s:480},   a04:{r:'meat',s:1800},
   a05:{r:'fruit',s:600},
-  // Rare animals
-  a06:{r:'meat',s:900},    a07:{r:'fish',s:600},
-  a08:{r:'mana',s:7200},
-  // Epic animals
-  a09:{r:'honey',s:1500},  a10:{r:'meat',s:900},
-  a11:{r:'meat',s:900},
+  // Rare animals (farm)
+  a06:{r:'milk',s:600},    // 염소 (염소우유)
+  a07:{r:'egg',s:480},     // 거위 (거위알)
+  a08:{r:'wool',s:900},    // 라마 (라마털)
+  // Epic animals (luxury farm)
+  a09:{r:'milk',s:720},    // 말 (꿀)→milk, premium
+  a10:{r:'wool',s:1800},   // 공작새 (깃털→양털)
+  a11:{r:'fish',s:1200},   // 백조 (생선)
   // Legendary animals
   a12:{r:'gem', s:3600},   a13:{r:'star',s:7200},
   a14:{r:'mana',s:3600},
@@ -2542,16 +3748,20 @@ const PROD={
   a17:{r:'fruit',s:300},   // 햄스터
   a18:{r:'egg',  s:300},   // 오리
   a19:{r:'fish', s:1200},  // 거북이
-  // Rare (new)
-  a20:{r:'fruit',s:900},   // 고슴도치
-  a21:{r:'meat', s:600},   // 너구리
+  // Rare farm (more)
+  a20:{r:'meat', s:1200},  // 칠면조
+  a21:{r:'fruit',s:900},   // 고슴도치 (작은 견과)
   a22:{r:'fish', s:600},   // 수달
-  a23:{r:'meat', s:700},   // 늑대
-  // Epic (new)
-  a24:{r:'meat', s:800},   // 얼룩말
+  a23:{r:'meat', s:1200},  // 사슴
+  // Epic luxury farm
+  a24:{r:'meat', s:900},   // 캥거루
   a25:{r:'meat', s:600},   // 멧돼지
-  a26:{r:'fruit',s:1500},  // 기린
+  a26:{r:'meat', s:1500},  // 악어
   a27:{r:'gem',  s:5400},  // 코뿔소
+  a28:{r:'meat', s:600},   // 황소
+  a29:{r:'milk', s:720},   // 물소 (premium milk)
+  a30:{r:'meat', s:900},   // 들소
+  // Fish (no production, decorative)
   // Plants
   p01:{r:'fruit',s:1800},  p02:{r:'fruit',s:1500},
   p03:{r:'fruit',s:600},   p04:{r:'fruit',s:600},
@@ -2567,22 +3777,27 @@ const PROD={
 };
 const MAX_STACK=12; // max accumulated per item
 // Juvenile → Adult system (2 stages only; "baby" removed per design)
-const BABY_PRICES={common:50,rare:250,epic:1000,legendary:5000};
+const BABY_PRICES={common:150,rare:800,epic:3500,legendary:15000};
 const GROW_SECONDS={common:1800,rare:3600,epic:7200,legendary:14400}; // juvenile → adult time
 const STAGE_MULT=[0,0.5,1.0]; // [unused, juvenile(1), adult(2)]
 const STAGE_LABEL=['','청소년','성체'];
 const STAGE_SCALE=[1,0.78,1.0];
-// Stage 1 (juvenile) custom emojis where visually distinct
+// Stage 1 (juvenile) cute face emojis → Stage 2 (adult) full body emojis
 const STAGE_EMOJI={
   a01:{1:'🐥'},  // 닭: 병아리 → 닭
-  a03:{1:'🐂'},  // 소: 황소 → 소
-  a04:{1:'🐷'},  // 돼지: 작은돼지 → 돼지
-  a08:{1:'🐤'},  // 부엉이: 새 → 부엉이
+  a03:{1:'🐮'},  // 소: 소얼굴 → 소 (body)
+  a04:{1:'🐷'},  // 돼지: 작은돼지 → 돼지 (body)
+  a05:{1:'🐰'},  // 토끼: 토끼얼굴 → 토끼 (body)
+  a07:{1:'🐤'},  // 거위: 병아리 → 거위
+  a09:{1:'🐴'},  // 말: 말얼굴 → 말 (body)
+  a11:{1:'🐤'},  // 백조: 병아리 → 백조
   a12:{1:'🐲'},  // 드래곤: 작은용 → 드래곤
-  a13:{1:'🐴'},  // 유니콘: 말 → 유니콘
-  a14:{1:'🐣'},  // 봉황: 부화하는 새 → 봉황
+  a13:{1:'🐴'},  // 유니콘: 말얼굴 → 유니콘
+  a14:{1:'🐣'},  // 봉황: 부화중 → 봉황
+  a15:{1:'🐶'},  // 강아지: 강아지얼굴 → 강아지(body)
+  a16:{1:'🐱'},  // 고양이: 고양이얼굴 → 고양이(body)
   a18:{1:'🐤'},  // 오리: 병아리 → 오리
-  a19:{1:'🐢'},  // 거북이: 작은거북 → 거북이
+  a19:{1:'🐢'},  // 거북이: 그대로 (스케일만)
 };
 function getStageEmoji(p,item){
   const stage=getCurrentStage(p);
@@ -2765,9 +3980,11 @@ function renderShop(){
   if(!el)return;
   const mult=priceMultiplier();
   const multTxt=mult>1?` <span style="color:var(--ok);font-weight:700">(+${Math.round((mult-1)*100)}%)</span>`:'';
+  // Chests first
+  let html=renderChestsSection(e);
   // Resources to sell
   const ownedRes=Object.entries(e.resources).filter(([,n])=>n>0);
-  let html=`<div class="shop-h"><span class="em">🪙</span>자원 판매${multTxt}</div>`;
+  html+=`<div class="shop-h"><span class="em">🪙</span>자원 판매${multTxt}</div>`;
   if(ownedRes.length===0){
     html+=`<div class="shop-empty">📭 판매할 자원이 없어요<br><small style="color:#aaa">동물·식물을 풍경에 두고 시간이 지나면 자원이 생산됩니다</small></div>`;
   }else{
@@ -2787,6 +4004,22 @@ function renderShop(){
       </div>`;
     });
   }
+  // Seed shop (plant in crop field zone)
+  html+=`<div class="shop-h"><span class="em">🌱</span>씨앗 심기 (작물밭에)</div>`;
+  html+=`<div style="font-size:11px;color:var(--muted);margin-bottom:6px;line-height:1.4">
+    🌾 작물밭 zone의 빈 칸(🟫)을 탭해서 씨앗 선택. 시간 지나면 수확</div>`;
+  html+=`<div class="baby-grid">`;
+  Object.entries(SEEDS).forEach(([id,s])=>{
+    const canAfford=e.coins>=s.cost;
+    html+=`<div class="baby-card common ${canAfford?'':'disabled'}" title="${s.n} 씨앗">
+      <div class="em">${s.e}</div>
+      <div class="nm">${s.n}</div>
+      <div class="pr">🪙 ${s.cost}</div>
+      <div class="tm">${fmtCountdown(s.sec)} · ${s.yield}개</div>
+    </div>`;
+  });
+  html+=`</div>`;
+  html+=`<div style="font-size:11px;color:var(--muted);margin-top:6px;text-align:center">↑ 보기만 가능. 실제 심기는 작물밭에서 🟫 탭</div>`;
   // Juvenile shop
   html+=`<div class="shop-h"><span class="em">🐣</span>청소년 입양</div>`;
   html+=`<div style="font-size:11px;color:var(--muted);margin-bottom:6px;line-height:1.4">
@@ -2961,6 +4194,8 @@ function switchFarmView(v){
   document.getElementById('farmSceneSection').classList.toggle('show',v==='scene');
   document.getElementById('farmShopSection').classList.toggle('show',v==='shop');
   document.getElementById('farmInvSection').classList.toggle('show',v==='inv');
+  const fishSec=document.getElementById('farmFishSection');
+  if(fishSec)fishSec.classList.toggle('show',v==='fish');
   if(v==='scene'){
     loadLayout();
     if(farmLayout.length===0 && Object.keys(getFarm()).length>0)autoArrangeFarm();
@@ -2968,6 +4203,9 @@ function switchFarmView(v){
   }else if(v==='shop'){
     stopWalking();
     renderShop();
+  }else if(v==='fish'){
+    stopWalking();
+    renderFishEncyclopedia();
   }else{
     stopWalking();
     renderFarm();
@@ -3195,7 +4433,7 @@ function renderFriendFarm(opp){
     // Apply stage scaling (1=juvenile, 2=adult; legacy 3 = adult)
     const stage=p.stage===1?1:2;
     if(item.c==='animal'&&stage===1){
-      const baseSize=30;
+      const baseSize=24;
       e.style.fontSize=(baseSize*STAGE_SCALE[1])+'px';
     }
     scene.appendChild(e);
@@ -3377,6 +4615,9 @@ function openSettings(){
   document.getElementById('bgmLabel').textContent=bgmEnabled?'ON':'OFF';
   document.getElementById('bgmIc').textContent=bgmEnabled?'🎵':'🔇';
   document.getElementById('bgmToggleBtn').textContent=bgmEnabled?'끄기':'켜기';
+  document.getElementById('darkLabel').textContent=darkMode?'ON':'OFF';
+  document.getElementById('darkIc').textContent=darkMode?'🌙':'☀️';
+  document.getElementById('darkToggleBtn').textContent=darkMode?'끄기':'켜기';
   // Cloud sync status
   const ic=document.getElementById('cloudIc');
   const st=document.getElementById('cloudStatus');
@@ -3421,6 +4662,17 @@ function toggleStrict(){
   showToast(strictMode?'🔥 엄격 모드 ON — 틀려도 안 알려줌':'🛡 일반 모드 — 틀리면 빨갛게');
   refreshAll();updateMistakeWrap();
 }
+let darkMode=localStorage.getItem('sudoku_dark_mode')==='1';
+function applyDarkMode(){
+  document.body.classList.toggle('dark',darkMode);
+}
+function toggleDark(){
+  darkMode=!darkMode;
+  localStorage.setItem('sudoku_dark_mode',darkMode?'1':'0');
+  applyDarkMode();
+  showToast(darkMode?'🌙 다크 모드 ON':'☀️ 라이트 모드');
+}
+applyDarkMode();
 function closeSettings(){document.getElementById('settingsModal').classList.add('hidden')}
 async function exportBackup(){
   const data={};
@@ -3518,56 +4770,98 @@ function toggleSound(){
 // BGM (lo-fi chord progression for concentration)
 // ═══════════════════════════════════════
 const BGM_KEY='sudoku_bgm_enabled';
-let bgmEnabled=localStorage.getItem(BGM_KEY)==='1';
-let bgmRunning=false, bgmInterval=null, bgmGain=null;
-// Chord progression: I-vi-IV-V in C major (calm, focus-friendly)
-const BGM_CHORDS=[
-  [130.81,164.81,196.00], // C: C3, E3, G3
-  [110.00,130.81,164.81], // Am: A2, C3, E3
-  [ 87.31,110.00,130.81], // F: F2, A2, C3
-  [ 98.00,123.47,146.83], // G: G2, B2, D3
-];
-const BGM_CHORD_DURATION=4; // seconds per chord
-function playBgmChord(notes,startTime){
+// Default ON unless explicitly disabled
+let bgmEnabled=localStorage.getItem(BGM_KEY)!=='0';
+let bgmRunning=false, bgmInterval=null, bgmGain=null, currentBgmType=null;
+// Sudoku BGM: bright puzzle game vibe — jazz progression, triangle wave (piano/marimba feel)
+const BGM_SUDOKU={
+  chords:[
+    [261.63,329.63,392.00,493.88], // Cmaj7
+    [220.00,261.63,329.63,392.00], // Am7
+    [174.61,220.00,261.63,329.63], // Fmaj7
+    [196.00,246.94,293.66,369.99], // G7
+  ],
+  duration:2.4,wave:'triangle',filterFreq:3200,filterQ:0.5,
+  volume:0.035,attack:0.08,release:0.4,
+  melody:[[523.25,659.25],[493.88,587.33],[523.25,698.46],[587.33,659.25]],
+  melodyVol:0.025,
+};
+// Farm BGM: cozy countryside — I-V-vi-IV, sine wave (warm flute/pad)
+const BGM_FARM={
+  chords:[
+    [130.81,196.00,261.63,329.63], // C
+    [196.00,246.94,392.00,493.88], // G
+    [220.00,261.63,329.63,440.00], // Am
+    [174.61,220.00,349.23,440.00], // F
+  ],
+  duration:4.0,wave:'sine',filterFreq:1600,filterQ:0.7,
+  volume:0.045,attack:0.8,release:1.2,melody:null,
+};
+function playBgmTone(freq,startTime,duration,prog,volume){
   if(!audioCtx||!bgmGain)return;
-  notes.forEach(freq=>{
-    const osc=audioCtx.createOscillator();
-    const g=audioCtx.createGain();
-    osc.type='sine';
-    osc.frequency.value=freq;
-    g.gain.setValueAtTime(0,startTime);
-    g.gain.linearRampToValueAtTime(0.04,startTime+0.6); // attack
-    g.gain.setValueAtTime(0.04,startTime+BGM_CHORD_DURATION-0.8);
-    g.gain.linearRampToValueAtTime(0,startTime+BGM_CHORD_DURATION); // release
-    osc.connect(g);g.connect(bgmGain);
-    osc.start(startTime);
-    osc.stop(startTime+BGM_CHORD_DURATION);
-  });
+  const osc=audioCtx.createOscillator();
+  const filter=audioCtx.createBiquadFilter();
+  const g=audioCtx.createGain();
+  osc.type=prog.wave;
+  osc.frequency.value=freq;
+  filter.type='lowpass';
+  filter.frequency.value=prog.filterFreq;
+  filter.Q.value=prog.filterQ;
+  g.gain.setValueAtTime(0,startTime);
+  g.gain.linearRampToValueAtTime(volume,startTime+prog.attack);
+  g.gain.setValueAtTime(volume,startTime+duration-prog.release);
+  g.gain.linearRampToValueAtTime(0,startTime+duration);
+  osc.connect(filter);filter.connect(g);g.connect(bgmGain);
+  osc.start(startTime);
+  osc.stop(startTime+duration);
 }
-function startBgm(){
-  if(bgmRunning)return;
+function playBgmChord(notes,startTime,prog){
+  notes.forEach(freq=>playBgmTone(freq,startTime,prog.duration,prog,prog.volume));
+}
+function startBgmType(type){
+  if(!bgmEnabled)return;
+  if(currentBgmType===type && bgmRunning)return;
+  if(bgmRunning)stopBgm();
   initAudio();
   if(!audioCtx)return;
   bgmRunning=true;
+  currentBgmType=type;
   bgmGain=audioCtx.createGain();
-  bgmGain.gain.value=0.5;
+  bgmGain.gain.value=0.7;
   bgmGain.connect(audioCtx.destination);
-  // Schedule chords
+  const prog=type==='farm'?BGM_FARM:BGM_SUDOKU;
   function scheduleLoop(){
     if(!bgmRunning||!audioCtx)return;
     const now=audioCtx.currentTime;
-    BGM_CHORDS.forEach((chord,i)=>playBgmChord(chord,now+i*BGM_CHORD_DURATION));
+    prog.chords.forEach((chord,i)=>{
+      const t=now+i*prog.duration;
+      playBgmChord(chord,t,prog);
+      if(prog.melody && prog.melody[i]){
+        prog.melody[i].forEach((mfreq,j)=>{
+          playBgmTone(mfreq,t+0.6+j*0.6,0.5,prog,prog.melodyVol);
+        });
+      }
+    });
   }
   scheduleLoop();
-  bgmInterval=setInterval(scheduleLoop,BGM_CHORDS.length*BGM_CHORD_DURATION*1000);
+  bgmInterval=setInterval(scheduleLoop,prog.chords.length*prog.duration*1000);
+}
+function startBgm(){
+  // Pick track by current view
+  const farmModal=document.getElementById('farmModal');
+  const farmOpen=farmModal && !farmModal.classList.contains('hidden');
+  startBgmType(farmOpen?'farm':'sudoku');
 }
 function stopBgm(){
   bgmRunning=false;
+  currentBgmType=null;
   if(bgmInterval){clearInterval(bgmInterval);bgmInterval=null}
   if(bgmGain && audioCtx){
     try{
       bgmGain.gain.linearRampToValueAtTime(0,audioCtx.currentTime+0.5);
-      setTimeout(()=>{try{bgmGain.disconnect()}catch(e){};bgmGain=null},600);
+      const oldGain=bgmGain;
+      setTimeout(()=>{try{oldGain.disconnect()}catch(e){}},600);
+      bgmGain=null;
     }catch(e){bgmGain=null}
   }
 }
@@ -3608,7 +4902,7 @@ const ACHIEVEMENTS=[
   {id:'col_l3',n:'전설의 시작',d:'전설 3종 수집',e:'🌟',cat:'collect',target:3,stat:'uniqueLegendary',reward:{coins:1500}},
   {id:'col_l8',n:'전설 컬렉터',d:'전설 8종 모두 수집',e:'✨',cat:'collect',target:8,stat:'uniqueLegendary',reward:{item:'sp_phoenixKing'}},
   {id:'col_e9',n:'영웅 컬렉터',d:'영웅 13종 모두 수집',e:'💜',cat:'collect',target:13,stat:'uniqueEpic',reward:{coins:5000}},
-  {id:'col_all',n:'완전체',d:'56종 모두 수집',e:'🏆',cat:'collect',target:56,stat:'uniqueAll',reward:{item:'sp_chalice'},title:'완벽수집가'},
+  {id:'col_all',n:'완전체',d:'80종 모두 수집',e:'🏆',cat:'collect',target:80,stat:'uniqueAll',reward:{item:'sp_chalice'},title:'완벽수집가'},
   // 꾸준함
   {id:'streak3',n:'3일째',d:'일일 챌린지 3일 연속',e:'🔥',cat:'streak',target:3,stat:'longestStreak',reward:{coins:300}},
   {id:'streak7',n:'1주일',d:'7일 연속 챌린지',e:'📅',cat:'streak',target:7,stat:'longestStreak',reward:{coins:1000}},
@@ -3629,6 +4923,17 @@ const ACHIEVEMENTS=[
   {id:'perfect5',n:'퍼펙트',d:'퍼펙트 클리어 5회',e:'👑',cat:'mission',target:5,stat:'missionPerfect',reward:{coins:1500}},
   // 숨겨진
   {id:'hid_owl',n:'올빼미족',d:'자정~새벽4시 클리어',e:'🦉',cat:'hidden',target:1,stat:'midnightWin',reward:{coins:500}},
+  // ★ Special item unlock achievements (10 new)
+  {id:'sp_l5',n:'전설 절반',d:'전설 5종 수집',e:'🌟',cat:'collect',target:5,stat:'uniqueLegendary',reward:{item:'sp_rainbow'}},
+  {id:'sp_w500k',n:'대부호',d:'코인 500,000 보유',e:'💎',cat:'wealth',target:500000,stat:'coins',reward:{item:'sp_grape'}},
+  {id:'sp_b100',n:'육아 전문가',d:'새끼 100마리 성체로',e:'⏳',cat:'farm',target:100,stat:'babyGrown',reward:{item:'sp_hourglass'}},
+  {id:'sp_st100x',n:'끈기의 마법사',d:'100일 연속 챌린지',e:'🪞',cat:'streak',target:100,stat:'longestStreak',reward:{item:'sp_mirror'}},
+  {id:'sp_nomis50',n:'무결점 50',d:'무실수 50판',e:'🍀',cat:'mission',target:50,stat:'noMistakeRuns',reward:{item:'sp_clover'}},
+  {id:'sp_e9',n:'영웅 마스터',d:'영웅 13종 모두',e:'⚡',cat:'collect',target:13,stat:'uniqueEpic',reward:{item:'sp_charm'}},
+  {id:'sp_mw25',n:'야행성',d:'자정~새벽 25회 클리어',e:'🌙',cat:'hidden',target:25,stat:'midnightWin',reward:{item:'sp_moon'}},
+  {id:'sp_w1m',n:'억만장자',d:'코인 1,000,000 보유',e:'🏺',cat:'wealth',target:1000000,stat:'coins',reward:{item:'sp_jar'}},
+  {id:'sp_solve200',n:'200판 정복',d:'200판 클리어',e:'🌾',cat:'solve',target:200,stat:'totalWins',reward:{item:'sp_scythe'}},
+  {id:'sp_per10',n:'완벽주의 마스터',d:'퍼펙트 10회',e:'🎺',cat:'mission',target:10,stat:'missionPerfect',reward:{item:'sp_trumpet'}},
 ];
 function getAchieveData(){
   try{return JSON.parse(localStorage.getItem(ACHIEVE_KEY)||'{}')}catch(e){return{}}
