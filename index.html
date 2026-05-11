@@ -4904,49 +4904,83 @@ const BGM_KEY='sudoku_bgm_enabled';
 // Default ON unless explicitly disabled
 let bgmEnabled=localStorage.getItem(BGM_KEY)!=='0';
 let bgmRunning=false, bgmInterval=null, bgmGain=null, currentBgmType=null;
-// Sudoku BGM: calm focus music — slow ambient pad, no melody, low frequency
-// Imaj7-vi7-IVmaj7-iii7 progression (no V→I tension, perfect for concentration)
+// BGM v2 — Multi-layer sequencer: pad chords + walking bass + marimba/sine melody
+// Inspired by Stardew Valley (sudoku) and Animal Crossing (farm)
+// Each track has bars; each bar has its own bass and melody timing within a fixed barLen.
+// Sudoku BGM: Stardew Valley "Spring" feel — C major, I-vi-IV-V, gentle marimba melody
 const BGM_SUDOKU={
-  chords:[
-    [130.81,196.00,261.63,329.63], // Cmaj7 (low octave)
-    [110.00,164.81,220.00,329.63], // Am7
-    [174.61,220.00,261.63,329.63], // Fmaj7
-    [164.81,196.00,246.94,329.63], // Em7
+  barLen:4.5,
+  bars:[
+    {pad:[130.81,196.00,261.63,329.63],
+      bass:[{t:0,n:65.41,d:1.3},{t:2.25,n:98.00,d:1.3}],
+      melody:[{t:0.4,n:523.25,d:0.7},{t:1.3,n:659.25,d:0.5},{t:2.2,n:783.99,d:0.9},{t:3.5,n:659.25,d:0.7}]},
+    {pad:[110.00,164.81,220.00,329.63],
+      bass:[{t:0,n:55.00,d:1.3},{t:2.25,n:82.41,d:1.3}],
+      melody:[{t:0.4,n:493.88,d:0.7},{t:1.3,n:587.33,d:0.5},{t:2.2,n:659.25,d:0.9},{t:3.5,n:523.25,d:0.7}]},
+    {pad:[174.61,220.00,261.63,349.23],
+      bass:[{t:0,n:43.65,d:1.3},{t:2.25,n:65.41,d:1.3}],
+      melody:[{t:0.4,n:440.00,d:0.7},{t:1.3,n:523.25,d:0.5},{t:2.2,n:698.46,d:0.9},{t:3.5,n:587.33,d:0.7}]},
+    {pad:[196.00,246.94,293.66,392.00],
+      bass:[{t:0,n:49.00,d:1.3},{t:2.25,n:73.42,d:1.3}],
+      melody:[{t:0.4,n:493.88,d:0.6},{t:1.3,n:587.33,d:0.5},{t:2.2,n:783.99,d:0.6},{t:3.0,n:659.25,d:0.5},{t:3.7,n:523.25,d:0.6}]},
   ],
-  duration:6.5,wave:'sine',filterFreq:1200,filterQ:0.6,
-  volume:0.025,attack:1.5,release:2.0,melody:null,
+  padWave:'sine',padVol:0.022,padAttack:1.0,padRelease:1.4,padFilter:1400,
+  bassWave:'triangle',bassVol:0.055,bassAttack:0.02,bassRelease:0.35,bassFilter:600,
+  melodyWave:'triangle',melodyVol:0.05,melodyAttack:0.005,melodyRelease:0.3,melodyFilter:2400,
 };
-// Farm BGM: cozy countryside — I-V-vi-IV, sine wave (warm flute/pad)
+// Farm BGM: Animal Crossing "K.K." feel — F major bossa nova, jazzy 7th chords, bouncy bass
 const BGM_FARM={
-  chords:[
-    [130.81,196.00,261.63,329.63], // C
-    [196.00,246.94,392.00,493.88], // G
-    [220.00,261.63,329.63,440.00], // Am
-    [174.61,220.00,349.23,440.00], // F
+  barLen:4.0,
+  bars:[
+    {pad:[174.61,261.63,349.23,440.00],
+      bass:[{t:0,n:43.65,d:0.9},{t:1.0,n:65.41,d:0.45},{t:2.0,n:43.65,d:0.9},{t:3.0,n:65.41,d:0.45}],
+      melody:[{t:0.3,n:523.25,d:0.5},{t:1.1,n:659.25,d:0.4},{t:1.8,n:698.46,d:0.6},{t:3.0,n:587.33,d:0.6}]},
+    {pad:[146.83,220.00,293.66,440.00],
+      bass:[{t:0,n:36.71,d:0.9},{t:1.0,n:55.00,d:0.45},{t:2.0,n:36.71,d:0.9},{t:3.0,n:55.00,d:0.45}],
+      melody:[{t:0.3,n:440.00,d:0.5},{t:1.1,n:523.25,d:0.4},{t:1.8,n:587.33,d:0.6},{t:3.0,n:493.88,d:0.6}]},
+    {pad:[196.00,233.08,293.66,440.00],
+      bass:[{t:0,n:49.00,d:0.9},{t:1.0,n:73.42,d:0.45},{t:2.0,n:49.00,d:0.9},{t:3.0,n:73.42,d:0.45}],
+      melody:[{t:0.3,n:466.16,d:0.5},{t:1.1,n:587.33,d:0.4},{t:1.8,n:698.46,d:0.6},{t:3.0,n:587.33,d:0.6}]},
+    {pad:[130.81,196.00,329.63,466.16],
+      bass:[{t:0,n:65.41,d:0.9},{t:1.0,n:98.00,d:0.45},{t:2.0,n:82.41,d:0.45},{t:2.5,n:65.41,d:0.45},{t:3.0,n:73.42,d:0.45}],
+      melody:[{t:0.3,n:523.25,d:0.4},{t:0.9,n:659.25,d:0.4},{t:1.6,n:783.99,d:0.6},{t:2.6,n:659.25,d:0.4},{t:3.3,n:523.25,d:0.5}]},
   ],
-  duration:4.0,wave:'sine',filterFreq:1600,filterQ:0.7,
-  volume:0.045,attack:0.8,release:1.2,melody:null,
+  padWave:'sine',padVol:0.026,padAttack:0.7,padRelease:1.1,padFilter:1500,
+  bassWave:'triangle',bassVol:0.06,bassAttack:0.02,bassRelease:0.25,bassFilter:550,
+  melodyWave:'sine',melodyVol:0.055,melodyAttack:0.005,melodyRelease:0.3,melodyFilter:2800,
 };
-function playBgmTone(freq,startTime,duration,prog,volume){
+// Generic note player with custom envelope per layer
+function playBgmNote(freq,startTime,dur,wave,vol,attack,release,filterHz){
   if(!audioCtx||!bgmGain)return;
   const osc=audioCtx.createOscillator();
   const filter=audioCtx.createBiquadFilter();
   const g=audioCtx.createGain();
-  osc.type=prog.wave;
-  osc.frequency.value=freq;
-  filter.type='lowpass';
-  filter.frequency.value=prog.filterFreq;
-  filter.Q.value=prog.filterQ;
+  osc.type=wave;osc.frequency.value=freq;
+  filter.type='lowpass';filter.frequency.value=filterHz;filter.Q.value=0.7;
+  const sustainEnd=Math.max(startTime+attack+0.01,startTime+dur-release);
   g.gain.setValueAtTime(0,startTime);
-  g.gain.linearRampToValueAtTime(volume,startTime+prog.attack);
-  g.gain.setValueAtTime(volume,startTime+duration-prog.release);
-  g.gain.linearRampToValueAtTime(0,startTime+duration);
+  g.gain.linearRampToValueAtTime(vol,startTime+attack);
+  g.gain.setValueAtTime(vol,sustainEnd);
+  g.gain.exponentialRampToValueAtTime(0.0001,startTime+dur);
   osc.connect(filter);filter.connect(g);g.connect(bgmGain);
-  osc.start(startTime);
-  osc.stop(startTime+duration);
+  osc.start(startTime);osc.stop(startTime+dur+0.05);
 }
-function playBgmChord(notes,startTime,prog){
-  notes.forEach(freq=>playBgmTone(freq,startTime,prog.duration,prog,prog.volume));
+function scheduleBgmBar(prog,bar,barStart){
+  // Pad chord — full bar
+  bar.pad.forEach(freq=>{
+    playBgmNote(freq,barStart,prog.barLen,prog.padWave,prog.padVol,
+      prog.padAttack,prog.padRelease,prog.padFilter);
+  });
+  // Bass notes
+  (bar.bass||[]).forEach(b=>{
+    playBgmNote(b.n,barStart+b.t,b.d,prog.bassWave,prog.bassVol,
+      prog.bassAttack,prog.bassRelease,prog.bassFilter);
+  });
+  // Melody notes
+  (bar.melody||[]).forEach(m=>{
+    playBgmNote(m.n,barStart+m.t,m.d,prog.melodyWave,prog.melodyVol,
+      prog.melodyAttack,prog.melodyRelease,prog.melodyFilter);
+  });
 }
 function startBgmType(type){
   if(!bgmEnabled)return;
@@ -4960,21 +4994,16 @@ function startBgmType(type){
   bgmGain.gain.value=0.7;
   bgmGain.connect(audioCtx.destination);
   const prog=type==='farm'?BGM_FARM:BGM_SUDOKU;
+  const loopLen=prog.bars.length*prog.barLen;
   function scheduleLoop(){
     if(!bgmRunning||!audioCtx)return;
-    const now=audioCtx.currentTime;
-    prog.chords.forEach((chord,i)=>{
-      const t=now+i*prog.duration;
-      playBgmChord(chord,t,prog);
-      if(prog.melody && prog.melody[i]){
-        prog.melody[i].forEach((mfreq,j)=>{
-          playBgmTone(mfreq,t+0.6+j*0.6,0.5,prog,prog.melodyVol);
-        });
-      }
+    const now=audioCtx.currentTime+0.05;
+    prog.bars.forEach((bar,i)=>{
+      scheduleBgmBar(prog,bar,now+i*prog.barLen);
     });
   }
   scheduleLoop();
-  bgmInterval=setInterval(scheduleLoop,prog.chords.length*prog.duration*1000);
+  bgmInterval=setInterval(scheduleLoop,loopLen*1000);
 }
 function startBgm(){
   // Pick track by current view
