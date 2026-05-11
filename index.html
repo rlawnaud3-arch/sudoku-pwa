@@ -684,6 +684,7 @@ body.dark .mfw-btn:hover{background:rgba(255,255,255,.2)}
   font-size:16px;letter-spacing:8px;animation:cloudDrift 80s linear infinite;opacity:.85;white-space:nowrap;pointer-events:none}
 @keyframes cloudDrift{from{transform:translateX(-30%)}to{transform:translateX(30%)}}
 /* Size variants — used by sz: prop on items */
+.placed-item.sz-huge{font-size:54px!important}
 .placed-item.sz-tree{font-size:46px!important}
 .placed-item.sz-large{font-size:38px!important}
 .placed-item.sz-medium{font-size:28px!important}
@@ -693,27 +694,57 @@ body.dark .mfw-btn:hover{background:rgba(255,255,255,.2)}
 .placed-item .fruit-overlay{position:absolute;top:6px;right:0px;font-size:0.28em;
   pointer-events:none;filter:drop-shadow(0 1px 1px rgba(0,0,0,.4))}
 .placed-item .fruit-overlay.b2{top:16px;left:0px;right:auto;font-size:0.26em}
-/* Color tone filters — for special legendaries */
-.placed-item.tone-red{filter:hue-rotate(330deg) saturate(2.2) brightness(1.1)
-  drop-shadow(0 0 6px #ff4444) drop-shadow(2px 3px 0 rgba(0,0,0,.25))}
-.placed-item.tone-blue{filter:hue-rotate(190deg) saturate(2.2) brightness(0.95)
-  drop-shadow(0 0 6px #4dabf7) drop-shadow(2px 3px 0 rgba(0,0,0,.25))}
-.placed-item.tone-yellow{filter:hue-rotate(40deg) saturate(2.5) brightness(1.15)
-  drop-shadow(0 0 8px #ffd43b) drop-shadow(2px 3px 0 rgba(0,0,0,.25))}
-.placed-item.tone-gold{filter:hue-rotate(20deg) saturate(2) brightness(1.2)
-  drop-shadow(0 0 8px #f59f00) drop-shadow(2px 3px 0 rgba(0,0,0,.3))}
-.placed-item.tone-rainbow{animation:rainbowHue 4s linear infinite;
-  filter:drop-shadow(0 0 8px #ff69b4) drop-shadow(2px 3px 0 rgba(0,0,0,.25))}
-@keyframes rainbowHue{0%{filter:hue-rotate(0deg) drop-shadow(0 0 8px #ff69b4)}
-  100%{filter:hue-rotate(360deg) drop-shadow(0 0 8px #ff69b4)}}
-.placed-item.tone-water{filter:hue-rotate(190deg) saturate(1.4) brightness(1.05)}
+/* Color tone filters — apply anywhere (placed-item OR inventory OR baby shop)
+   NOTE: hue-rotate is calibrated for 🐉 (green) baseline. For 🐎 (brown),
+   horse-specific tones below are used. */
+.tone-red{filter:hue-rotate(230deg) saturate(3) brightness(1.05) contrast(1.15)
+  drop-shadow(0 0 4px #ff4444)!important}
+.tone-blue{filter:hue-rotate(120deg) saturate(3) brightness(0.95) contrast(1.1)
+  drop-shadow(0 0 4px #339af0)!important}
+.tone-yellow{filter:hue-rotate(310deg) saturate(3.5) brightness(1.15) contrast(1.05)
+  drop-shadow(0 0 5px #ffd43b)!important}
+.tone-gold{filter:hue-rotate(30deg) saturate(2.5) brightness(1.2)
+  drop-shadow(0 0 5px #f59f00)!important}
+.tone-rainbow{animation:rainbowHue 4s linear infinite!important}
+/* Horse-specific tones (🐎 base is brown, needs different hue values) */
+[data-item-id="a33"] .em.tone-red,
+.placed-item[data-item-id="a33"].tone-red,
+.tone-horse-red{filter:hue-rotate(340deg) saturate(2.5) brightness(1.1) contrast(1.2)
+  drop-shadow(0 0 4px #ff4444)!important}
+@keyframes rainbowHue{
+  0%{filter:hue-rotate(0deg) saturate(2) drop-shadow(0 0 6px #ff69b4)}
+  25%{filter:hue-rotate(90deg) saturate(2) drop-shadow(0 0 6px #74c0fc)}
+  50%{filter:hue-rotate(180deg) saturate(2) drop-shadow(0 0 6px #51cf66)}
+  75%{filter:hue-rotate(270deg) saturate(2) drop-shadow(0 0 6px #ffd43b)}
+  100%{filter:hue-rotate(360deg) saturate(2) drop-shadow(0 0 6px #ff69b4)}
+}
+.tone-water{filter:hue-rotate(190deg) saturate(1.4) brightness(1.05)!important}
+/* Stack rarity glow with tone filter — use box-shadow on parent instead of filter */
+.placed-item.tone-red{box-shadow:0 0 14px rgba(255,68,68,.5)}
+.placed-item.tone-blue{box-shadow:0 0 14px rgba(51,154,240,.5)}
+.placed-item.tone-yellow{box-shadow:0 0 14px rgba(255,212,59,.5)}
+.placed-item.tone-gold{box-shadow:0 0 16px rgba(245,159,0,.6)}
+.placed-item.tone-rainbow{box-shadow:0 0 16px rgba(255,105,180,.5)}
 /* Unicorn body wings + horn overlay */
-.placed-item .body-wing{position:absolute;top:-2px;left:-8px;font-size:0.5em;
-  pointer-events:none;transform:rotate(-15deg);
-  animation:wingFlap 0.6s ease-in-out infinite alternate}
-.placed-item .body-horn{position:absolute;top:-12px;right:14px;font-size:0.32em;
-  pointer-events:none;text-shadow:0 0 6px #fff}
-@keyframes wingFlap{0%{transform:rotate(-25deg) translateY(0)}100%{transform:rotate(-5deg) translateY(-2px)}}
+.placed-item .body-wing,.placed-item .body-wing-r,
+.baby-card .mini-wing,.baby-card .mini-wing-r,
+.fitem .mini-wing,.fitem .mini-wing-r{
+  position:absolute;font-size:0.5em;pointer-events:none}
+.placed-item .body-wing{top:0px;left:-10px;
+  animation:wingFlapL 0.6s ease-in-out infinite alternate}
+.placed-item .body-wing-r{top:0px;right:-10px;transform:scaleX(-1);
+  animation:wingFlapR 0.6s ease-in-out infinite alternate}
+.baby-card .mini-wing,.fitem .mini-wing{top:-2px;left:-8px;font-size:13px;
+  animation:wingFlapL 0.6s ease-in-out infinite alternate}
+.baby-card .mini-wing-r,.fitem .mini-wing-r{top:-2px;right:-8px;font-size:13px;
+  transform:scaleX(-1);animation:wingFlapR 0.6s ease-in-out infinite alternate}
+.placed-item .body-horn{position:absolute;top:-14px;left:50%;
+  transform:translateX(-50%);font-size:0.28em;
+  pointer-events:none;color:#fff;text-shadow:0 0 6px #ffd43b,0 0 12px #ffd43b}
+@keyframes wingFlapL{0%{transform:rotate(-30deg) translateY(0)}100%{transform:rotate(-10deg) translateY(-2px)}}
+@keyframes wingFlapR{0%{transform:scaleX(-1) rotate(-30deg) translateY(0)}100%{transform:scaleX(-1) rotate(-10deg) translateY(-2px)}}
+/* Make .em parent relative so wing overlay positions correctly */
+.baby-card .em,.fitem .em{position:relative;display:inline-block}
 /* Fishing pond — swimming fish hints */
 .water-fish-hint{position:absolute;font-size:16px;top:50%;left:10%;
   animation:waterFishSwim 8s ease-in-out infinite;pointer-events:none;opacity:.85}
@@ -2611,12 +2642,14 @@ const ITEMS=[
   {id:'a09',n:'말',e:'🐎',r:'epic',c:'animal'},
   {id:'a10',n:'공작새',e:'🦚',r:'epic',c:'animal'},
   {id:'a11',n:'백조',e:'🦢',r:'epic',c:'animal'},
-  {id:'a12',n:'적룡',e:'🐉',r:'legendary',c:'animal',tone:'red'},
-  {id:'a13',n:'유니콘',e:'🐴',e2:'🪽',e3:'✨',r:'legendary',c:'animal',tone:'rainbow'},
+  {id:'a12',n:'적룡',e:'🐉',img:'./img/dragon_red.png',r:'legendary',c:'animal',tone:'red'},
+  {id:'a13',n:'유니콘',e:'🐎',e2:'🪽',e3:'✨',r:'legendary',c:'animal',tone:'rainbow',sz:'huge'},
   {id:'a14',n:'봉황',e:'🦅',r:'legendary',c:'animal',tone:'gold'},
-  {id:'a31',n:'청룡',e:'🐉',r:'legendary',c:'animal',tone:'blue'},
-  {id:'a32',n:'황룡',e:'🐉',r:'legendary',c:'animal',tone:'yellow'},
-  {id:'a33',n:'적토마',e:'🐎',r:'epic',c:'animal',tone:'red'},
+  {id:'a31',n:'청룡',e:'🐉',img:'./img/dragon_blue.png',r:'legendary',c:'animal',tone:'blue'},
+  {id:'a32',n:'황룡',e:'🐉',img:'./img/dragon_gold.png',r:'legendary',c:'animal',tone:'gold'},
+  {id:'a34',n:'녹룡',e:'🐉',img:'./img/dragon_green.png',r:'epic',c:'animal'},
+  {id:'a35',n:'무지개룡',e:'🐉',img:'./img/dragon_rainbow.png',r:'legendary',c:'animal',tone:'rainbow'},
+  {id:'a36',n:'흑룡',e:'🐉',img:'./img/dragon_shadow.png',r:'legendary',c:'animal'},
   // Common animals (extra)
   {id:'a15',n:'강아지',e:'🐕',r:'common',c:'animal'},
   {id:'a16',n:'고양이',e:'🐈',r:'common',c:'animal'},
@@ -2711,9 +2744,9 @@ const ITEMS=[
   {id:'d27',n:'미끄럼틀',e:'🛝',r:'epic',c:'deco'},
   {id:'d28',n:'관람차',e:'🎡',r:'legendary',c:'deco'},
   // ─── Special items (achievement rewards) ───
-  {id:'sp_jeokToMa',n:'적토마',e:'🐎',r:'legendary',c:'animal',sp:true},
-  {id:'sp_goldChicken',n:'황금알닭',e:'🐓',r:'legendary',c:'animal',sp:true},
-  {id:'sp_phoenixKing',n:'불사조왕',e:'🦤',r:'legendary',c:'animal',sp:true},
+  {id:'sp_jeokToMa',n:'적토마',e:'🐎',r:'legendary',c:'animal',sp:true,tone:'horse-red'},
+  {id:'sp_goldChicken',n:'황금알닭',e:'🐓',r:'legendary',c:'animal',sp:true,tone:'gold'},
+  {id:'sp_phoenixKing',n:'불사조왕',e:'🦅',r:'legendary',c:'animal',sp:true,tone:'red'},
   {id:'sp_coinMine',n:'코인광산',e:'⛏️',r:'legendary',c:'building',sp:true},
   {id:'sp_chalice',n:'황금성배',e:'🏆',r:'legendary',c:'deco',sp:true},
   {id:'sp_streakRing',n:'연속의반지',e:'💍',r:'legendary',c:'deco',sp:true},
@@ -3488,8 +3521,14 @@ function renderFarm(){
   grid.innerHTML=filtered.map(item=>{
     const count=farm[item.id]||0;
     const cls=count>0?`fitem ${item.r} unlocked`:`fitem ${item.r} locked`;
+    const toneClass=(count>0&&item.tone&&!item.img)?` tone-${item.tone}`:'';
+    let emInner;
+    if(count===0)emInner='❓';
+    else if(item.img)emInner=`<img src="${item.img}" alt="${item.n}" loading="lazy" style="width:36px;height:36px;vertical-align:middle;image-rendering:pixelated" onerror="this.outerHTML='${item.e}'">`;
+    else if(item.id==='a13')emInner=`${item.e}<span class="mini-wing">🪽</span><span class="mini-wing-r">🪽</span>`;
+    else emInner=item.e;
     return`<div class="${cls}" title="${item.n} (${RARITY_INFO[item.r].label})">
-      <div class="em">${count>0?item.e:'❓'}</div>
+      <div class="em${toneClass}">${emInner}</div>
       <div class="nm">${count>0?item.n:'???'}</div>
       ${count>1?`<div class="ct">×${count}</div>`:''}
     </div>`;
@@ -3773,14 +3812,18 @@ function renderFarmScene(){
     const el=document.createElement('div');
     let cls=`placed-item ${item.c} ${item.r} ${itemSizeClass(item)}`;
     if(item.live)cls+=` lively live-${item.id}`;
-    if(item.tone)cls+=` tone-${item.tone}`;
+    // Skip tone filter when item has its own image (image already colored correctly)
+    if(item.tone && !item.img)cls+=` tone-${item.tone}`;
     el.className=cls;
     el.dataset.uid=p.uid;
     // Base emoji + optional overlay (e2=fruit/wing, e3=sparkle/horn)
     const baseEmoji=getStageEmoji(p,item);
-    // Unicorn (a13) → body + wing + horn special
+    // Unicorn (a13) → 전신 말 + 양쪽 날개 + 뿔 + 반짝
     if(item.id==='a13'){
-      el.innerHTML=`${baseEmoji}<span class="body-wing">🪽</span><span class="body-horn">📍</span><span class="fruit-overlay">✨</span>`;
+      el.innerHTML=`<span style="position:relative;display:inline-block">${baseEmoji}<span class="body-wing">🪽</span><span class="body-wing-r">🪽</span><span class="body-horn">▲</span></span><span class="fruit-overlay">✨</span>`;
+    }else if(item.img){
+      // Custom image with emoji fallback if image fails to load
+      el.innerHTML=`<img src="${item.img}" alt="${item.n}" loading="lazy" style="width:1.4em;height:1.4em;vertical-align:middle;display:inline-block;image-rendering:pixelated" onerror="this.outerHTML='${item.e}'">`;
     }else if(item.c==='plant' && item.e2){
       // Tree fruit overlays
       el.innerHTML=`${baseEmoji}<span class="fruit-overlay">${item.e2}</span><span class="fruit-overlay b2">${item.e2}</span>`;
@@ -4284,8 +4327,17 @@ function renderShop(){
     </div>`;
     html+=`<div class="baby-grid">`;
     rAnimals.forEach(item=>{
+      const toneClass=(item.tone && !item.img)?` tone-${item.tone}`:'';
+      let emInner;
+      if(item.img){
+        emInner=`<img src="${item.img}" alt="${item.n}" loading="lazy" style="width:32px;height:32px;vertical-align:middle;image-rendering:pixelated" onerror="this.outerHTML='${item.e}'">`;
+      }else if(item.id==='a13'){
+        emInner=`${item.e}<span class="mini-wing">🪽</span><span class="mini-wing-r">🪽</span>`;
+      }else{
+        emInner=item.e;
+      }
       html+=`<div class="baby-card ${item.r} ${can?'':'disabled'}" onclick="${can?`buyBaby('${item.id}')`:''}">
-        <div class="em">${item.e}</div>
+        <div class="em${toneClass}">${emInner}</div>
         <div class="nm">${item.n}</div>
         <div class="pr">🪙 ${cost.toLocaleString()}</div>
       </div>`;

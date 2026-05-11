@@ -1,5 +1,5 @@
 // Service Worker for Sudoku PWA - Offline support
-const CACHE_NAME = 'sudoku-v31';
+const CACHE_NAME = 'sudoku-v34';
 const ASSETS = [
   './',
   './index.html',
@@ -8,6 +8,8 @@ const ASSETS = [
   './icon-512.png',
   './icon-maskable-512.png',
   './icon.svg'
+  // Optional: place custom animal images in /img/ folder (e.g., img/hamster.png)
+  // They'll be cached on-demand by the fetch handler below
 ];
 
 // Install: pre-cache all assets
