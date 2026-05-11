@@ -539,6 +539,17 @@ body.dark .mfw-btn:hover{background:rgba(255,255,255,.2)}
   transition:transform .28s,opacity .28s;opacity:0;white-space:nowrap}
 .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
 .mistakes-wrap{display:flex;gap:4px;align-items:center}
+/* Live score display */
+.score-pill{display:inline-flex;align-items:center;gap:4px;
+  background:linear-gradient(135deg,#7048e8,#3b5bdb);color:#fff;
+  padding:3px 10px;border-radius:14px;font-weight:800;font-size:13px;
+  box-shadow:0 2px 8px rgba(112,72,232,.35);transition:transform .25s}
+.score-pill.bump{animation:scoreBump .35s ease}
+.score-pill.bump-bad{animation:scoreBumpBad .35s ease}
+@keyframes scoreBump{0%{transform:scale(1)}40%{transform:scale(1.18);background:linear-gradient(135deg,#2f9e44,#37b24d)}100%{transform:scale(1)}}
+@keyframes scoreBumpBad{0%{transform:scale(1)}40%{transform:scale(1.15);background:linear-gradient(135deg,#e03131,#fa5252)}100%{transform:scale(1)}}
+.score-pill .sp-ic{font-size:11px}
+.score-pill .sp-n{letter-spacing:-0.3px}
 /* Install banner */
 .install-banner{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);
   background:var(--primary);color:#fff;padding:10px 16px;border-radius:24px;
@@ -1159,6 +1170,7 @@ window.dispatchEvent(new Event('fb-ready'));
       <div class="best-time" id="bestTime"></div>
     </div>
     <div class="mistakes-wrap" id="mistakeWrap"></div>
+    <div class="score-pill" id="scorePill" title="점수"><span class="sp-ic">⚡</span><span class="sp-n" id="scoreVal">0</span></div>
     <button class="icon-btn pause" id="pauseBtn" onclick="togglePause()" title="일시정지">⏸</button>
     <button class="icon-btn farm" onclick="openFarm()" title="내 농장">🌾</button>
     <button class="icon-btn compare" onclick="openCompare()" title="친구와 비교">👥</button>
@@ -1609,6 +1621,46 @@ let isPaused=false;
 let strictMode=localStorage.getItem('sudoku_strict_mode')==='1';
 // Track row/col/box completion for bonus drops
 let completedRows=new Set(), completedCols=new Set(), completedBoxes=new Set();
+// Score system
+let score=0, scoreStreak=0;
+const SCORE_BASE={easy:10,medium:18,hard:30,expert:50};
+const SCORE_MISTAKE=80;       // penalty per mistake
+const SCORE_HINT=150;          // penalty per hint use
+const SCORE_STREAK_BONUS=100;  // every 10 correct in a row
+function cellDifficultyMult(r,c){
+  // Count remaining empty cells in row+col+box (excluding this cell)
+  let empties=0;
+  for(let i=0;i<9;i++){
+    if(i!==c && board[r][i]===0)empties++;
+    if(i!==r && board[i][c]===0)empties++;
+  }
+  const br=Math.floor(r/3)*3,bc=Math.floor(c/3)*3;
+  for(let i=0;i<3;i++)for(let j=0;j<3;j++){
+    const rr=br+i,cc=bc+j;
+    if((rr!==r||cc!==c)&&board[rr][cc]===0)empties++;
+  }
+  // Fewer empty cells around = harder cell to deduce
+  if(empties<=4)return 2.8;   // endgame, very tight
+  if(empties<=8)return 2.0;
+  if(empties<=14)return 1.5;
+  if(empties<=20)return 1.2;
+  return 1.0;                  // lots of room, easy cell
+}
+function updateScoreDisplay(){
+  const el=document.getElementById('scoreVal');
+  if(el)el.textContent=score.toLocaleString();
+}
+function bumpScore(delta){
+  if(delta===0)return;
+  score=Math.max(0,score+delta);
+  updateScoreDisplay();
+  const pill=document.getElementById('scorePill');
+  if(pill){
+    pill.classList.remove('bump','bump-bad');
+    void pill.offsetWidth;
+    pill.classList.add(delta>0?'bump':'bump-bad');
+  }
+}
 // ═══════════════════════════════════════
 // PUZZLE GENERATION
 // ═══════════════════════════════════════
@@ -1808,6 +1860,7 @@ function initGame(d, daily=false){
   diff=d;completed=false;
   hintsLeft=3;hintsUsed=0;mistakes=0;
   notesUsed=false;undoUsed=false;
+  score=0;scoreStreak=0;updateScoreDisplay();
   history=[];noteMode=false;sel=null;missionFailed=false;
   completedRows=new Set();completedCols=new Set();completedBoxes=new Set();
   // Reset pause state
@@ -1940,6 +1993,7 @@ function input(n){
     notes[r][c].has(n)?notes[r][c].delete(n):notes[r][c].add(n);
   } else {
     const wasErr=board[r][c]!==0&&board[r][c]!==solution[r][c];
+    const wasEmpty=board[r][c]===0;
     board[r][c]=n;notes[r][c].clear();
     if(n!==solution[r][c]){
       if(!wasErr){
@@ -1947,8 +2001,24 @@ function input(n){
         if(mission)triggerFail('mistake');
         // Highlight conflicting cells (if not strict mode)
         if(!strictMode)highlightConflicts(r,c,n);
+        // Score: penalty
+        bumpScore(-SCORE_MISTAKE);
+        scoreStreak=0;
       }
-    } else {clearPeerNotes(r,c,n);playSound('correct');checkLineCompletion(r,c);}
+    } else {
+      clearPeerNotes(r,c,n);playSound('correct');checkLineCompletion(r,c);
+      // Score: only award if this was the first correct entry for this empty cell
+      if(wasEmpty){
+        const mult=cellDifficultyMult(r,c);
+        const pts=Math.round(SCORE_BASE[diff]*mult);
+        bumpScore(pts);
+        scoreStreak++;
+        if(scoreStreak>0 && scoreStreak%10===0){
+          bumpScore(SCORE_STREAK_BONUS);
+          showToast(`🔥 ${scoreStreak}연속! +${SCORE_STREAK_BONUS}점`);
+        }
+      }
+    }
   }
   refreshCell(r,c);renderNumpad();highlight();updateProgress();checkWin();
 }
@@ -2100,10 +2170,11 @@ function giveHint(){
     history.push({r,c,val:board[r][c],notes:new Set(notes[r][c])});
     board[r][c]=solution[r][c];notes[r][c].clear();
     hintsLeft--;hintsUsed++;
+    bumpScore(-SCORE_HINT);scoreStreak=0;
     if(mission)triggerFail('hint');
     updateHintBtn();clearPeerNotes(r,c,solution[r][c]);
     refreshCell(r,c);renderNumpad();highlight();updateProgress();checkWin();
-    showToast('💡 정답 채움!');
+    showToast('💡 정답 채움! (-'+SCORE_HINT+'점)');
     lastHintCellKey=null;
     playSound('correct');
   }else{
@@ -2136,8 +2207,16 @@ function checkWin(){
 }
 function showWin(){
   const mOk=mission&&!missionFailed&&mission.check({mistakes,hintsUsed,notesUsed,undoUsed,time:timerVal});
+  // Time bonus — reward fast solves
+  const TIME_BONUS_MAX={easy:300,medium:600,hard:1000,expert:1500};
+  const TIME_TARGET={easy:180,medium:360,hard:600,expert:900};
+  const timeBonus=Math.max(0,Math.round(TIME_BONUS_MAX[diff]*(1-timerVal/(TIME_TARGET[diff]*2.5))));
+  if(timeBonus>0)bumpScore(timeBonus);
+  // Perfect bonus
+  if(mistakes===0 && hintsUsed===0)bumpScore(500);
+  const chestCount=calcChestCount({mistakes,score});
   const streak=trackGameWin();
-  const entry={diff:isDaily?'daily':diff,time:timerVal,mistakes,hintsUsed,
+  const entry={diff:isDaily?'daily':diff,time:timerVal,mistakes,hintsUsed,score,
     missionId:mission?.id||null,missionTitle:mission?.title||null,
     missionOk:!!mOk,daily:isDaily,date:todayKey()};
   const rank=saveRecord(entry);
@@ -2146,8 +2225,11 @@ function showWin(){
   document.getElementById('winDiff').textContent=isDaily?`📅 ${todayKey()}`:`${DIFF[diff].label} 난이도`;
   document.getElementById('winTime').textContent=fmtTime(timerVal);
   document.getElementById('winStats').innerHTML=
+    `<span class="chip gold" style="font-size:14px">⚡ ${score.toLocaleString()}점</span>`+
+    `<span class="chip ${chestCount>=3?'gold':chestCount===0?'fail':'ok'}">📦 상자 ${chestCount}개</span>`+
     `<span class="chip ok">실수 ${mistakes}회</span>`+
     `<span class="chip ok">힌트 ${hintsUsed}회</span>`+
+    (timeBonus>0?`<span class="chip rank">⏱ +${timeBonus}</span>`:'')+
     (isDaily?`<span class="chip daily">DAILY ${DIFF[diff].label}</span>`:'');
   if(mission){
     document.getElementById('winMission').innerHTML=
@@ -2590,11 +2672,29 @@ function getChests(){
   try{return JSON.parse(localStorage.getItem(CHEST_KEY)||'[]')}catch(e){return[]}
 }
 function saveChests(c){localStorage.setItem(CHEST_KEY,JSON.stringify(c));scheduleSyncPush&&scheduleSyncPush()}
+function calcChestCount(opts){
+  // Base 2 chests
+  let n=2;
+  // +1 perfect (no mistakes)
+  if(opts.mistakes===0)n+=1;
+  // +1 high score (≥3000)
+  if(opts.score>=3000)n+=1;
+  // Mistake penalty: -1 per 3 mistakes
+  const penalty=Math.floor(opts.mistakes/3);
+  n-=penalty;
+  // Clamp 0..5
+  return Math.max(0,Math.min(5,n));
+}
 function grantWinChests(){
-  // Grant all 5 chests, each starts timer NOW
+  // Calculate chest count based on performance
+  const count=calcChestCount({mistakes,score});
+  if(count<=0)return;
+  // Pick the BEST N chests from CHEST_PACK (rarest first)
+  // CHEST_PACK is [bronze,silver,gold,platinum,rainbow] — take last N for higher value
+  const picked=CHEST_PACK.slice(-count);
   const chests=getChests();
   const now=Date.now();
-  CHEST_PACK.forEach(type=>{
+  picked.forEach(type=>{
     chests.push({type,startedAt:now,id:'c_'+Math.random().toString(36).substr(2,7)});
   });
   saveChests(chests);
@@ -4804,18 +4904,17 @@ const BGM_KEY='sudoku_bgm_enabled';
 // Default ON unless explicitly disabled
 let bgmEnabled=localStorage.getItem(BGM_KEY)!=='0';
 let bgmRunning=false, bgmInterval=null, bgmGain=null, currentBgmType=null;
-// Sudoku BGM: bright puzzle game vibe — jazz progression, triangle wave (piano/marimba feel)
+// Sudoku BGM: calm focus music — slow ambient pad, no melody, low frequency
+// Imaj7-vi7-IVmaj7-iii7 progression (no V→I tension, perfect for concentration)
 const BGM_SUDOKU={
   chords:[
-    [261.63,329.63,392.00,493.88], // Cmaj7
-    [220.00,261.63,329.63,392.00], // Am7
+    [130.81,196.00,261.63,329.63], // Cmaj7 (low octave)
+    [110.00,164.81,220.00,329.63], // Am7
     [174.61,220.00,261.63,329.63], // Fmaj7
-    [196.00,246.94,293.66,369.99], // G7
+    [164.81,196.00,246.94,329.63], // Em7
   ],
-  duration:2.4,wave:'triangle',filterFreq:3200,filterQ:0.5,
-  volume:0.035,attack:0.08,release:0.4,
-  melody:[[523.25,659.25],[493.88,587.33],[523.25,698.46],[587.33,659.25]],
-  melodyVol:0.025,
+  duration:6.5,wave:'sine',filterFreq:1200,filterQ:0.6,
+  volume:0.025,attack:1.5,release:2.0,melody:null,
 };
 // Farm BGM: cozy countryside — I-V-vi-IV, sine wave (warm flute/pad)
 const BGM_FARM={
