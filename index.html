@@ -693,6 +693,27 @@ body.dark .mfw-btn:hover{background:rgba(255,255,255,.2)}
 .placed-item .fruit-overlay{position:absolute;top:6px;right:0px;font-size:0.28em;
   pointer-events:none;filter:drop-shadow(0 1px 1px rgba(0,0,0,.4))}
 .placed-item .fruit-overlay.b2{top:16px;left:0px;right:auto;font-size:0.26em}
+/* Color tone filters — for special legendaries */
+.placed-item.tone-red{filter:hue-rotate(330deg) saturate(2.2) brightness(1.1)
+  drop-shadow(0 0 6px #ff4444) drop-shadow(2px 3px 0 rgba(0,0,0,.25))}
+.placed-item.tone-blue{filter:hue-rotate(190deg) saturate(2.2) brightness(0.95)
+  drop-shadow(0 0 6px #4dabf7) drop-shadow(2px 3px 0 rgba(0,0,0,.25))}
+.placed-item.tone-yellow{filter:hue-rotate(40deg) saturate(2.5) brightness(1.15)
+  drop-shadow(0 0 8px #ffd43b) drop-shadow(2px 3px 0 rgba(0,0,0,.25))}
+.placed-item.tone-gold{filter:hue-rotate(20deg) saturate(2) brightness(1.2)
+  drop-shadow(0 0 8px #f59f00) drop-shadow(2px 3px 0 rgba(0,0,0,.3))}
+.placed-item.tone-rainbow{animation:rainbowHue 4s linear infinite;
+  filter:drop-shadow(0 0 8px #ff69b4) drop-shadow(2px 3px 0 rgba(0,0,0,.25))}
+@keyframes rainbowHue{0%{filter:hue-rotate(0deg) drop-shadow(0 0 8px #ff69b4)}
+  100%{filter:hue-rotate(360deg) drop-shadow(0 0 8px #ff69b4)}}
+.placed-item.tone-water{filter:hue-rotate(190deg) saturate(1.4) brightness(1.05)}
+/* Unicorn body wings + horn overlay */
+.placed-item .body-wing{position:absolute;top:-2px;left:-8px;font-size:0.5em;
+  pointer-events:none;transform:rotate(-15deg);
+  animation:wingFlap 0.6s ease-in-out infinite alternate}
+.placed-item .body-horn{position:absolute;top:-12px;right:14px;font-size:0.32em;
+  pointer-events:none;text-shadow:0 0 6px #fff}
+@keyframes wingFlap{0%{transform:rotate(-25deg) translateY(0)}100%{transform:rotate(-5deg) translateY(-2px)}}
 /* Fishing pond — swimming fish hints */
 .water-fish-hint{position:absolute;font-size:16px;top:50%;left:10%;
   animation:waterFishSwim 8s ease-in-out infinite;pointer-events:none;opacity:.85}
@@ -927,10 +948,13 @@ body.dark .mfw-btn:hover{background:rgba(255,255,255,.2)}
 }
 /* ── CROP PLOTS ── */
 .crop-plot{position:absolute;font-size:24px;cursor:pointer;text-align:center;line-height:1;
-  transform:translate(-50%,0);transition:transform .2s;
+  transform:translate(-50%,0);transition:transform .2s;z-index:30;
   filter:drop-shadow(2px 3px 0 rgba(0,0,0,.2))}
 .crop-plot:hover{transform:translate(-50%,-2px) scale(1.1)}
-.crop-plot.empty{font-size:22px;opacity:.7;animation:plotPulse 3s ease-in-out infinite}
+.crop-plot.empty{font-size:20px;opacity:.85;animation:plotPulse 3s ease-in-out infinite;
+  background:rgba(255,255,255,.55);border:1.5px dashed rgba(0,0,0,.4);
+  border-radius:6px;width:30px;height:30px;display:flex;align-items:center;
+  justify-content:center}
 @keyframes plotPulse{0%,100%{opacity:.5}50%{opacity:.85}}
 .crop-plot.growing{animation:cropSway 4s ease-in-out infinite alternate}
 @keyframes cropSway{from{transform:translate(-50%,0) rotate(-2deg)}to{transform:translate(-50%,0) rotate(2deg)}}
@@ -2576,7 +2600,7 @@ setInterval(()=>{if(typeof renderMainFarmWidget==='function')renderMainFarmWidge
 // ═══════════════════════════════════════
 const ITEMS=[
   // animals
-  {id:'a01',n:'닭',e:'🐔',r:'common',c:'animal'},
+  {id:'a01',n:'닭',e:'🐓',r:'common',c:'animal'},
   {id:'a02',n:'양',e:'🐑',r:'common',c:'animal'},
   {id:'a03',n:'소',e:'🐄',r:'common',c:'animal'},
   {id:'a04',n:'돼지',e:'🐖',r:'common',c:'animal'},
@@ -2587,9 +2611,12 @@ const ITEMS=[
   {id:'a09',n:'말',e:'🐎',r:'epic',c:'animal'},
   {id:'a10',n:'공작새',e:'🦚',r:'epic',c:'animal'},
   {id:'a11',n:'백조',e:'🦢',r:'epic',c:'animal'},
-  {id:'a12',n:'드래곤',e:'🐉',r:'legendary',c:'animal'},
-  {id:'a13',n:'유니콘',e:'🦄',r:'legendary',c:'animal'},
-  {id:'a14',n:'봉황',e:'🦅',r:'legendary',c:'animal'},
+  {id:'a12',n:'적룡',e:'🐉',r:'legendary',c:'animal',tone:'red'},
+  {id:'a13',n:'유니콘',e:'🐴',e2:'🪽',e3:'✨',r:'legendary',c:'animal',tone:'rainbow'},
+  {id:'a14',n:'봉황',e:'🦅',r:'legendary',c:'animal',tone:'gold'},
+  {id:'a31',n:'청룡',e:'🐉',r:'legendary',c:'animal',tone:'blue'},
+  {id:'a32',n:'황룡',e:'🐉',r:'legendary',c:'animal',tone:'yellow'},
+  {id:'a33',n:'적토마',e:'🐎',r:'epic',c:'animal',tone:'red'},
   // Common animals (extra)
   {id:'a15',n:'강아지',e:'🐕',r:'common',c:'animal'},
   {id:'a16',n:'고양이',e:'🐈',r:'common',c:'animal'},
@@ -2636,7 +2663,7 @@ const ITEMS=[
   {id:'p10',n:'세계수',e:'🌳',e2:'🌟',r:'legendary',c:'plant',sz:'tree'},
   {id:'p11',n:'무지개나무',e:'🌳',e2:'🌈',r:'legendary',c:'plant',sz:'tree'},
   // buildings
-  {id:'b01',n:'우물',e:'🪣',r:'common',c:'building',perk:'plant_yield_plus'}, // 식물 수확량 +1
+  {id:'b01',n:'우물',e:'⛲',r:'common',c:'building',perk:'plant_yield_plus',tone:'water'}, // 식물 수확량 +1
   {id:'b02',n:'텐트',e:'⛺',r:'common',c:'building'},
   {id:'b03',n:'폐가',e:'🏚',r:'common',c:'building'},
   {id:'b04',n:'농가',e:'🏠',r:'rare',c:'building'},
@@ -2817,11 +2844,11 @@ function renderChestsSection(e){
 // SEED / CROP PLANTING SYSTEM
 // ═══════════════════════════════════════
 const SEEDS={
-  carrot: {n:'당근',  e:'🥕',sprout:'🌱',cost:100, sec:300,  yield:5, res:'fruit'},
-  corn:   {n:'옥수수',e:'🌽',sprout:'🌱',cost:300, sec:600,  yield:8, res:'fruit'},
-  wheat:  {n:'밀',    e:'🌾',sprout:'🌾',cost:700, sec:1200, yield:12,res:'fruit'},
-  tomato: {n:'토마토',e:'🍅',sprout:'🌱',cost:1500,sec:1800, yield:18,res:'fruit'},
-  pumpkin:{n:'호박',  e:'🎃',sprout:'🌱',cost:3500,sec:3600, yield:35,res:'fruit'},
+  carrot: {n:'당근',  e:'🥕',sprout:'🌱',cost:100, sec:300,  yield:8,  res:'fruit'},
+  corn:   {n:'옥수수',e:'🌽',sprout:'🌱',cost:300, sec:600,  yield:22, res:'fruit'},
+  wheat:  {n:'밀',    e:'🌾',sprout:'🌾',cost:700, sec:1200, yield:50, res:'fruit'},
+  tomato: {n:'토마토',e:'🍅',sprout:'🌱',cost:1500,sec:1800, yield:120,res:'fruit'},
+  pumpkin:{n:'호박',  e:'🎃',sprout:'🌱',cost:3500,sec:3600, yield:300,res:'fruit'},
 };
 const CROPS_KEY='sudoku_crops_v1';
 // ═══════════════════════════════════════
@@ -3031,9 +3058,14 @@ function reelInFish(){
   }
 }
 // 8 plots in crop field zone (x=68-83, y=12-30)
+// CROP_PLOTS aligned to dirt zones: 🌾 밭 (left half) + 🥕 작물 (right half)
 const CROP_PLOTS=[
-  {id:'p1',x:70,y:25},{id:'p2',x:75,y:25},{id:'p3',x:80,y:25},{id:'p4',x:85,y:25},
-  {id:'p5',x:70,y:18},{id:'p6',x:75,y:18},{id:'p7',x:80,y:18},{id:'p8',x:85,y:18},
+  // 🌾 밭 zone (x:52-73, y:5-27) — 4 plots
+  {id:'p1',x:57,y:20},{id:'p2',x:67,y:20},
+  {id:'p3',x:57,y:10},{id:'p4',x:67,y:10},
+  // 🥕 작물 zone (x:75-97, y:5-27) — 4 plots
+  {id:'p5',x:80,y:20},{id:'p6',x:91,y:20},
+  {id:'p7',x:80,y:10},{id:'p8',x:91,y:10},
 ];
 let plantedCrops=[];
 function loadCrops(){
@@ -3741,11 +3773,16 @@ function renderFarmScene(){
     const el=document.createElement('div');
     let cls=`placed-item ${item.c} ${item.r} ${itemSizeClass(item)}`;
     if(item.live)cls+=` lively live-${item.id}`;
+    if(item.tone)cls+=` tone-${item.tone}`;
     el.className=cls;
     el.dataset.uid=p.uid;
-    // Base emoji (tree etc) + optional fruit/leaf overlay (사과나무 → 🌳 + 🍎)
+    // Base emoji + optional overlay (e2=fruit/wing, e3=sparkle/horn)
     const baseEmoji=getStageEmoji(p,item);
-    if(item.e2){
+    // Unicorn (a13) → body + wing + horn special
+    if(item.id==='a13'){
+      el.innerHTML=`${baseEmoji}<span class="body-wing">🪽</span><span class="body-horn">📍</span><span class="fruit-overlay">✨</span>`;
+    }else if(item.c==='plant' && item.e2){
+      // Tree fruit overlays
       el.innerHTML=`${baseEmoji}<span class="fruit-overlay">${item.e2}</span><span class="fruit-overlay b2">${item.e2}</span>`;
     }else{
       el.textContent=baseEmoji;
@@ -3836,24 +3873,34 @@ function startWalking(){
       const stage=getCurrentStage(p);
       // Smaller, more natural wander range
       const range=stage===1?6:12;
+      const rangeY=stage===1?4:8;
       let newX=p.x+(Math.random()*range*2-range);
-      // Keep animals within left pen (5-45%) if they started there
-      if(p.x<=48){newX=Math.max(7,Math.min(45,newX));}
-      else{newX=Math.max(8,Math.min(92,newX));}
+      let newY=p.y+(Math.random()*rangeY*2-rangeY);
+      // Keep animals within animal pen zone (3-49%, 5-55%) if they started there
+      if(p.x<=49){
+        newX=Math.max(5,Math.min(48,newX));
+        newY=Math.max(7,Math.min(52,newY));
+      }else{
+        newX=Math.max(8,Math.min(92,newX));
+        newY=Math.max(5,Math.min(60,newY));
+      }
       newX=Math.round(newX/5)*5;
-      const oldX=p.x;
-      if(Math.abs(newX-oldX)<3)return;
-      p.x=newX;
+      newY=Math.round(newY/5)*5;
+      const oldX=p.x,oldY=p.y;
+      if(Math.abs(newX-oldX)<3 && Math.abs(newY-oldY)<3)return;
+      p.x=newX;p.y=newY;
       const el=document.querySelector(`[data-uid="${p.uid}"]`);
       if(el){
-        // Direction flip
-        if(newX<oldX)el.classList.add('flipped');else el.classList.remove('flipped');
+        // Direction flip (based on X movement)
+        if(newX<oldX)el.classList.add('flipped');else if(newX>oldX)el.classList.remove('flipped');
         // 35% chance to hop, 65% smooth glide (variety)
         if(Math.random()<0.35){
           el.classList.add('hopping');
           setTimeout(()=>el.classList.remove('hopping'),500);
         }
         el.style.left=p.x+'%';
+        el.style.bottom=p.y+'%';
+        el.style.zIndex=Math.round(150-p.y);
       }
     });
     saveLayout();
@@ -3910,7 +3957,7 @@ const RESOURCES={
   egg:{n:'계란',e:'🥚',price:5},
   milk:{n:'우유',e:'🥛',price:12},
   wool:{n:'양털',e:'🧶',price:10},
-  fruit:{n:'과일',e:'🍎',price:8},
+  fruit:{n:'과일',e:'🍎',price:25},
   honey:{n:'꿀',e:'🍯',price:30},
   fish:{n:'생선',e:'🐟',price:18},
   meat:{n:'고기',e:'🥩',price:40},

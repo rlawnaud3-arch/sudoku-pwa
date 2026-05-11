@@ -1,5 +1,5 @@
 // Service Worker for Sudoku PWA - Offline support
-const CACHE_NAME = 'sudoku-v30';
+const CACHE_NAME = 'sudoku-v31';
 const ASSETS = [
   './',
   './index.html',
