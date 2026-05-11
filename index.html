@@ -668,8 +668,8 @@ body.dark .mfw-btn:hover{background:rgba(255,255,255,.2)}
     repeating-linear-gradient(0deg,transparent 0,transparent 23px,rgba(0,0,0,.07) 23px,rgba(0,0,0,.07) 24px),
     /* Tile color variation */
     repeating-conic-gradient(from 0deg at 50% 50%,rgba(255,255,255,.04) 0% 50%,transparent 50% 100%),
-    /* Sky+grass gradient */
-    linear-gradient(to bottom,#88c4ec 0%,#b8def0 26%,#7cb342 26%,#5a9926 100%);
+    /* Sky (smaller) + grass (bigger) gradient */
+    linear-gradient(to bottom,#88c4ec 0%,#b8def0 17%,#7cb342 17%,#5a9926 100%);
   border:4px solid #4a3826;
   box-shadow:inset 0 0 0 2px #6b5333,inset 0 -3px 0 rgba(0,0,0,.15),0 4px 0 #2a1f12;
   image-rendering:pixelated;image-rendering:crisp-edges;
@@ -690,9 +690,27 @@ body.dark .mfw-btn:hover{background:rgba(255,255,255,.2)}
 .placed-item.sz-small{font-size:22px!important}
 .placed-item.sz-tiny{font-size:18px!important}
 /* Fruit/leaf overlay on top of tree emoji (사과나무, 벚꽃나무 etc) */
-.placed-item .fruit-overlay{position:absolute;top:-2px;right:-4px;font-size:0.45em;
-  pointer-events:none;filter:drop-shadow(0 1px 1px rgba(0,0,0,.3))}
-.placed-item .fruit-overlay.b2{top:8px;left:-6px;right:auto;font-size:0.4em}
+.placed-item .fruit-overlay{position:absolute;top:6px;right:0px;font-size:0.28em;
+  pointer-events:none;filter:drop-shadow(0 1px 1px rgba(0,0,0,.4))}
+.placed-item .fruit-overlay.b2{top:16px;left:0px;right:auto;font-size:0.26em}
+/* Fishing pond — swimming fish hints */
+.water-fish-hint{position:absolute;font-size:16px;top:50%;left:10%;
+  animation:waterFishSwim 8s ease-in-out infinite;pointer-events:none;opacity:.85}
+.water-fish-hint.f2{top:30%;left:60%;animation-duration:11s;animation-delay:-3s;font-size:14px}
+@keyframes waterFishSwim{
+  0%,100%{left:8%;transform:translateY(-50%) scaleX(1)}
+  48%{left:70%;transform:translateY(-50%) scaleX(1)}
+  50%{left:70%;transform:translateY(-50%) scaleX(-1)}
+  98%{left:8%;transform:translateY(-50%) scaleX(-1)}
+}
+.zone-water{pointer-events:auto!important}
+.zone-water:hover{filter:brightness(1.08)}
+.zone-water::after{content:'🎣 클릭!';position:absolute;bottom:4px;left:50%;
+  transform:translateX(-50%);background:rgba(255,255,255,.95);color:#1864ab;
+  font-size:9px;font-weight:800;padding:2px 7px;border-radius:8px;
+  white-space:nowrap;letter-spacing:-.3px;pointer-events:none;
+  box-shadow:0 1px 3px rgba(0,0,0,.25);animation:waterCta 2s ease-in-out infinite}
+@keyframes waterCta{0%,100%{transform:translateX(-50%) scale(1)}50%{transform:translateX(-50%) scale(1.08)}}
 .placed-item{position:absolute;transform:translate(-50%,0);cursor:pointer;text-align:center;
   line-height:1;transition:left .5s cubic-bezier(.34,1.2,.64,1),bottom .5s cubic-bezier(.34,1.2,.64,1);
   filter:drop-shadow(2px 3px 0 rgba(0,0,0,.25));image-rendering:pixelated}
@@ -3484,24 +3502,26 @@ function autoArrangeFarm(){
     let x,y;
     if(item.c==='fish')return; // Fish go in encyclopedia only, not on farm
     if(item.c==='animal'){
-      x=8+Math.random()*35;
-      y=16+Math.random()*22;
+      // 동물 우리 zone: left:3-49%, bottom:5-55%
+      x=8+Math.random()*38;
+      y=12+Math.random()*38;
     }else if(item.c==='plant'){
-      // 50/50 garden vs crop
-      if(Math.random()<0.5){x=50+Math.random()*14;}
-      else{x=70+Math.random()*13;}
-      y=14+Math.random()*14;
+      // Plants placed in 밭/작물/정원 dirt zones
+      const slot=Math.floor(Math.random()*3);
+      if(slot===0){x=54+Math.random()*17;y=8+Math.random()*16;}      // 🌾 밭
+      else if(slot===1){x=77+Math.random()*18;y=8+Math.random()*16;} // 🥕 작물
+      else{x=54+Math.random()*17;y=32+Math.random()*14;}              // 🌱 정원
     }else if(item.c==='building'){
-      x=42+Math.random()*18;
-      if(Math.abs(x-50)<8)x=x<50?40:62;
-      y=44+Math.random()*14;
+      // Buildings go in the open plaza area above zones
+      x=15+Math.random()*30;
+      y=62+Math.random()*16;
     }else if(item.live){
       // Lively items scatter around upper sky area
       x=10+Math.random()*80;
-      y=20+Math.random()*40;
+      y=68+Math.random()*15;
     }else{ // static deco
       x=5+Math.random()*90;
-      y=3+Math.random()*9;
+      y=60+Math.random()*8;
     }
     x=Math.round(x/5)*5;
     y=Math.round(y/5)*5;
@@ -3597,35 +3617,7 @@ function buildFarmBackground(){
     el.style.zIndex=Math.round(150-m.y);
     bg.appendChild(el);
   });
-  // Pond (in water zone)
-  const pond=document.createElement('div');
-  pond.className='pond';
-  pond.id='farmPond';
-  pond.style.left='91%';pond.style.bottom='9%';
-  pond.style.width='70px';pond.style.height='36px';
-  pond.style.transform='translateX(-50%)';
-  pond.style.zIndex=Math.round(150-9);
-  pond.style.cursor='pointer';
-  pond.style.pointerEvents='auto';
-  bg.appendChild(pond);
-  // Zone fences (5 zones)
-  const zones=[
-    {cls:'animal',left:5, bottom:12, w:40, h:30},   // 🐾 동물 우리 (좌측 큼)
-    {cls:'garden',left:48,bottom:12, w:18, h:18},   // 🌱 정원 (식물)
-    {cls:'crop', left:68, bottom:12, w:17, h:18},   // 🌾 작물밭
-    {cls:'house-plaza',left:40,bottom:42,w:22,h:18},// 🏠 집 광장 (중앙)
-    {cls:'water',left:85,bottom:6,  w:13, h:14},    // 💧 연못 영역
-  ];
-  zones.forEach(z=>{
-    const el=document.createElement('div');
-    el.className='zone-fence '+z.cls;
-    el.style.left=z.left+'%';
-    el.style.bottom=z.bottom+'%';
-    el.style.width=z.w+'%';
-    el.style.height=z.h+'%';
-    el.style.zIndex='25';
-    bg.appendChild(el);
-  });
+  // (Old small pond + zone-fences removed — replaced by full-size buildZoneOverlays)
   return bg;
 }
 // Ambient life layer (butterflies, birds, smoke, fireflies)
@@ -3664,17 +3656,29 @@ function spawnFloatEffect(emoji,x,y,scene){
   setTimeout(()=>el.remove(),1600);
 }
 function buildZoneOverlays(){
-  // 4 named zones — give the farm a clear "layout" feel
+  // Stardew-style zones — large, fills most of the scene
   const wrap=document.createElement('div');
   wrap.className='farm-bg-layer';
   wrap.style.zIndex=1;
   wrap.innerHTML=`
-    <div class="zone zone-pen"   style="left:6%;bottom:8%;width:30%;height:32%"><span class="zone-label">🐔 동물</span></div>
-    <div class="zone zone-dirt"  style="left:40%;bottom:8%;width:24%;height:18%"><span class="zone-label">🌾 밭</span></div>
-    <div class="zone zone-dirt"  style="left:67%;bottom:8%;width:24%;height:18%"><span class="zone-label">🥕 작물</span></div>
-    <div class="zone zone-water" style="left:67%;bottom:50%;width:26%;height:22%"><span class="zone-label" style="background:rgba(0,0,80,.45)">🐟 연못</span></div>
-    <div class="zone zone-path"  style="left:36%;bottom:30%;width:30%;height:6%"></div>
+    <div class="zone zone-pen"   style="left:3%;bottom:5%;width:46%;height:50%"><span class="zone-label">🐔 동물 우리</span></div>
+    <div class="zone zone-dirt"  style="left:52%;bottom:5%;width:21%;height:22%"><span class="zone-label">🌾 밭</span></div>
+    <div class="zone zone-dirt"  style="left:75%;bottom:5%;width:22%;height:22%"><span class="zone-label">🥕 작물</span></div>
+    <div class="zone zone-dirt"  style="left:52%;bottom:30%;width:21%;height:18%"><span class="zone-label">🌱 정원</span></div>
+    <div class="zone zone-water" id="zoneWater" style="left:75%;bottom:30%;width:22%;height:30%;cursor:pointer">
+      <span class="zone-label" style="background:rgba(0,0,80,.45)">🎣 낚시터</span>
+      <div class="water-fish-hint">🐟</div>
+      <div class="water-fish-hint f2">🐠</div>
+    </div>
+    <div class="zone zone-path"  style="left:3%;bottom:57%;width:94%;height:5%"></div>
   `;
+  // Make the pond zone clickable → open fishing modal directly
+  setTimeout(()=>{
+    const w=document.getElementById('zoneWater');
+    if(w){
+      w.onclick=function(e){e.stopPropagation();if(typeof openFishingModal==='function')openFishingModal();};
+    }
+  },50);
   return wrap;
 }
 function renderFarmScene(){
@@ -3705,8 +3709,8 @@ function renderFarmScene(){
   const hEl=document.createElement('div');
   hEl.className=`placed-item house lv${h.lv}`;
   hEl.textContent=h.e;
-  hEl.style.left='50%';
-  hEl.style.bottom='48%';
+  hEl.style.left='25%';
+  hEl.style.bottom='70%';
   hEl.style.fontSize=h.size+'px';
   hEl.style.zIndex='80';
   hEl.title=`${h.n} (LV ${h.lv}) - ${h.perk}`;
@@ -4615,7 +4619,7 @@ function renderFriendFarm(opp){
   const hEl=document.createElement('div');
   hEl.className=`placed-item house lv${house.lv}`;
   hEl.textContent=house.e;
-  hEl.style.left='50%';hEl.style.bottom='48%';
+  hEl.style.left='25%';hEl.style.bottom='70%';
   hEl.style.fontSize=house.size+'px';
   hEl.style.zIndex='80';
   scene.appendChild(hEl);
