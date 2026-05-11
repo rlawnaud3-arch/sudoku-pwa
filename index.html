@@ -683,6 +683,16 @@ body.dark .mfw-btn:hover{background:rgba(255,255,255,.2)}
 .farm-scene::before{content:'☁️       ☁️    ☁️';position:absolute;top:8px;left:0;right:0;
   font-size:16px;letter-spacing:8px;animation:cloudDrift 80s linear infinite;opacity:.85;white-space:nowrap;pointer-events:none}
 @keyframes cloudDrift{from{transform:translateX(-30%)}to{transform:translateX(30%)}}
+/* Size variants — used by sz: prop on items */
+.placed-item.sz-tree{font-size:46px!important}
+.placed-item.sz-large{font-size:38px!important}
+.placed-item.sz-medium{font-size:28px!important}
+.placed-item.sz-small{font-size:22px!important}
+.placed-item.sz-tiny{font-size:18px!important}
+/* Fruit/leaf overlay on top of tree emoji (사과나무, 벚꽃나무 etc) */
+.placed-item .fruit-overlay{position:absolute;top:-2px;right:-4px;font-size:0.45em;
+  pointer-events:none;filter:drop-shadow(0 1px 1px rgba(0,0,0,.3))}
+.placed-item .fruit-overlay.b2{top:8px;left:-6px;right:auto;font-size:0.4em}
 .placed-item{position:absolute;transform:translate(-50%,0);cursor:pointer;text-align:center;
   line-height:1;transition:left .5s cubic-bezier(.34,1.2,.64,1),bottom .5s cubic-bezier(.34,1.2,.64,1);
   filter:drop-shadow(2px 3px 0 rgba(0,0,0,.25));image-rendering:pixelated}
@@ -729,6 +739,31 @@ body.dark .mfw-btn:hover{background:rgba(255,255,255,.2)}
 }
 /* ── BACKGROUND DETAILS ── */
 .farm-bg-layer{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+/* Zone overlays — dirt fields, animal pen, paths */
+.zone{position:absolute;pointer-events:none;border-radius:4px}
+.zone-dirt{background:
+  repeating-linear-gradient(0deg,rgba(0,0,0,.08) 0,rgba(0,0,0,.08) 2px,transparent 2px,transparent 14px),
+  repeating-linear-gradient(90deg,#a47148 0,#a47148 2px,#8b5e3c 2px,#8b5e3c 14px);
+  border:2px solid #5d3d20;box-shadow:inset 0 0 0 1px rgba(0,0,0,.2),0 2px 0 #3d2510}
+.zone-pen{background:
+  repeating-linear-gradient(45deg,#c9a77a 0,#c9a77a 6px,#b8956a 6px,#b8956a 12px);
+  border:3px solid #6b4226;border-radius:6px;
+  box-shadow:inset 0 0 0 2px #8b6238,inset 0 -3px 0 rgba(0,0,0,.18),0 2px 0 #3d2510;
+  opacity:.92}
+.zone-pen::before{content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(90deg,transparent 0,transparent 30px,#5d3d20 30px,#5d3d20 33px);
+  opacity:.45;border-radius:3px;pointer-events:none}
+.zone-path{background:
+  repeating-linear-gradient(0deg,rgba(0,0,0,.05) 0,rgba(0,0,0,.05) 1px,transparent 1px,transparent 8px),
+  linear-gradient(to right,#d4b285,#c4a275);
+  border-top:2px solid #8b6f47;border-bottom:2px solid #8b6f47;opacity:.85}
+.zone-water{background:
+  repeating-linear-gradient(0deg,#4dabf7 0,#4dabf7 3px,#74c0fc 3px,#74c0fc 6px,#a5d8ff 6px,#a5d8ff 9px,#74c0fc 9px,#74c0fc 12px);
+  border:2px solid #1864ab;border-radius:50% 50% 8px 8px / 30% 30% 8px 8px;
+  box-shadow:inset 0 3px 6px rgba(24,100,171,.4)}
+.zone-label{position:absolute;top:2px;left:6px;font-size:9px;color:#fff;
+  text-shadow:0 1px 2px rgba(0,0,0,.6);font-weight:800;letter-spacing:-.3px;
+  background:rgba(0,0,0,.35);padding:1px 6px;border-radius:6px;pointer-events:none}
 .bg-tree{position:absolute;line-height:1;filter:brightness(.78) saturate(.9);pointer-events:none}
 .bg-stone{position:absolute;line-height:1;opacity:.55;font-size:14px;pointer-events:none}
 .bg-flower{position:absolute;line-height:1;font-size:11px;opacity:.85;pointer-events:none;
@@ -2571,17 +2606,17 @@ const ITEMS=[
   // Aquarium building
   {id:'b16',n:'수족관',e:'🪟',r:'epic',c:'building'},
   // plants
-  {id:'p01',n:'나무',e:'🌳',r:'common',c:'plant'},
-  {id:'p02',n:'해바라기',e:'🌻',r:'common',c:'plant'},
-  {id:'p03',n:'당근밭',e:'🥕',r:'common',c:'plant'},
-  {id:'p04',n:'옥수수밭',e:'🌽',r:'common',c:'plant'},
-  {id:'p05',n:'사과나무',e:'🍎',r:'rare',c:'plant'},
-  {id:'p06',n:'소나무',e:'🌲',r:'rare',c:'plant'},
-  {id:'p07',n:'야자수',e:'🌴',r:'rare',c:'plant'},
-  {id:'p08',n:'벚꽃나무',e:'🌸',r:'epic',c:'plant'},
-  {id:'p09',n:'단풍나무',e:'🍁',r:'epic',c:'plant'},
-  {id:'p10',n:'세계수',e:'🌟',r:'legendary',c:'plant'},
-  {id:'p11',n:'무지개나무',e:'🌈',r:'legendary',c:'plant'},
+  {id:'p01',n:'나무',e:'🌳',r:'common',c:'plant',sz:'tree'},
+  {id:'p02',n:'해바라기',e:'🌻',r:'common',c:'plant',sz:'small'},
+  {id:'p03',n:'당근밭',e:'🥕',r:'common',c:'plant',sz:'small'},
+  {id:'p04',n:'옥수수밭',e:'🌽',r:'common',c:'plant',sz:'small'},
+  {id:'p05',n:'사과나무',e:'🌳',e2:'🍎',r:'rare',c:'plant',sz:'tree'},
+  {id:'p06',n:'소나무',e:'🌲',r:'rare',c:'plant',sz:'tree'},
+  {id:'p07',n:'야자수',e:'🌴',r:'rare',c:'plant',sz:'tree'},
+  {id:'p08',n:'벚꽃나무',e:'🌳',e2:'🌸',r:'epic',c:'plant',sz:'tree'},
+  {id:'p09',n:'단풍나무',e:'🌳',e2:'🍁',r:'epic',c:'plant',sz:'tree'},
+  {id:'p10',n:'세계수',e:'🌳',e2:'🌟',r:'legendary',c:'plant',sz:'tree'},
+  {id:'p11',n:'무지개나무',e:'🌳',e2:'🌈',r:'legendary',c:'plant',sz:'tree'},
   // buildings
   {id:'b01',n:'우물',e:'🪣',r:'common',c:'building',perk:'plant_yield_plus'}, // 식물 수확량 +1
   {id:'b02',n:'텐트',e:'⛺',r:'common',c:'building'},
@@ -3628,6 +3663,20 @@ function spawnFloatEffect(emoji,x,y,scene){
   scene.appendChild(el);
   setTimeout(()=>el.remove(),1600);
 }
+function buildZoneOverlays(){
+  // 4 named zones — give the farm a clear "layout" feel
+  const wrap=document.createElement('div');
+  wrap.className='farm-bg-layer';
+  wrap.style.zIndex=1;
+  wrap.innerHTML=`
+    <div class="zone zone-pen"   style="left:6%;bottom:8%;width:30%;height:32%"><span class="zone-label">🐔 동물</span></div>
+    <div class="zone zone-dirt"  style="left:40%;bottom:8%;width:24%;height:18%"><span class="zone-label">🌾 밭</span></div>
+    <div class="zone zone-dirt"  style="left:67%;bottom:8%;width:24%;height:18%"><span class="zone-label">🥕 작물</span></div>
+    <div class="zone zone-water" style="left:67%;bottom:50%;width:26%;height:22%"><span class="zone-label" style="background:rgba(0,0,80,.45)">🐟 연못</span></div>
+    <div class="zone zone-path"  style="left:36%;bottom:30%;width:30%;height:6%"></div>
+  `;
+  return wrap;
+}
 function renderFarmScene(){
   const scene=document.getElementById('farmScene');
   if(!scene)return;
@@ -3635,6 +3684,8 @@ function renderFarmScene(){
   scene.querySelectorAll('.placed-item,.farm-bg-layer,.amb-layer,.chimney-smoke').forEach(el=>el.remove());
   // Add background layer first (lowest z)
   scene.appendChild(buildFarmBackground());
+  // Add zone overlays (animal pen, dirt fields, pond, path) — above ambient bg
+  scene.appendChild(buildZoneOverlays());
   // Load + render crop plots
   loadCrops();
   scene.querySelectorAll('.crop-plot').forEach(el=>el.remove());
@@ -3670,22 +3721,38 @@ function renderFarmScene(){
     const smoke=buildChimneySmoke(50,48+h.size*0.08,h.size);
     scene.appendChild(smoke);
   }
+  // Size category by item — trees biggest, then large animals, then default
+  const LARGE_ANIMALS=new Set(['a03','a04','a09','a28','a29','a30','a27','a12','a13','a14','a26','a25','a24']);
+  function itemSizeClass(item){
+    if(item.sz)return 'sz-'+item.sz;
+    if(item.c==='plant' && !item.sz)return 'sz-tree';
+    if(item.c==='building')return 'sz-tree';
+    if(item.c==='animal' && LARGE_ANIMALS.has(item.id))return 'sz-large';
+    if(item.c==='deco')return 'sz-small';
+    return 'sz-medium';
+  }
   farmLayout.forEach(p=>{
     const item=ITEMS.find(i=>i.id===p.id);
     if(!item)return;
     const el=document.createElement('div');
-    let cls=`placed-item ${item.c} ${item.r}`;
+    let cls=`placed-item ${item.c} ${item.r} ${itemSizeClass(item)}`;
     if(item.live)cls+=` lively live-${item.id}`;
     el.className=cls;
     el.dataset.uid=p.uid;
-    el.textContent=getStageEmoji(p,item);
+    // Base emoji (tree etc) + optional fruit/leaf overlay (사과나무 → 🌳 + 🍎)
+    const baseEmoji=getStageEmoji(p,item);
+    if(item.e2){
+      el.innerHTML=`${baseEmoji}<span class="fruit-overlay">${item.e2}</span><span class="fruit-overlay b2">${item.e2}</span>`;
+    }else{
+      el.textContent=baseEmoji;
+    }
     el.style.left=p.x+'%';
     el.style.bottom=p.y+'%';
     el.style.zIndex=Math.round(150-p.y);
     // Apply stage scale for animals (1=juvenile, 2=adult)
     const stage=getCurrentStage(p);
     if(item.c==='animal' && stage<2){
-      const baseSize=24;
+      const baseSize=LARGE_ANIMALS.has(item.id)?38:28;
       el.style.fontSize=(baseSize*STAGE_SCALE[stage])+'px';
       // Juvenile growing indicator
       const label=document.createElement('div');
@@ -4553,18 +4620,32 @@ function renderFriendFarm(opp){
   hEl.style.zIndex='80';
   scene.appendChild(hEl);
   // Add layout items
+  const LARGE_A=new Set(['a03','a04','a09','a28','a29','a30','a27','a12','a13','a14','a26','a25','a24']);
+  function _sz(it){
+    if(it.sz)return 'sz-'+it.sz;
+    if(it.c==='plant')return 'sz-tree';
+    if(it.c==='building')return 'sz-tree';
+    if(it.c==='animal'&&LARGE_A.has(it.id))return 'sz-large';
+    if(it.c==='deco')return 'sz-small';
+    return 'sz-medium';
+  }
   (opp.layout||[]).forEach(p=>{
     const item=ITEMS.find(i=>i.id===p.id);
     if(!item)return;
     const e=document.createElement('div');
-    e.className=`placed-item ${item.c} ${item.r}`;
-    e.textContent=getStageEmoji(p,item);
+    e.className=`placed-item ${item.c} ${item.r} ${_sz(item)}`;
+    const baseE=getStageEmoji(p,item);
+    if(item.e2){
+      e.innerHTML=`${baseE}<span class="fruit-overlay">${item.e2}</span><span class="fruit-overlay b2">${item.e2}</span>`;
+    }else{
+      e.textContent=baseE;
+    }
     e.style.left=p.x+'%';e.style.bottom=p.y+'%';
     e.style.zIndex=Math.round(150-p.y);
     // Apply stage scaling (1=juvenile, 2=adult; legacy 3 = adult)
     const stage=p.stage===1?1:2;
     if(item.c==='animal'&&stage===1){
-      const baseSize=24;
+      const baseSize=LARGE_A.has(item.id)?38:28;
       e.style.fontSize=(baseSize*STAGE_SCALE[1])+'px';
     }
     scene.appendChild(e);
