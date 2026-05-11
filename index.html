@@ -314,15 +314,30 @@ header{width:100%;max-width:420px;display:flex;align-items:center;
 .mfw-title{display:flex;align-items:center;gap:6px}
 .mfw-coins{background:rgba(255,255,255,.85);padding:3px 10px;border-radius:10px;
   font-weight:900;color:#b8860b;font-size:13px;display:flex;align-items:center;gap:4px}
-.mfw-scene{width:100%;height:120px;border-radius:10px;overflow:hidden;
-  background:linear-gradient(to bottom,#87ceeb 0%,#87ceeb 60%,#9bd49b 60%,#7dc97d 100%);
+.mfw-scene{width:100%;height:130px;border-radius:10px;overflow:hidden;
+  background:linear-gradient(to bottom,#87ceeb 0%,#a8d8ec 55%,#9bd49b 55%,#7dc97d 100%);
   position:relative;cursor:pointer;border:2px solid rgba(255,255,255,.5)}
-.mfw-scene .mfw-item{position:absolute;font-size:18px;line-height:1;
-  filter:drop-shadow(0 1px 1px rgba(0,0,0,.3));transition:left 2s linear,bottom .4s ease;
-  user-select:none;pointer-events:none}
+.mfw-scene .mfw-bg{position:absolute;font-size:22px;line-height:1;
+  user-select:none;pointer-events:none;opacity:.92}
+.mfw-scene .mfw-sun{position:absolute;top:6px;right:8px;font-size:24px;
+  filter:drop-shadow(0 0 6px rgba(255,200,0,.6));animation:mfwSunGlow 3s ease-in-out infinite}
+@keyframes mfwSunGlow{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+.mfw-scene .mfw-cloud{position:absolute;font-size:20px;opacity:.88;
+  animation:mfwCloudDrift 25s linear infinite}
+.mfw-scene .mfw-cloud.c2{font-size:16px;animation-duration:35s;animation-delay:-12s;opacity:.7}
+.mfw-scene .mfw-cloud.c3{font-size:14px;animation-duration:30s;animation-delay:-22s;opacity:.6}
+@keyframes mfwCloudDrift{
+  0%{left:-15%}
+  100%{left:115%}
+}
+.mfw-scene .mfw-grass{position:absolute;bottom:1%;font-size:12px;opacity:.7;pointer-events:none}
+.mfw-scene .mfw-item{position:absolute;font-size:26px;line-height:1;
+  filter:drop-shadow(0 2px 2px rgba(0,0,0,.35));transition:left 2s linear,bottom .4s ease;
+  user-select:none;pointer-events:none;z-index:2}
+.mfw-scene .mfw-item.house{font-size:32px}
 .mfw-scene .mfw-empty{position:absolute;inset:0;display:flex;align-items:center;
   justify-content:center;color:rgba(255,255,255,.95);font-weight:700;font-size:12px;
-  text-shadow:0 1px 2px rgba(0,0,0,.4)}
+  text-shadow:0 1px 2px rgba(0,0,0,.4);z-index:3}
 .mfw-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:8px}
 .mfw-btn{background:rgba(255,255,255,.9);border:none;border-radius:9px;
   padding:7px 4px;font-size:10px;font-weight:700;color:#2d5a2d;cursor:pointer;
@@ -959,13 +974,16 @@ body.dark .mfw-btn:hover{background:rgba(255,255,255,.2)}
   display:flex;align-items:center;gap:6px}
 .shop-h .em{font-size:16px}
 .res-row{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--bg);
-  border-radius:10px;margin-bottom:6px}
+  border-radius:10px;margin-bottom:6px;flex-wrap:nowrap}
 .res-row .em{font-size:24px;flex-shrink:0;width:32px;text-align:center}
-.res-row .info{flex:1;min-width:0}
-.res-row .info .nm{font-size:13px;font-weight:700;color:var(--given)}
-.res-row .info .pr{font-size:10px;color:var(--muted);margin-top:1px}
-.res-row .ct{font-size:14px;font-weight:800;color:var(--primary);min-width:40px;text-align:right}
-.res-row .actions{display:flex;gap:4px;flex-shrink:0}
+.res-row .info{flex:1 1 auto;min-width:60px;overflow:hidden}
+.res-row .info .nm{font-size:13px;font-weight:700;color:var(--given);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;word-break:keep-all}
+.res-row .info .pr{font-size:10px;color:var(--muted);margin-top:1px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;word-break:keep-all}
+.res-row .ct{font-size:14px;font-weight:800;color:var(--primary);min-width:40px;
+  text-align:right;flex-shrink:0;white-space:nowrap}
+.res-row .actions{display:flex;gap:4px;flex-shrink:0;flex-wrap:nowrap}
 .res-btn{background:var(--ok);color:#fff;border:none;border-radius:8px;
   padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap}
 .res-btn:hover{background:#1f7a32}
@@ -3138,7 +3156,7 @@ function renderMainFarmWidget(){
   entries.sort((a,b)=>{
     const ia=ITEMS.find(i=>i.id===a[0]);
     const ib=ITEMS.find(i=>i.id===b[0]);
-    return order.indexOf(ia?.rarity||'common')-order.indexOf(ib?.rarity||'common');
+    return order.indexOf(ia?.r||'common')-order.indexOf(ib?.r||'common');
   });
   let count=0;
   for(const[id,n]of entries){
@@ -3146,20 +3164,33 @@ function renderMainFarmWidget(){
     const item=ITEMS.find(i=>i.id===id);
     if(!item)continue;
     if(item.c==='fish')continue; // no fish on widget
-    placed.push({id,emoji:item.emoji,cat:item.c});count++;
+    if(!item.e)continue; // skip items without emoji
+    placed.push({id,emoji:item.e,cat:item.c});count++;
   }
+  // Background details — sun, 3 clouds, grass tufts
+  let html=`<div class="mfw-sun">☀️</div>`;
+  html+=`<div class="mfw-cloud" style="top:8%">☁️</div>`;
+  html+=`<div class="mfw-cloud c2" style="top:22%">☁️</div>`;
+  html+=`<div class="mfw-cloud c3" style="top:14%">☁️</div>`;
+  // Grass tufts along the ground line
+  for(let i=0;i<8;i++){
+    const gx=4+i*12+Math.random()*3;
+    html+=`<div class="mfw-grass" style="left:${gx}%">🌿</div>`;
+  }
+  // Small flower accents
+  html+=`<div class="mfw-bg" style="left:80%;bottom:3%;font-size:14px">🌼</div>`;
+  html+=`<div class="mfw-bg" style="left:30%;bottom:2%;font-size:14px">🌸</div>`;
   // House if owned
   const house=(econ.houseLevel||0)>=1;
-  let html='';
   if(house){
-    html+=`<div class="mfw-item" style="left:5%;bottom:12%;font-size:28px">🏡</div>`;
+    html+=`<div class="mfw-item house" style="left:6%;bottom:18%">🏡</div>`;
   }
   if(placed.length===0 && !house){
-    html=`<div class="mfw-empty">🌱 농장을 시작해보세요!</div>`;
+    html+=`<div class="mfw-empty">🌱 농장을 시작해보세요!</div>`;
   }else{
     placed.forEach((p,i)=>{
-      const x=15+i*14+Math.random()*4;
-      const y=8+(i%2)*15;
+      const x=22+i*12+Math.random()*4;
+      const y=10+(i%2)*18;
       html+=`<div class="mfw-item" data-i="${i}" style="left:${x}%;bottom:${y}%">${p.emoji}</div>`;
     });
   }
