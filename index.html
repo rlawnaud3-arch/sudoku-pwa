@@ -672,14 +672,23 @@ body.dark .mfw-btn:hover{background:rgba(255,255,255,.2)}
 .farm-scene-wrap{padding:8px 10px 6px}
 .farm-scene{width:100%;height:520px;border-radius:6px;position:relative;overflow:hidden;
   background-color:#7cb342;
-  /* Custom pixel art background — falls back to gradient if image missing */
+  /* Custom pixel art background — falls back to detailed grass texture */
   background-image:
     url('./img/farm_bg.png'),
-    /* Sky (smaller) + grass (bigger) gradient FALLBACK */
-    linear-gradient(to bottom,#88c4ec 0%,#b8def0 17%,#7cb342 17%,#5a9926 100%);
-  background-size:cover,cover;
-  background-position:center,center;
-  background-repeat:no-repeat,no-repeat;
+    /* Grass tuft pattern (small dots) */
+    radial-gradient(circle at 20% 60%,#5a9926 1.5px,transparent 1.5px),
+    radial-gradient(circle at 70% 75%,#5a9926 1.5px,transparent 1.5px),
+    radial-gradient(circle at 45% 85%,#6db32b 2px,transparent 2px),
+    radial-gradient(circle at 85% 55%,#6db32b 1.5px,transparent 1.5px),
+    radial-gradient(circle at 15% 90%,#8bc34a 1px,transparent 1px),
+    /* Sky + grass gradient with horizon shadow */
+    linear-gradient(to bottom,
+      #88c4ec 0%,#b8def0 17%,
+      #6ab32a 17%,#7cb342 30%,
+      #6ba526 60%,#5a9926 100%);
+  background-size:cover,30px 30px,40px 40px,35px 35px,45px 45px,25px 25px,cover;
+  background-position:center,0 0,15px 15px,5px 10px,20px 5px,8px 8px,center;
+  background-repeat:no-repeat,repeat,repeat,repeat,repeat,repeat,no-repeat;
   border:4px solid #4a3826;
   box-shadow:inset 0 0 0 2px #6b5333,inset 0 -3px 0 rgba(0,0,0,.15),0 4px 0 #2a1f12;
   image-rendering:pixelated;image-rendering:crisp-edges;
@@ -825,6 +834,16 @@ body.dark .mfw-btn:hover{background:rgba(255,255,255,.2)}
 .placed-item{position:absolute;transform:translate(-50%,0);cursor:pointer;text-align:center;
   line-height:1;transition:left .5s cubic-bezier(.34,1.2,.64,1),bottom .5s cubic-bezier(.34,1.2,.64,1);
   filter:drop-shadow(2px 3px 0 rgba(0,0,0,.25));image-rendering:pixelated}
+/* GROUND SHADOW — every placed item casts a soft oval shadow */
+.placed-item::before{content:'';position:absolute;left:50%;bottom:-8px;
+  transform:translateX(-50%);width:70%;height:10px;pointer-events:none;z-index:-1;
+  background:radial-gradient(ellipse at center,rgba(0,0,0,.4) 0%,rgba(0,0,0,.15) 40%,transparent 70%);
+  filter:blur(1px)}
+.placed-item.sz-tree::before{width:85%;height:14px;bottom:-10px}
+.placed-item.sz-large::before{width:75%;height:12px}
+.placed-item.sz-huge::before{width:90%;height:16px;bottom:-12px}
+/* When hopping or excited, shadow shrinks to feel like jump */
+.placed-item.hopping::before,.placed-item.excited::before{opacity:.4;transform:translateX(-50%) scale(0.7,0.6)}
 .placed-item.building{font-size:36px}
 .placed-item.plant{font-size:26px;animation:plantSway 4s ease-in-out infinite alternate}
 .placed-item.animal{font-size:24px;animation:idleBreathe 1.8s ease-in-out infinite alternate}
@@ -2751,12 +2770,12 @@ const ITEMS=[
   {id:'a03',n:'소',e:'🐄',img:'./img/cow.png',r:'common',c:'animal'},
   {id:'a04',n:'돼지',e:'🐖',img:'./img/pig.png',r:'common',c:'animal'},
   {id:'a05',n:'토끼',e:'🐇',img:'./img/rabbit.png',r:'common',c:'animal'},
-  {id:'a06',n:'염소',e:'🐐',r:'rare',c:'animal'},
-  {id:'a07',n:'거위',e:'🪿',r:'rare',c:'animal'},
-  {id:'a08',n:'라마',e:'🦙',r:'rare',c:'animal'},
-  {id:'a09',n:'말',e:'🐎',r:'epic',c:'animal'},
-  {id:'a10',n:'공작새',e:'🦚',r:'epic',c:'animal'},
-  {id:'a11',n:'백조',e:'🦢',r:'epic',c:'animal'},
+  {id:'a06',n:'염소',e:'🐐',img:'./img/goat.png',r:'rare',c:'animal'},
+  {id:'a07',n:'거위',e:'🪿',img:'./img/goose.png',r:'rare',c:'animal'},
+  {id:'a08',n:'라마',e:'🦙',img:'./img/llama.png',r:'rare',c:'animal'},
+  {id:'a09',n:'말',e:'🐎',img:'./img/horse.png',r:'epic',c:'animal'},
+  {id:'a10',n:'공작새',e:'🦚',img:'./img/peacock.png',r:'epic',c:'animal'},
+  {id:'a11',n:'백조',e:'🦢',img:'./img/swan.png',r:'epic',c:'animal'},
   {id:'a12',n:'적룡',e:'🐉',img:'./img/dragon_red.png',imgAction:'./img/dragon_red_fire.png',r:'legendary',c:'animal',tone:'red'},
   {id:'a13',n:'유니콘',e:'🐎',e2:'🪽',e3:'✨',r:'legendary',c:'animal',tone:'rainbow',sz:'huge'},
   {id:'a14',n:'봉황',e:'🦅',r:'legendary',c:'animal',tone:'gold'},
@@ -2766,25 +2785,25 @@ const ITEMS=[
   {id:'a35',n:'무지개룡',e:'🐉',r:'legendary',c:'animal',tone:'rainbow'},
   {id:'a36',n:'흑룡',e:'🐉',r:'legendary',c:'animal'},
   // Common animals (extra)
-  {id:'a15',n:'강아지',e:'🐕',r:'common',c:'animal'},
-  {id:'a16',n:'고양이',e:'🐈',r:'common',c:'animal'},
-  {id:'a17',n:'햄스터',e:'🐹',r:'common',c:'animal'},
-  {id:'a18',n:'오리',e:'🦆',r:'common',c:'animal'},
-  {id:'a19',n:'거북이',e:'🐢',r:'common',c:'animal'},
+  {id:'a15',n:'강아지',e:'🐕',img:'./img/dog.png',r:'common',c:'animal'},
+  {id:'a16',n:'고양이',e:'🐈',img:'./img/cat.png',r:'common',c:'animal'},
+  {id:'a17',n:'햄스터',e:'🐹',img:'./img/hamster.png',r:'common',c:'animal'},
+  {id:'a18',n:'오리',e:'🦆',img:'./img/duck.png',r:'common',c:'animal'},
+  {id:'a19',n:'거북이',e:'🐢',img:'./img/turtle.png',r:'common',c:'animal'},
   // Rare animals (extra)
-  {id:'a20',n:'칠면조',e:'🦃',r:'rare',c:'animal'},
-  {id:'a21',n:'고슴도치',e:'🦔',r:'rare',c:'animal'},
-  {id:'a22',n:'수달',e:'🦦',r:'rare',c:'animal'},
-  {id:'a23',n:'사슴',e:'🦌',r:'rare',c:'animal'},
+  {id:'a20',n:'칠면조',e:'🦃',img:'./img/turkey.png',r:'rare',c:'animal'},
+  {id:'a21',n:'고슴도치',e:'🦔',img:'./img/hedgehog.png',r:'rare',c:'animal'},
+  {id:'a22',n:'수달',e:'🦦',img:'./img/otter.png',r:'rare',c:'animal'},
+  {id:'a23',n:'사슴',e:'🦌',img:'./img/deer.png',r:'rare',c:'animal'},
   // Epic animals (extra) - 럭셔리 농장
-  {id:'a24',n:'캥거루',e:'🦘',r:'epic',c:'animal'},
-  {id:'a25',n:'멧돼지',e:'🐗',r:'epic',c:'animal'},
-  {id:'a26',n:'악어',e:'🐊',r:'epic',c:'animal'},
-  {id:'a27',n:'코뿔소',e:'🦏',r:'epic',c:'animal'},
+  {id:'a24',n:'캥거루',e:'🦘',img:'./img/kangaroo.png',r:'epic',c:'animal'},
+  {id:'a25',n:'멧돼지',e:'🐗',img:'./img/boar.png',r:'epic',c:'animal'},
+  {id:'a26',n:'악어',e:'🐊',img:'./img/crocodile.png',r:'epic',c:'animal'},
+  {id:'a27',n:'코뿔소',e:'🦏',img:'./img/rhino.png',r:'epic',c:'animal'},
   // More epic animals
-  {id:'a28',n:'황소',e:'🐂',r:'epic',c:'animal'},
-  {id:'a29',n:'물소',e:'🐃',r:'epic',c:'animal'},
-  {id:'a30',n:'들소',e:'🦬',r:'epic',c:'animal'},
+  {id:'a28',n:'황소',e:'🐂',img:'./img/ox.png',r:'epic',c:'animal'},
+  {id:'a29',n:'물소',e:'🐃',img:'./img/buffalo.png',r:'epic',c:'animal'},
+  {id:'a30',n:'들소',e:'🦬',img:'./img/bison.png',r:'epic',c:'animal'},
   // Fish (aquatic - placeable in water zone)
   {id:'f01',n:'잔챙이',e:'🐟',r:'common',c:'fish'},
   {id:'f02',n:'붕어',e:'🐠',r:'common',c:'fish'},
@@ -4153,7 +4172,7 @@ function renderFarmScene(){
     }else if(item.img){
       // Custom image with emoji fallback + optional action sprite (e.g. fire breath)
       const actionAttr=item.imgAction?` data-base="${item.img}" data-action="${item.imgAction}"`:'';
-      el.innerHTML=`<img src="${item.img}" alt="${item.n}"${actionAttr} class="dragon-img" loading="lazy" style="width:1.4em;height:1.4em;vertical-align:middle;display:inline-block;image-rendering:pixelated" onerror="this.outerHTML='${item.e}'">`;
+      el.innerHTML=`<img src="${item.img}" alt="${item.n}"${actionAttr} class="dragon-img" loading="lazy" style="width:2em;height:2em;vertical-align:middle;display:inline-block;image-rendering:pixelated" onerror="this.outerHTML='${item.e}'">`;
     }else if(item.c==='plant' && item.e2){
       // Tree fruit overlays
       el.innerHTML=`${baseEmoji}<span class="fruit-overlay">${item.e2}</span><span class="fruit-overlay b2">${item.e2}</span>`;
@@ -4620,18 +4639,34 @@ function collectAll(){
   updatePendingBadges();
   setTimeout(()=>checkAllAchievements(),200);
 }
+function bondingPriceMultiplier(resId){
+  // Find highest bonding level among animals/plants producing this resource
+  let bestBond=0;
+  farmLayout.forEach(p=>{
+    const prod=PROD[p.id];
+    if(prod && prod.r===resId){
+      bestBond=Math.max(bestBond,p.bond||0);
+    }
+  });
+  return 1+(bestBond*0.1); // +10% per bonding LV (max +100% at LV 10)
+}
 function sellResource(resId,amount){
   const e=getEconomy();
   const have=e.resources[resId]||0;
   const sellN=Math.min(have,amount);
   if(sellN<=0)return;
-  const price=Math.round(RESOURCES[resId].price*priceMultiplier());
+  const bondMult=bondingPriceMultiplier(resId);
+  const basePrice=RESOURCES[resId].price;
+  const price=Math.round(basePrice*priceMultiplier()*bondMult);
   const earn=sellN*price;
   e.resources[resId]=have-sellN;
   if(e.resources[resId]===0)delete e.resources[resId];
   e.coins+=earn;
   saveEconomy(e);
-  showToast(`💰 ${RESOURCES[resId].e}×${sellN} 판매 → +${earn} 코인!`);
+  // Show bonding bonus if applicable
+  const bondBonusPct=Math.round((bondMult-1)*100);
+  const bondTxt=bondBonusPct>0?` 💞+${bondBonusPct}%`:'';
+  showToast(`💰 ${RESOURCES[resId].e}×${sellN} 판매 → +${earn.toLocaleString()} 코인!${bondTxt}`);
   playSound('coin');
   trackQuest('todaySold',sellN);
   updateCoinsDisplay();
@@ -4951,6 +4986,10 @@ document.addEventListener('click',e=>{
   }
   farmLayout.push({uid:genUid(),id:selectedTrayItem,x,y});
   saveLayout();renderFarmScene();renderTray();
+  // Satisfying placement feedback
+  spawnFloatEffect('✨',x,y+5,document.getElementById('farmScene'));
+  spawnFloatEffect('💨',x-3,y,document.getElementById('farmScene'));
+  playSound('coin');
 });
 function switchFarmView(v){
   document.querySelectorAll('.fvtab').forEach(b=>b.classList.toggle('active',b.dataset.v===v));
