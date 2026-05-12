@@ -862,6 +862,30 @@ body.dark .mfw-btn:hover{background:rgba(255,255,255,.2)}
 .season-badge{position:absolute;top:8px;left:78px;background:rgba(255,255,255,.85);color:#1a1a2e;
   font-size:11px;font-weight:800;padding:4px 10px;border-radius:14px;z-index:200;
   letter-spacing:.3px;backdrop-filter:blur(4px);box-shadow:0 2px 8px rgba(0,0,0,.15);cursor:help}
+/* Zone highlights when placing item from tray */
+.zone-highlight{position:absolute;pointer-events:none;z-index:60;
+  border:3px dashed #51cf66;border-radius:8px;
+  background:rgba(81,207,102,.15);
+  animation:zonePulse 1.5s ease-in-out infinite alternate}
+.zone-highlight.valid{border-color:#37b24d;background:rgba(55,178,77,.18)}
+.zone-highlight .zh-label{position:absolute;top:4px;left:50%;
+  transform:translateX(-50%);background:rgba(55,178,77,.95);color:#fff;
+  font-size:10px;font-weight:800;padding:3px 9px;border-radius:10px;
+  white-space:nowrap;letter-spacing:-.2px;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+@keyframes zonePulse{
+  from{box-shadow:0 0 8px rgba(55,178,77,.3)}
+  to{box-shadow:0 0 20px rgba(55,178,77,.6)}
+}
+/* Sky no-place zone visualization (only when placement mode is on) */
+.sky-block{position:absolute;top:0;left:0;width:100%;height:45%;
+  background:repeating-linear-gradient(45deg,rgba(255,80,80,.06) 0,rgba(255,80,80,.06) 10px,transparent 10px,transparent 20px);
+  border-bottom:2px dashed rgba(255,80,80,.4);pointer-events:none;z-index:5;
+  display:none}
+.sky-block::after{content:'☁️ 하늘 (배치 불가)';position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);background:rgba(255,255,255,.85);color:#c92a2a;
+  font-size:11px;font-weight:800;padding:3px 12px;border-radius:14px;
+  letter-spacing:.3px;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+.farm-scene.placing .sky-block{display:block}
 /* Season-themed particle overlays */
 .season-particles{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:50}
 .season-particles .sp{position:absolute;font-size:14px;animation:seasonFall 8s linear infinite;
@@ -1683,6 +1707,7 @@ window.dispatchEvent(new Event('fb-ready'));
         <div class="farm-scene" id="farmScene">
           <div class="day-badge" id="dayBadge">🌞 낮</div>
           <div class="season-badge" id="seasonBadge">🌸 봄</div>
+          <div class="sky-block"></div>
           <div class="farm-counter" id="farmCounter">0개 배치</div>
         </div>
       </div>
@@ -2964,6 +2989,85 @@ function bondingBonus(level){
   // Each bonding level = +10% resource yield. Max +100% at LV 10
   return 1+(level*0.1);
 }
+// ═══════════════════════════════════════
+// PLACEMENT BOUNDARIES — keep items out of sky
+// ═══════════════════════════════════════
+const PLACE_MAX_Y=55; // Items can only be placed in bottom 55% (sky = top 45%)
+const PLACE_MIN_Y=3;
+function clampPlacement(p){
+  if(p.y>PLACE_MAX_Y)p.y=PLACE_MAX_Y;
+  if(p.y<PLACE_MIN_Y)p.y=PLACE_MIN_Y;
+  // Snap to 5% grid
+  p.y=Math.round(p.y/5)*5;
+  return p;
+}
+function migrateOldPlacements(){
+  // One-time fix: move any items in sky area back to ground
+  let changed=false;
+  farmLayout.forEach(p=>{
+    if(p.y>PLACE_MAX_Y){
+      p.y=PLACE_MAX_Y-Math.floor(Math.random()*30);
+      changed=true;
+    }
+  });
+  if(changed){
+    saveLayout();
+    showToast('☁️ 하늘에 있던 아이템들을 땅으로 가져왔어요');
+  }
+}
+// ═══════════════════════════════════════
+// SEMANTIC ZONES (Option C) — category-based placement
+// ═══════════════════════════════════════
+const PLACEMENT_ZONES={
+  pen:    {l:3, r:49, b:5,  t:55, color:'#a47148', emoji:'🐔', name:'동물 우리'},
+  field1: {l:52,r:73, b:5,  t:27, color:'#8b5e3c', emoji:'🌾', name:'밭'},
+  field2: {l:75,r:97, b:5,  t:27, color:'#8b5e3c', emoji:'🥕', name:'작물'},
+  garden: {l:52,r:73, b:30, t:48, color:'#8b5e3c', emoji:'🌱', name:'정원'},
+  plaza:  {l:3, r:48, b:58, t:85, color:'#c9a77a', emoji:'🏠', name:'광장'},
+  deco:   {l:3, r:97, b:3,  t:85, color:'#7cb342', emoji:'🎀', name:'어디든'},
+};
+function getValidZones(category){
+  if(category==='animal')return ['pen'];
+  if(category==='plant')return ['field1','field2','garden'];
+  if(category==='building')return ['plaza'];
+  if(category==='deco')return ['deco'];
+  return [];
+}
+function getZoneAt(x,y){
+  for(const[id,z]of Object.entries(PLACEMENT_ZONES)){
+    if(x>=z.l && x<=z.r && y>=z.b && y<=z.t)return id;
+  }
+  return null;
+}
+function canPlaceAt(category,x,y){
+  const validZones=getValidZones(category);
+  if(validZones.length===0)return false;
+  const zoneId=getZoneAt(x,y);
+  if(!zoneId)return false;
+  // deco can go anywhere on ground
+  if(validZones.includes('deco'))return y<=PLACE_MAX_Y+30;
+  return validZones.includes(zoneId);
+}
+function findNearestValidPos(category,x,y){
+  // If invalid, find nearest spot in a valid zone
+  const validZones=getValidZones(category);
+  if(validZones.length===0)return null;
+  let best=null,bestDist=Infinity;
+  validZones.forEach(zId=>{
+    if(zId==='deco')return; // deco is everywhere
+    const z=PLACEMENT_ZONES[zId];
+    const cx=(z.l+z.r)/2, cy=(z.b+z.t)/2;
+    const dist=Math.hypot(x-cx,y-cy);
+    if(dist<bestDist){bestDist=dist;best={x:cx,y:cy,zone:zId};}
+  });
+  return best;
+}
+function placementErrorMsg(category){
+  if(category==='animal')return '❌ 동물은 동물 우리에만 배치할 수 있어요';
+  if(category==='plant')return '❌ 식물은 밭/작물/정원에만 심을 수 있어요';
+  if(category==='building')return '❌ 건물은 광장(상단)에만 지을 수 있어요';
+  return '❌ 여기엔 배치할 수 없어요';
+}
 function refreshBondingDisplay(el,level){
   // Remove old badge
   const old=el.querySelector('.bond-badge');
@@ -3657,6 +3761,8 @@ function openFarm(){
   const fishSec=document.getElementById('farmFishSection');
   if(fishSec)fishSec.classList.remove('show');
   loadLayout();
+  // Migrate any sky-placed items to ground (one-time fix for old layouts)
+  migrateOldPlacements();
   // First-time starter pack
   spawnStarterPack();
   if(farmLayout.length===0 && Object.keys(getFarm()).length>0)autoArrangeFarm();
@@ -3798,7 +3904,9 @@ function autoArrangeFarm(){
     }
     x=Math.round(x/5)*5;
     y=Math.round(y/5)*5;
-    farmLayout.push({uid:genUid(),id:item.id,x,y});
+    // Clamp to ground area (no items in sky)
+    const placement=clampPlacement({x,y});
+    farmLayout.push({uid:genUid(),id:item.id,x:placement.x,y:placement.y});
   });
   saveLayout();
   renderFarmScene();
@@ -3972,7 +4080,7 @@ function renderFarmScene(){
   const scene=document.getElementById('farmScene');
   if(!scene)return;
   // Clear everything except day-badge, counter
-  scene.querySelectorAll('.placed-item,.farm-bg-layer,.amb-layer,.chimney-smoke').forEach(el=>el.remove());
+  scene.querySelectorAll('.placed-item,.farm-bg-layer,.amb-layer,.chimney-smoke,.zone-highlight').forEach(el=>el.remove());
   // Add background layer first (lowest z)
   scene.appendChild(buildFarmBackground());
   // Add zone overlays (animal pen, dirt fields, pond, path) — above ambient bg
@@ -4178,6 +4286,8 @@ function renderFarmScene(){
     scene.appendChild(el);
   });
   document.getElementById('farmCounter').textContent=`${farmLayout.length}개 배치`;
+  // Re-apply zone highlights if item is selected for placement
+  if(placeMode && selectedTrayItem)showZoneHighlights();
   // Ambient life layer (top)
   scene.appendChild(buildAmbientLayer());
   startWalking();
@@ -4235,13 +4345,13 @@ function startWalking(){
       const rangeY=stage===1?4:8;
       let newX=p.x+(Math.random()*range*2-range);
       let newY=p.y+(Math.random()*rangeY*2-rangeY);
-      // Keep animals within animal pen zone (3-49%, 5-55%) if they started there
+      // Keep animals within animal pen zone if they started there, otherwise clamp to ground
       if(p.x<=49){
         newX=Math.max(5,Math.min(48,newX));
-        newY=Math.max(7,Math.min(52,newY));
+        newY=Math.max(7,Math.min(48,newY));
       }else{
         newX=Math.max(8,Math.min(92,newX));
-        newY=Math.max(5,Math.min(60,newY));
+        newY=Math.max(5,Math.min(PLACE_MAX_Y,newY));
       }
       newX=Math.round(newX/5)*5;
       newY=Math.round(newY/5)*5;
@@ -4749,6 +4859,8 @@ function togglePlaceMode(){
     tray.classList.remove('show');scene.classList.remove('placing');
     help.innerHTML='동물들이 5초마다 돌아다녀요. 배치 모드로 직접 꾸밀 수도 있어요!';
     selectedTrayItem=null;
+    // Clear zone highlights
+    scene.querySelectorAll('.zone-highlight').forEach(el=>el.remove());
   }
 }
 function renderTray(){
@@ -4778,10 +4890,37 @@ function renderTray(){
 function selectTrayItem(id){
   selectedTrayItem=selectedTrayItem===id?null:id;
   renderTray();
+  showZoneHighlights();
   if(selectedTrayItem){
     const item=ITEMS.find(i=>i.id===id);
-    showToast(`${item.e} 선택됨 → 풍경 클릭으로 배치`);
+    const validZones=getValidZones(item.c);
+    const zoneNames=validZones.map(z=>PLACEMENT_ZONES[z]?.name||z).join(', ');
+    showToast(`${item.e} ${item.n} → ${zoneNames}에 배치하세요`);
   }
+}
+function showZoneHighlights(){
+  const scene=document.getElementById('farmScene');
+  if(!scene)return;
+  // Remove old highlights
+  scene.querySelectorAll('.zone-highlight').forEach(el=>el.remove());
+  if(!selectedTrayItem)return;
+  const item=ITEMS.find(i=>i.id===selectedTrayItem);
+  if(!item)return;
+  const validZones=getValidZones(item.c);
+  // Draw green overlay on valid zones
+  validZones.forEach(zId=>{
+    if(zId==='deco')return; // deco everywhere — no highlight needed
+    const z=PLACEMENT_ZONES[zId];
+    if(!z)return;
+    const el=document.createElement('div');
+    el.className='zone-highlight valid';
+    el.style.left=z.l+'%';
+    el.style.bottom=z.b+'%';
+    el.style.width=(z.r-z.l)+'%';
+    el.style.height=(z.t-z.b)+'%';
+    el.innerHTML=`<span class="zh-label">✅ ${z.emoji} ${z.name}</span>`;
+    scene.appendChild(el);
+  });
 }
 function clearFarmLayout(){
   if(!confirm('농장에 배치된 아이템을 모두 보관함으로 되돌릴까요?'))return;
@@ -4800,9 +4939,16 @@ document.addEventListener('click',e=>{
   const rect=scene.getBoundingClientRect();
   let x=((e.clientX-rect.left)/rect.width)*100;
   let y=((rect.bottom-e.clientY)/rect.height)*100;
-  // Snap to 5% grid (Stardew tile feel)
+  // Snap to 5% grid
   x=Math.round(Math.max(3,Math.min(97,x))/5)*5;
   y=Math.round(Math.max(2,Math.min(85,y))/5)*5;
+  // SEMANTIC ZONE CHECK — must place in correct zone for category
+  const selectedItem=ITEMS.find(i=>i.id===selectedTrayItem);
+  if(!selectedItem)return;
+  if(!canPlaceAt(selectedItem.c,x,y)){
+    showToast(placementErrorMsg(selectedItem.c));
+    return;
+  }
   farmLayout.push({uid:genUid(),id:selectedTrayItem,x,y});
   saveLayout();renderFarmScene();renderTray();
 });
