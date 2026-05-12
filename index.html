@@ -719,6 +719,55 @@ body.dark .mfw-btn:hover{background:rgba(255,255,255,.2)}
   100%{filter:hue-rotate(360deg) saturate(2) drop-shadow(0 0 6px #ff69b4)}
 }
 .tone-water{filter:hue-rotate(190deg) saturate(1.4) brightness(1.05)!important}
+/* When a real <img> loads, don't apply hue-rotate to it — image has its own colors */
+.tone-red img,.tone-blue img,.tone-yellow img,.tone-gold img,
+.tone-rainbow img,.tone-water img,.tone-horse-red img,
+.placed-item.tone-red img,.placed-item.tone-blue img,
+.placed-item.tone-yellow img,.placed-item.tone-gold img,
+.placed-item.tone-rainbow img,.placed-item.tone-horse-red img{
+  filter:none!important;animation:none!important}
+/* ═══ DRAGON ANIMATIONS ═══ */
+/* Idle breathing (all dragons) — chest expands/shrinks subtly */
+@keyframes dragonBreathe{
+  0%,100%{transform:translate(-50%,0) scale(1,1)}
+  50%{transform:translate(-50%,-2px) scale(1.04,0.96)}
+}
+/* Wing flap (dragon idle wing movement via filter glow pulse) */
+@keyframes dragonWingPulse{
+  0%,100%{filter:drop-shadow(0 0 8px currentColor) brightness(1)}
+  50%{filter:drop-shadow(0 0 16px currentColor) brightness(1.15)}
+}
+/* Fire breath particles — shoot flame on click */
+@keyframes dragonFire{
+  0%{transform:translate(0,0) scale(0.3);opacity:1}
+  100%{transform:translate(35px,-8px) scale(1.4);opacity:0}
+}
+.dragon-fire{position:absolute;font-size:20px;pointer-events:none;
+  animation:dragonFire .9s ease-out forwards;z-index:200}
+/* Apply breathe to all dragons (id starts with a12,a31,a32,a34,a35,a36) */
+.placed-item[data-dragon="1"]{animation:dragonBreathe 2.4s ease-in-out infinite!important}
+/* Flying creatures (unicorn, rainbow dragon) — hover effect */
+@keyframes dragonHover{
+  0%,100%{transform:translate(-50%,0) rotate(-1deg)}
+  50%{transform:translate(-50%,-6px) rotate(1deg)}
+}
+.placed-item[data-fly="1"]{animation:dragonHover 2.8s ease-in-out infinite!important}
+/* Click action: jump + scale */
+@keyframes dragonExcite{
+  0%{transform:translate(-50%,0) scale(1)}
+  30%{transform:translate(-50%,-12px) scale(1.15)}
+  60%{transform:translate(-50%,0) scale(0.95)}
+  100%{transform:translate(-50%,0) scale(1)}
+}
+.placed-item.excited{animation:dragonExcite .6s cubic-bezier(.34,1.6,.64,1)!important}
+/* Sparkle particles on click */
+@keyframes sparklePop{
+  0%{transform:translate(0,0) scale(0);opacity:1}
+  50%{transform:translate(var(--sx,0),var(--sy,-20px)) scale(1);opacity:1}
+  100%{transform:translate(var(--sx,0),var(--sy,-30px)) scale(0.5);opacity:0}
+}
+.dragon-sparkle{position:absolute;font-size:14px;pointer-events:none;
+  animation:sparklePop 1s ease-out forwards;z-index:201}
 /* Stack rarity glow with tone filter — use box-shadow on parent instead of filter */
 .placed-item.tone-red{box-shadow:0 0 14px rgba(255,68,68,.5)}
 .placed-item.tone-blue{box-shadow:0 0 14px rgba(51,154,240,.5)}
@@ -2631,25 +2680,25 @@ setInterval(()=>{if(typeof renderMainFarmWidget==='function')renderMainFarmWidge
 // ═══════════════════════════════════════
 const ITEMS=[
   // animals
-  {id:'a01',n:'닭',e:'🐓',r:'common',c:'animal'},
-  {id:'a02',n:'양',e:'🐑',r:'common',c:'animal'},
-  {id:'a03',n:'소',e:'🐄',r:'common',c:'animal'},
-  {id:'a04',n:'돼지',e:'🐖',r:'common',c:'animal'},
-  {id:'a05',n:'토끼',e:'🐇',r:'common',c:'animal'},
+  {id:'a01',n:'닭',e:'🐓',img:'./img/chicken.png',r:'common',c:'animal'},
+  {id:'a02',n:'양',e:'🐑',img:'./img/sheep.png',r:'common',c:'animal'},
+  {id:'a03',n:'소',e:'🐄',img:'./img/cow.png',r:'common',c:'animal'},
+  {id:'a04',n:'돼지',e:'🐖',img:'./img/pig.png',r:'common',c:'animal'},
+  {id:'a05',n:'토끼',e:'🐇',img:'./img/rabbit.png',r:'common',c:'animal'},
   {id:'a06',n:'염소',e:'🐐',r:'rare',c:'animal'},
   {id:'a07',n:'거위',e:'🪿',r:'rare',c:'animal'},
   {id:'a08',n:'라마',e:'🦙',r:'rare',c:'animal'},
   {id:'a09',n:'말',e:'🐎',r:'epic',c:'animal'},
   {id:'a10',n:'공작새',e:'🦚',r:'epic',c:'animal'},
   {id:'a11',n:'백조',e:'🦢',r:'epic',c:'animal'},
-  {id:'a12',n:'적룡',e:'🐉',img:'./img/dragon_red.png',r:'legendary',c:'animal',tone:'red'},
+  {id:'a12',n:'적룡',e:'🐉',img:'./img/dragon_red.png',imgAction:'./img/dragon_red_fire.png',r:'legendary',c:'animal',tone:'red'},
   {id:'a13',n:'유니콘',e:'🐎',e2:'🪽',e3:'✨',r:'legendary',c:'animal',tone:'rainbow',sz:'huge'},
   {id:'a14',n:'봉황',e:'🦅',r:'legendary',c:'animal',tone:'gold'},
-  {id:'a31',n:'청룡',e:'🐉',img:'./img/dragon_blue.png',r:'legendary',c:'animal',tone:'blue'},
-  {id:'a32',n:'황룡',e:'🐉',img:'./img/dragon_gold.png',r:'legendary',c:'animal',tone:'gold'},
-  {id:'a34',n:'녹룡',e:'🐉',img:'./img/dragon_green.png',r:'epic',c:'animal'},
-  {id:'a35',n:'무지개룡',e:'🐉',img:'./img/dragon_rainbow.png',r:'legendary',c:'animal',tone:'rainbow'},
-  {id:'a36',n:'흑룡',e:'🐉',img:'./img/dragon_shadow.png',r:'legendary',c:'animal'},
+  {id:'a31',n:'청룡',e:'🐉',img:'./img/dragon_blue.png',imgAction:'./img/dragon_blue_fire.png',r:'legendary',c:'animal',tone:'blue'},
+  {id:'a32',n:'황룡',e:'🐉',r:'legendary',c:'animal',tone:'gold'},
+  {id:'a34',n:'녹룡',e:'🐉',r:'epic',c:'animal'},
+  {id:'a35',n:'무지개룡',e:'🐉',r:'legendary',c:'animal',tone:'rainbow'},
+  {id:'a36',n:'흑룡',e:'🐉',r:'legendary',c:'animal'},
   // Common animals (extra)
   {id:'a15',n:'강아지',e:'🐕',r:'common',c:'animal'},
   {id:'a16',n:'고양이',e:'🐈',r:'common',c:'animal'},
@@ -3521,7 +3570,7 @@ function renderFarm(){
   grid.innerHTML=filtered.map(item=>{
     const count=farm[item.id]||0;
     const cls=count>0?`fitem ${item.r} unlocked`:`fitem ${item.r} locked`;
-    const toneClass=(count>0&&item.tone&&!item.img)?` tone-${item.tone}`:'';
+    const toneClass=(count>0&&item.tone)?` tone-${item.tone}`:'';
     let emInner;
     if(count===0)emInner='❓';
     else if(item.img)emInner=`<img src="${item.img}" alt="${item.n}" loading="lazy" style="width:36px;height:36px;vertical-align:middle;image-rendering:pixelated" onerror="this.outerHTML='${item.e}'">`;
@@ -3812,18 +3861,24 @@ function renderFarmScene(){
     const el=document.createElement('div');
     let cls=`placed-item ${item.c} ${item.r} ${itemSizeClass(item)}`;
     if(item.live)cls+=` lively live-${item.id}`;
-    // Skip tone filter when item has its own image (image already colored correctly)
-    if(item.tone && !item.img)cls+=` tone-${item.tone}`;
+    // Always apply tone — CSS exempts <img> children so loaded images keep true colors
+    if(item.tone)cls+=` tone-${item.tone}`;
     el.className=cls;
     el.dataset.uid=p.uid;
+    // Mark dragons + flying creatures for special animations
+    const DRAGON_IDS=new Set(['a12','a31','a32','a34','a35','a36']);
+    const FLYING_IDS=new Set(['a13','a35']); // unicorn + rainbow dragon
+    if(DRAGON_IDS.has(item.id))el.dataset.dragon='1';
+    if(FLYING_IDS.has(item.id))el.dataset.fly='1';
     // Base emoji + optional overlay (e2=fruit/wing, e3=sparkle/horn)
     const baseEmoji=getStageEmoji(p,item);
     // Unicorn (a13) → 전신 말 + 양쪽 날개 + 뿔 + 반짝
     if(item.id==='a13'){
       el.innerHTML=`<span style="position:relative;display:inline-block">${baseEmoji}<span class="body-wing">🪽</span><span class="body-wing-r">🪽</span><span class="body-horn">▲</span></span><span class="fruit-overlay">✨</span>`;
     }else if(item.img){
-      // Custom image with emoji fallback if image fails to load
-      el.innerHTML=`<img src="${item.img}" alt="${item.n}" loading="lazy" style="width:1.4em;height:1.4em;vertical-align:middle;display:inline-block;image-rendering:pixelated" onerror="this.outerHTML='${item.e}'">`;
+      // Custom image with emoji fallback + optional action sprite (e.g. fire breath)
+      const actionAttr=item.imgAction?` data-base="${item.img}" data-action="${item.imgAction}"`:'';
+      el.innerHTML=`<img src="${item.img}" alt="${item.n}"${actionAttr} class="dragon-img" loading="lazy" style="width:1.4em;height:1.4em;vertical-align:middle;display:inline-block;image-rendering:pixelated" onerror="this.outerHTML='${item.e}'">`;
     }else if(item.c==='plant' && item.e2){
       // Tree fruit overlays
       el.innerHTML=`${baseEmoji}<span class="fruit-overlay">${item.e2}</span><span class="fruit-overlay b2">${item.e2}</span>`;
@@ -3854,6 +3909,50 @@ function renderFarmScene(){
           saveLayout();renderFarmScene();renderTray();
         }
         return;
+      }
+      // Dragon special: breathe fire + sparkle particles + bigger coin reward
+      const isDragon=DRAGON_IDS.has(item.id);
+      if(isDragon){
+        // Excite jump animation
+        el.classList.add('excited');
+        setTimeout(()=>el.classList.remove('excited'),600);
+        playSound('rare');
+        // SPRITE SWAP: if dragon has imgAction (fire-breathing sprite), swap to it briefly
+        const dragonImg=el.querySelector('img.dragon-img');
+        if(dragonImg && dragonImg.dataset.action){
+          dragonImg.src=dragonImg.dataset.action;
+          setTimeout(()=>{
+            if(dragonImg.dataset.base)dragonImg.src=dragonImg.dataset.base;
+          },1200);
+        }
+        // Fire breath emoji shooting out (additional VFX on top of sprite swap)
+        const fire=document.createElement('div');
+        fire.className='dragon-fire';
+        fire.textContent='🔥';
+        fire.style.left='75%';fire.style.top='35%';
+        el.appendChild(fire);
+        setTimeout(()=>fire.remove(),900);
+        // 6 sparkle particles burst out
+        for(let i=0;i<6;i++){
+          const spark=document.createElement('div');
+          spark.className='dragon-sparkle';
+          spark.textContent=['✨','⭐','💫','🌟'][i%4];
+          spark.style.left='50%';spark.style.top='30%';
+          const angle=(i/6)*Math.PI*2;
+          spark.style.setProperty('--sx',Math.cos(angle)*40+'px');
+          spark.style.setProperty('--sy',(Math.sin(angle)*40-10)+'px');
+          spark.style.animationDelay=(i*0.05)+'s';
+          el.appendChild(spark);
+          setTimeout(()=>spark.remove(),1100);
+        }
+        // 40% chance for bonus coins (dragons are valuable!)
+        if(Math.random()<0.4){
+          const bonus=Math.floor(Math.random()*100)+50; // 50~150 coins
+          const econ=getEconomy();
+          econ.coins+=bonus;saveEconomy(econ);updateCoinsDisplay();
+          showToast(`🐉 ${item.n}의 축복! +🪙${bonus}`);
+        }
+        return; // Don't fall through to generic animal handler
       }
       // Click interactions based on category
       if(item.c==='animal'){
@@ -3896,11 +3995,39 @@ function renderFarmScene(){
   startWalking();
   updatePendingBadges();
 }
+// Auto-trigger idle dragon fire breath every 8-15 sec (random)
+let dragonIdleTimer=null;
+function startDragonIdleAnim(){
+  if(dragonIdleTimer)clearInterval(dragonIdleTimer);
+  dragonIdleTimer=setInterval(()=>{
+    if(document.getElementById('farmModal').classList.contains('hidden'))return;
+    if(placeMode)return;
+    // Pick a random dragon with imgAction to do an idle fire breath
+    const dragons=document.querySelectorAll('.placed-item[data-dragon="1"]');
+    if(dragons.length===0)return;
+    const el=dragons[Math.floor(Math.random()*dragons.length)];
+    const img=el.querySelector('img.dragon-img');
+    if(!img||!img.dataset.action)return; // only animate if action sprite available
+    img.src=img.dataset.action;
+    // Small puff of fire emoji
+    const fire=document.createElement('div');
+    fire.className='dragon-fire';
+    fire.textContent='🔥';
+    fire.style.left='75%';fire.style.top='35%';
+    el.appendChild(fire);
+    setTimeout(()=>{
+      if(img.dataset.base)img.src=img.dataset.base;
+      fire.remove();
+    },1100);
+  },10000); // every 10 seconds, pick random dragon
+}
+function stopDragonIdleAnim(){if(dragonIdleTimer){clearInterval(dragonIdleTimer);dragonIdleTimer=null}}
 function startWalking(){
   if(walkInterval)clearInterval(walkInterval);
   // Apply day/night and weather on start
   applyDayPhase();
   applyWeather();
+  startDragonIdleAnim();
   walkInterval=setInterval(()=>{
     if(document.getElementById('farmModal').classList.contains('hidden'))return;
     if(placeMode)return;
@@ -3949,7 +4076,7 @@ function startWalking(){
     saveLayout();
   },1800);
 }
-function stopWalking(){if(walkInterval){clearInterval(walkInterval);walkInterval=null}}
+function stopWalking(){if(walkInterval){clearInterval(walkInterval);walkInterval=null}stopDragonIdleAnim();}
 // Day/night cycle based on real time
 function getDayPhase(){
   const h=new Date().getHours();
@@ -4327,7 +4454,7 @@ function renderShop(){
     </div>`;
     html+=`<div class="baby-grid">`;
     rAnimals.forEach(item=>{
-      const toneClass=(item.tone && !item.img)?` tone-${item.tone}`:'';
+      const toneClass=item.tone?` tone-${item.tone}`:'';
       let emInner;
       if(item.img){
         emInner=`<img src="${item.img}" alt="${item.n}" loading="lazy" style="width:32px;height:32px;vertical-align:middle;image-rendering:pixelated" onerror="this.outerHTML='${item.e}'">`;
