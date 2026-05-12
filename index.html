@@ -550,6 +550,13 @@ body.dark .mfw-btn:hover{background:rgba(255,255,255,.2)}
 @keyframes scoreBumpBad{0%{transform:scale(1)}40%{transform:scale(1.15);background:linear-gradient(135deg,#e03131,#fa5252)}100%{transform:scale(1)}}
 .score-pill .sp-ic{font-size:11px}
 .score-pill .sp-n{letter-spacing:-0.3px}
+.token-pill{display:inline-flex;align-items:center;gap:4px;
+  background:linear-gradient(135deg,#f06595,#ff8787);color:#fff;
+  padding:3px 10px;border-radius:14px;font-weight:800;font-size:13px;
+  box-shadow:0 2px 8px rgba(240,101,149,.35);transition:transform .25s}
+.token-pill.bump{animation:scoreBump .35s ease}
+.token-pill .sp-ic{font-size:12px}
+.token-pill .sp-n{letter-spacing:-0.3px}
 /* Install banner */
 .install-banner{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);
   background:var(--primary);color:#fff;padding:10px 16px;border-radius:24px;
@@ -630,14 +637,18 @@ body.dark .mfw-btn:hover{background:rgba(255,255,255,.2)}
 .farm-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:12px 14px 18px}
 .fitem{aspect-ratio:1;border-radius:10px;display:flex;flex-direction:column;
   align-items:center;justify-content:center;position:relative;padding:4px;
-  border:2px solid #e9ecef;background:#fff;cursor:pointer;transition:transform .15s}
+  border:3px solid #dee2e6;background:#fff;cursor:pointer;transition:transform .15s}
 .fitem.unlocked{}
 .fitem.locked{opacity:.35;background:#f1f3f5}
-.fitem.common.unlocked{border-color:#adb5bd}
-.fitem.rare.unlocked{border-color:#1971c2;background:linear-gradient(135deg,#fff,#e7f5ff)}
-.fitem.epic.unlocked{border-color:var(--accent);background:linear-gradient(135deg,#fff,#f3e8ff)}
-.fitem.legendary.unlocked{border-color:#f59f00;background:linear-gradient(135deg,#fff,#fff3bf);
-  box-shadow:0 0 12px rgba(245,159,0,.4)}
+/* RARITY BORDERS — applied to ALL items (locked/unlocked) */
+.fitem.common{border-color:#ffffff;box-shadow:0 0 0 1px #ced4da}
+.fitem.rare{border-color:#4dabf7;box-shadow:0 0 8px rgba(77,171,247,.3)}
+.fitem.epic{border-color:#9775fa;box-shadow:0 0 10px rgba(151,117,250,.35)}
+.fitem.legendary{border-color:#ffd43b;box-shadow:0 0 12px rgba(255,212,59,.45)}
+.fitem.common.unlocked{background:#fff}
+.fitem.rare.unlocked{background:linear-gradient(135deg,#fff,#e7f5ff)}
+.fitem.epic.unlocked{background:linear-gradient(135deg,#fff,#f3e8ff)}
+.fitem.legendary.unlocked{background:linear-gradient(135deg,#fff,#fff3bf)}
 .fitem:hover{transform:translateY(-2px)}
 .fitem .em{font-size:28px;line-height:1}
 .fitem .nm{font-size:9px;font-weight:700;color:var(--given);text-align:center;
@@ -661,15 +672,14 @@ body.dark .mfw-btn:hover{background:rgba(255,255,255,.2)}
 .farm-scene-wrap{padding:8px 10px 6px}
 .farm-scene{width:100%;height:520px;border-radius:6px;position:relative;overflow:hidden;
   background-color:#7cb342;
+  /* Custom pixel art background — falls back to gradient if image missing */
   background-image:
-    /* Pixel grid: vertical lines */
-    repeating-linear-gradient(90deg,transparent 0,transparent 23px,rgba(0,0,0,.07) 23px,rgba(0,0,0,.07) 24px),
-    /* Horizontal lines */
-    repeating-linear-gradient(0deg,transparent 0,transparent 23px,rgba(0,0,0,.07) 23px,rgba(0,0,0,.07) 24px),
-    /* Tile color variation */
-    repeating-conic-gradient(from 0deg at 50% 50%,rgba(255,255,255,.04) 0% 50%,transparent 50% 100%),
-    /* Sky (smaller) + grass (bigger) gradient */
+    url('./img/farm_bg.png'),
+    /* Sky (smaller) + grass (bigger) gradient FALLBACK */
     linear-gradient(to bottom,#88c4ec 0%,#b8def0 17%,#7cb342 17%,#5a9926 100%);
+  background-size:cover,cover;
+  background-position:center,center;
+  background-repeat:no-repeat,no-repeat;
   border:4px solid #4a3826;
   box-shadow:inset 0 0 0 2px #6b5333,inset 0 -3px 0 rgba(0,0,0,.15),0 4px 0 #2a1f12;
   image-rendering:pixelated;image-rendering:crisp-edges;
@@ -849,6 +859,17 @@ body.dark .mfw-btn:hover{background:rgba(255,255,255,.2)}
 .day-badge{position:absolute;top:8px;left:8px;background:rgba(0,0,0,.5);color:#fff;
   font-size:11px;font-weight:700;padding:4px 9px;border-radius:14px;z-index:200;
   letter-spacing:.5px;text-shadow:1px 1px 0 #000;backdrop-filter:blur(4px)}
+.season-badge{position:absolute;top:8px;left:78px;background:rgba(255,255,255,.85);color:#1a1a2e;
+  font-size:11px;font-weight:800;padding:4px 10px;border-radius:14px;z-index:200;
+  letter-spacing:.3px;backdrop-filter:blur(4px);box-shadow:0 2px 8px rgba(0,0,0,.15);cursor:help}
+/* Season-themed particle overlays */
+.season-particles{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:50}
+.season-particles .sp{position:absolute;font-size:14px;animation:seasonFall 8s linear infinite;
+  opacity:.85;will-change:transform,top}
+@keyframes seasonFall{
+  0%{top:-10%;transform:translateX(0) rotate(0deg)}
+  100%{top:110%;transform:translateX(40px) rotate(360deg)}
+}
 /* Weather particles */
 .weather-particle{position:absolute;font-size:14px;pointer-events:none;
   animation:weatherFall 6s linear infinite;z-index:50}
@@ -1102,6 +1123,9 @@ body.dark .mfw-btn:hover{background:rgba(255,255,255,.2)}
   box-shadow:0 1px 3px rgba(0,0,0,.4);z-index:5}
 .placed-item .baby-badge{position:absolute;top:-12px;left:-8px;font-size:14px;
   filter:drop-shadow(1px 1px 0 rgba(0,0,0,.3));z-index:6;animation:babyShake 1.5s ease-in-out infinite alternate}
+.placed-item .bond-badge{position:absolute;top:-8px;left:50%;transform:translateX(-50%);
+  font-size:9px;line-height:1;letter-spacing:-2px;white-space:nowrap;pointer-events:none;
+  text-shadow:0 1px 2px rgba(0,0,0,.5);filter:drop-shadow(0 0 3px #ffd43b)}
 .placed-item .stage-badge{position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);
   background:rgba(0,0,0,.7);color:#fff;font-size:8px;font-weight:800;padding:1px 5px;border-radius:6px;
   white-space:nowrap;letter-spacing:.5px;z-index:7}
@@ -1113,10 +1137,11 @@ body.dark .mfw-btn:hover{background:rgba(255,255,255,.2)}
   display:flex;flex-direction:column;align-items:center;text-align:center;cursor:pointer;
   transition:all .15s;position:relative}
 .baby-card:hover{transform:translateY(-2px);border-color:var(--primary);box-shadow:0 4px 10px rgba(59,91,219,.15)}
-.baby-card.common{border-color:#adb5bd}
-.baby-card.rare{border-color:#1971c2;background:linear-gradient(135deg,#fff,#e7f5ff)}
-.baby-card.epic{border-color:var(--accent);background:linear-gradient(135deg,#fff,#f3e8ff)}
-.baby-card.legendary{border-color:#f59f00;background:linear-gradient(135deg,#fff,#fff3bf);
+.baby-card{border-width:3px}
+.baby-card.common{border-color:#ffffff;box-shadow:0 0 0 1px #ced4da}
+.baby-card.rare{border-color:#4dabf7;box-shadow:0 0 8px rgba(77,171,247,.3);background:linear-gradient(135deg,#fff,#e7f5ff)}
+.baby-card.epic{border-color:#9775fa;box-shadow:0 0 10px rgba(151,117,250,.35);background:linear-gradient(135deg,#fff,#f3e8ff)}
+.baby-card.legendary{border-color:#ffd43b;box-shadow:0 0 12px rgba(255,212,59,.45);background:linear-gradient(135deg,#fff,#fff3bf);
   box-shadow:0 0 8px rgba(245,159,0,.3)}
 .baby-card.disabled{opacity:.45;cursor:not-allowed}
 .baby-card .em{font-size:28px;line-height:1;position:relative}
@@ -1328,6 +1353,7 @@ window.dispatchEvent(new Event('fb-ready'));
     </div>
     <div class="mistakes-wrap" id="mistakeWrap"></div>
     <div class="score-pill" id="scorePill" title="점수"><span class="sp-ic">⚡</span><span class="sp-n" id="scoreVal">0</span></div>
+    <div class="token-pill" id="tokenPill" title="교감 토큰 (동물 상호작용용)"><span class="sp-ic">💞</span><span class="sp-n" id="tokenVal">0</span></div>
     <button class="icon-btn pause" id="pauseBtn" onclick="togglePause()" title="일시정지">⏸</button>
     <button class="icon-btn farm" onclick="openFarm()" title="내 농장">🌾</button>
     <button class="icon-btn compare" onclick="openCompare()" title="친구와 비교">👥</button>
@@ -1549,6 +1575,14 @@ window.dispatchEvent(new Event('fb-ready'));
           </div>
           <button onclick="toggleDark();openSettings()" id="darkToggleBtn">ON</button>
         </div>
+        <div class="settings-row">
+          <div class="ic">🖼</div>
+          <div class="info">
+            <div class="nm">픽셀 배경: <span id="bgLabel">OFF</span></div>
+            <div class="desc">농장에 커스텀 배경 이미지 사용 (./img/farm_bg.png)</div>
+          </div>
+          <button onclick="toggleCustomBg();openSettings()" id="bgToggleBtn">켜기</button>
+        </div>
         <h3>☁️ 클라우드 동기화</h3>
         <div class="settings-row">
           <div class="ic" id="cloudIc">☁️</div>
@@ -1648,6 +1682,7 @@ window.dispatchEvent(new Event('fb-ready'));
       <div class="farm-scene-wrap">
         <div class="farm-scene" id="farmScene">
           <div class="day-badge" id="dayBadge">🌞 낮</div>
+          <div class="season-badge" id="seasonBadge">🌸 봄</div>
           <div class="farm-counter" id="farmCounter">0개 배치</div>
         </div>
       </div>
@@ -2410,6 +2445,10 @@ function showWin(){
   pendingRewardData=generateRewards(diff,!!mOk,isDaily);
   // Grant 5 chests (time-gated coin rewards)
   grantWinChests();
+  // Grant interaction tokens (animals can be petted for rewards)
+  const tokenGain=tokensPerWin(diff);
+  addTokens(tokenGain);
+  showToast(`💞 교감 토큰 +${tokenGain}`);
   // Track for achievements + quests
   playSound('win');
   trackQuest('todayWins',1);
@@ -2672,6 +2711,7 @@ document.querySelectorAll('.dtab').forEach(t=>t.classList.toggle('active',t.data
 initGame(diff);
 updateDailyBanner();
 updateFarmBadge();
+updateTokenBadge();
 // Render main farm widget on load + refresh every 5s
 setTimeout(()=>{if(typeof renderMainFarmWidget==='function')renderMainFarmWidget()},500);
 setInterval(()=>{if(typeof renderMainFarmWidget==='function')renderMainFarmWidget()},5000);
@@ -2822,6 +2862,118 @@ const FARM_KEY='sudoku_farm_v1';
 // CHEST SYSTEM (5 chests per sudoku win, time-gated)
 // ═══════════════════════════════════════
 const CHEST_KEY='sudoku_chests_v1';
+// ═══════════════════════════════════════
+// INTERACTION TOKEN SYSTEM (스도쿠 클리어 → 동물 교감 토큰)
+// ═══════════════════════════════════════
+// ═══════════════════════════════════════
+// SEASON SYSTEM (4계절 자동 순환, 7일 1계절)
+// ═══════════════════════════════════════
+const SEASON_EPOCH=new Date('2025-01-01').getTime();
+const SEASONS=[
+  {id:'spring',n:'봄',e:'🌸',color:'#ffd6e7',accent:'#f783ac',sky1:'#ffdeeb',sky2:'#e599f7',
+   tint:'sepia(0.05) hue-rotate(-10deg) saturate(1.1)',msg:'벚꽃이 피었어요'},
+  {id:'summer',n:'여름',e:'☀️',color:'#a5d8ff',accent:'#339af0',sky1:'#74c0fc',sky2:'#a5d8ff',
+   tint:'saturate(1.3) brightness(1.05)',msg:'시원한 여름 바람'},
+  {id:'autumn',n:'가을',e:'🍂',color:'#ffd8a8',accent:'#fd7e14',sky1:'#ffd8a8',sky2:'#ffa94d',
+   tint:'sepia(0.25) hue-rotate(-15deg) saturate(1.2) brightness(0.98)',msg:'단풍이 물들었어요'},
+  {id:'winter',n:'겨울',e:'❄️',color:'#dee2e6',accent:'#74c0fc',sky1:'#e7f5ff',sky2:'#a5d8ff',
+   tint:'hue-rotate(180deg) saturate(0.7) brightness(1.1)',msg:'눈이 내려요'},
+];
+function getCurrentSeason(){
+  const dayIdx=Math.floor((Date.now()-SEASON_EPOCH)/86400000);
+  const idx=Math.floor(dayIdx/7)%4;
+  return SEASONS[idx];
+}
+function daysUntilNextSeason(){
+  const dayIdx=Math.floor((Date.now()-SEASON_EPOCH)/86400000);
+  return 7-(dayIdx%7);
+}
+function applySeasonVisuals(){
+  const s=getCurrentSeason();
+  const scene=document.getElementById('farmScene');
+  if(scene){
+    scene.style.filter=s.tint;
+    // Remove old particle layer if exists
+    const oldP=scene.querySelector('.season-particles');
+    if(oldP)oldP.remove();
+    // Add season-specific particles
+    const particles={
+      spring:['🌸','🌸','🌸','🌺','🌷'],
+      summer:['🦋','✨','☀️'],
+      autumn:['🍂','🍁','🍃'],
+      winter:['❄️','❄️','❄️','⛄']
+    }[s.id]||['✨'];
+    const pLayer=document.createElement('div');
+    pLayer.className='season-particles';
+    for(let i=0;i<8;i++){
+      const p=document.createElement('div');
+      p.className='sp';
+      p.textContent=particles[i%particles.length];
+      p.style.left=(Math.random()*95)+'%';
+      p.style.animationDelay=(Math.random()*8)+'s';
+      p.style.animationDuration=(6+Math.random()*6)+'s';
+      pLayer.appendChild(p);
+    }
+    scene.appendChild(pLayer);
+  }
+  // Update season badge if exists
+  const badge=document.getElementById('seasonBadge');
+  if(badge){
+    badge.innerHTML=`${s.e} ${s.n}`;
+    badge.title=`${s.msg} · 다음 계절까지 ${daysUntilNextSeason()}일`;
+  }
+}
+const TOKEN_KEY='sudoku_interact_tokens_v1';
+function getTokens(){return parseInt(localStorage.getItem(TOKEN_KEY)||'0')}
+function setTokens(n){localStorage.setItem(TOKEN_KEY,String(Math.max(0,n)));updateTokenBadge&&updateTokenBadge();scheduleSyncPush&&scheduleSyncPush()}
+function addTokens(n){setTokens(getTokens()+n)}
+function spendToken(){
+  const t=getTokens();
+  if(t<=0)return false;
+  setTokens(t-1);
+  return true;
+}
+function tokensPerWin(diff){
+  // Difficulty → tokens granted on win
+  return {easy:3,medium:5,hard:8,expert:12}[diff]||5;
+}
+function updateTokenBadge(){
+  const el=document.getElementById('tokenVal');
+  if(el)el.textContent=getTokens();
+  const pill=document.getElementById('tokenPill');
+  if(pill){
+    pill.classList.remove('bump');
+    void pill.offsetWidth;
+    pill.classList.add('bump');
+  }
+}
+// Pet bonding helpers
+function getBondingLevel(p){return p.bond||0}
+function increaseBonding(p,amount=0.5){
+  if(!p.bond)p.bond=0;
+  p.bond=Math.min(10,p.bond+amount);
+  return p.bond;
+}
+function bondingStars(level){
+  const full=Math.floor(level);
+  const half=(level-full)>=0.5?1:0;
+  return '⭐'.repeat(full)+(half?'½':'');
+}
+function bondingBonus(level){
+  // Each bonding level = +10% resource yield. Max +100% at LV 10
+  return 1+(level*0.1);
+}
+function refreshBondingDisplay(el,level){
+  // Remove old badge
+  const old=el.querySelector('.bond-badge');
+  if(old)old.remove();
+  if(level<=0)return;
+  const badge=document.createElement('div');
+  badge.className='bond-badge';
+  const lvl=Math.floor(level);
+  badge.textContent='⭐'.repeat(Math.min(5,lvl))+(lvl>=10?'👑':'');
+  el.appendChild(badge);
+}
 const CHEST_TYPES={
   bronze:   {n:'동상자',  e:'📦',sec:300,    coins:100,  color:'#cd7f32'},  // 5분
   silver:   {n:'은상자',  e:'📦',sec:1800,   coins:500,  color:'#c0c0c0'},  // 30분
@@ -3780,18 +3932,32 @@ function buildZoneOverlays(){
   const wrap=document.createElement('div');
   wrap.className='farm-bg-layer';
   wrap.style.zIndex=1;
-  wrap.innerHTML=`
-    <div class="zone zone-pen"   style="left:3%;bottom:5%;width:46%;height:50%"><span class="zone-label">🐔 동물 우리</span></div>
-    <div class="zone zone-dirt"  style="left:52%;bottom:5%;width:21%;height:22%"><span class="zone-label">🌾 밭</span></div>
-    <div class="zone zone-dirt"  style="left:75%;bottom:5%;width:22%;height:22%"><span class="zone-label">🥕 작물</span></div>
-    <div class="zone zone-dirt"  style="left:52%;bottom:30%;width:21%;height:18%"><span class="zone-label">🌱 정원</span></div>
-    <div class="zone zone-water" id="zoneWater" style="left:75%;bottom:30%;width:22%;height:30%;cursor:pointer">
-      <span class="zone-label" style="background:rgba(0,0,80,.45)">🎣 낚시터</span>
-      <div class="water-fish-hint">🐟</div>
-      <div class="water-fish-hint f2">🐠</div>
-    </div>
-    <div class="zone zone-path"  style="left:3%;bottom:57%;width:94%;height:5%"></div>
-  `;
+  // If custom bg is enabled (farm_bg.png), hide overlay boxes (image has built-in zones)
+  // Just add the invisible fishing zone trigger for the pond area in the image
+  const useCustomBg=localStorage.getItem('sudoku_custom_bg')==='1';
+  if(useCustomBg){
+    // Custom image background — only fishing trigger zone (transparent)
+    wrap.innerHTML=`
+      <div class="zone zone-water" id="zoneWater"
+        style="left:3%;bottom:5%;width:35%;height:30%;cursor:pointer;
+        background:transparent;border:2px dashed rgba(255,255,255,.6)">
+        <span class="zone-label" style="background:rgba(0,0,80,.6)">🎣 클릭=낚시</span>
+      </div>
+    `;
+  }else{
+    wrap.innerHTML=`
+      <div class="zone zone-pen"   style="left:3%;bottom:5%;width:46%;height:50%"><span class="zone-label">🐔 동물 우리</span></div>
+      <div class="zone zone-dirt"  style="left:52%;bottom:5%;width:21%;height:22%"><span class="zone-label">🌾 밭</span></div>
+      <div class="zone zone-dirt"  style="left:75%;bottom:5%;width:22%;height:22%"><span class="zone-label">🥕 작물</span></div>
+      <div class="zone zone-dirt"  style="left:52%;bottom:30%;width:21%;height:18%"><span class="zone-label">🌱 정원</span></div>
+      <div class="zone zone-water" id="zoneWater" style="left:75%;bottom:30%;width:22%;height:30%;cursor:pointer">
+        <span class="zone-label" style="background:rgba(0,0,80,.45)">🎣 낚시터</span>
+        <div class="water-fish-hint">🐟</div>
+        <div class="water-fish-hint f2">🐠</div>
+      </div>
+      <div class="zone zone-path"  style="left:3%;bottom:57%;width:94%;height:5%"></div>
+    `;
+  }
   // Make the pond zone clickable → open fishing modal directly
   setTimeout(()=>{
     const w=document.getElementById('zoneWater');
@@ -3900,7 +4066,11 @@ function renderFarmScene(){
       label.textContent=`🐣 ${grow?fmtCountdown(grow.remainingSec):''}`;
       el.appendChild(label);
     }
-    el.title=`${item.n} (${RARITY_INFO[item.r].label})${stage<2?' · '+STAGE_LABEL[stage]:''}`;
+    el.title=`${item.n} (${RARITY_INFO[item.r].label})${stage<2?' · '+STAGE_LABEL[stage]:''}${p.bond?' · 친밀도 LV '+Math.floor(p.bond):''}`;
+    // Pet bonding stars on placed animal
+    if(item.c==='animal' && p.bond>=1){
+      refreshBondingDisplay(el,p.bond);
+    }
     el.addEventListener('click',e=>{
       e.stopPropagation();
       if(placeMode){
@@ -3945,41 +4115,58 @@ function renderFarmScene(){
           el.appendChild(spark);
           setTimeout(()=>spark.remove(),1100);
         }
-        // 40% chance for bonus coins (dragons are valuable!)
-        if(Math.random()<0.4){
+        // Token-gated coin bonus (prevents infinite click glitch)
+        if(spendToken()){
           const bonus=Math.floor(Math.random()*100)+50; // 50~150 coins
           const econ=getEconomy();
           econ.coins+=bonus;saveEconomy(econ);updateCoinsDisplay();
-          showToast(`🐉 ${item.n}의 축복! +🪙${bonus}`);
+          showToast(`🐉 ${item.n}의 축복! +🪙${bonus} (남은 토큰: ${getTokens()})`);
+        }else{
+          showToast(`💞 교감 토큰 없음. 스도쿠 클리어해서 모아오세요`);
         }
         return; // Don't fall through to generic animal handler
       }
-      // Click interactions based on category
+      // Click interactions based on category — token-gated for rewards
       if(item.c==='animal'){
         el.classList.add('hopping');
         setTimeout(()=>el.classList.remove('hopping'),500);
         playSound('correct');
         spawnFloatEffect('❤️',p.x,p.y,scene);
-        // 25% chance for instant resource (adult only)
-        if(Math.random()<0.25 && PROD[p.id] && stage===2){
+        // Token-gated resource reward + bonding system
+        if(PROD[p.id] && stage===2 && spendToken()){
+          // Increase bonding when token is spent (reward = bonding effort)
+          const oldBond=getBondingLevel(p);
+          const newBond=increaseBonding(p,0.5);
+          saveLayout();
+          // Bonding bonus multiplier on yield
+          const mult=bondingBonus(newBond);
+          const yieldAmount=Math.max(1,Math.round(1*mult));
           const econ=getEconomy();
-          econ.resources[PROD[p.id].r]=(econ.resources[PROD[p.id].r]||0)+1;
+          econ.resources[PROD[p.id].r]=(econ.resources[PROD[p.id].r]||0)+yieldAmount;
           saveEconomy(econ);updateCoinsDisplay();
           const res=RESOURCES[PROD[p.id].r];
-          showToast(`💕 ${item.n}이(가) 좋아해요! +${res.e} ${res.n}1`);
+          // Level up celebration
+          if(Math.floor(newBond)>Math.floor(oldBond)){
+            spawnFloatEffect('⭐',p.x,p.y+10,scene);
+            showToast(`✨ ${item.n} LV ${Math.floor(newBond)} 달성! 자원 +${Math.round((mult-1)*100)}%`);
+          }else{
+            showToast(`💕 ${item.n} +${res.e}${yieldAmount} (친밀도 ${newBond.toFixed(1)}/10)`);
+          }
+          // Refresh the bonding stars display
+          refreshBondingDisplay(el,newBond);
         }
       }else if(item.c==='plant'){
-        // Shake + chance of fruit
+        // Shake + chance of fruit (token-gated)
         el.style.animation='plantSway .3s ease-in-out 3';
         setTimeout(()=>{el.style.animation=''},900);
         playSound('flip');
         spawnFloatEffect('✨',p.x,p.y,scene);
-        if(Math.random()<0.20 && PROD[p.id]){
+        if(PROD[p.id] && spendToken()){
           const econ=getEconomy();
           econ.resources[PROD[p.id].r]=(econ.resources[PROD[p.id].r]||0)+1;
           saveEconomy(econ);updateCoinsDisplay();
           const res=RESOURCES[PROD[p.id].r];
-          showToast(`🌳 ${item.n}에서 ${res.e} ${res.n}1 떨어짐!`);
+          showToast(`🌳 ${item.n}에서 ${res.e} ${res.n}1 떨어짐! (남은 토큰: ${getTokens()})`);
         }
       }else if(item.live){
         spawnFloatEffect('💕',p.x,p.y,scene);
@@ -4024,9 +4211,10 @@ function startDragonIdleAnim(){
 function stopDragonIdleAnim(){if(dragonIdleTimer){clearInterval(dragonIdleTimer);dragonIdleTimer=null}}
 function startWalking(){
   if(walkInterval)clearInterval(walkInterval);
-  // Apply day/night and weather on start
+  // Apply day/night, weather, and season visuals on start
   applyDayPhase();
   applyWeather();
+  applySeasonVisuals();
   startDragonIdleAnim();
   walkInterval=setInterval(()=>{
     if(document.getElementById('farmModal').classList.contains('hidden'))return;
@@ -5060,6 +5248,11 @@ function openSettings(){
   document.getElementById('darkLabel').textContent=darkMode?'ON':'OFF';
   document.getElementById('darkIc').textContent=darkMode?'🌙':'☀️';
   document.getElementById('darkToggleBtn').textContent=darkMode?'끄기':'켜기';
+  const customBg=localStorage.getItem('sudoku_custom_bg')==='1';
+  const bgLabel=document.getElementById('bgLabel');
+  const bgBtn=document.getElementById('bgToggleBtn');
+  if(bgLabel)bgLabel.textContent=customBg?'ON':'OFF';
+  if(bgBtn)bgBtn.textContent=customBg?'끄기':'켜기';
   // Cloud sync status
   const ic=document.getElementById('cloudIc');
   const st=document.getElementById('cloudStatus');
@@ -5113,6 +5306,11 @@ function toggleDark(){
   localStorage.setItem('sudoku_dark_mode',darkMode?'1':'0');
   applyDarkMode();
   showToast(darkMode?'🌙 다크 모드 ON':'☀️ 라이트 모드');
+}
+function toggleCustomBg(){
+  const cur=localStorage.getItem('sudoku_custom_bg')==='1';
+  localStorage.setItem('sudoku_custom_bg',cur?'0':'1');
+  showToast(cur?'🖼 픽셀 배경 OFF':'🖼 픽셀 배경 ON (농장 다시 열어주세요)');
 }
 applyDarkMode();
 function closeSettings(){document.getElementById('settingsModal').classList.add('hidden')}
