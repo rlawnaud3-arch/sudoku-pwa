@@ -2711,7 +2711,8 @@ document.querySelectorAll('.dtab').forEach(t=>t.classList.toggle('active',t.data
 initGame(diff);
 updateDailyBanner();
 updateFarmBadge();
-updateTokenBadge();
+// Defer updateTokenBadge until after all consts are initialized (fixes TDZ)
+setTimeout(()=>{if(typeof updateTokenBadge==='function')updateTokenBadge()},100);
 // Render main farm widget on load + refresh every 5s
 setTimeout(()=>{if(typeof renderMainFarmWidget==='function')renderMainFarmWidget()},500);
 setInterval(()=>{if(typeof renderMainFarmWidget==='function')renderMainFarmWidget()},5000);
